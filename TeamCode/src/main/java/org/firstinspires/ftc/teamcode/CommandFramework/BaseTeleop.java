@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.CommandFramework;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
@@ -7,10 +8,14 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
 public abstract class BaseTeleop extends LinearOpMode {
 
     protected Robot robot;
+    public final Pose2d initialPose = new Pose2d( -36, 63.5, Math.toRadians(-90));
+
 
     @Override
     public void runOpMode() {
         robot = new Robot(hardwareMap, Robot.OpMode.Auto, gamepad1, gamepad2);
+        robot.drivetrain.setPose(initialPose);
+
         waitForStart();
 
         robot.getScheduler().forceCommand(setupTeleop(robot.getScheduler()));

@@ -29,7 +29,7 @@ public class BlueRight extends BaseAuto {
 	public Command setupAuto(CommandScheduler scheduler) {
 
 		Pose2d goNearScoring = new Pose2d(-36.0, 18, Math.toRadians(-90));
-		Pose2d placeCone = new Pose2d(-29, 16.5, Math.toRadians(-75));
+		Pose2d placeCone = new Pose2d( -36.10741466514628, 12.56727416105955, Math.toRadians(308.06138282915236));
 		Pose2d pickupPartial = new Pose2d(-48,14.5,Math.toRadians(0));
 		Pose2d pickupFull = new Pose2d(-60,14.5,Math.toRadians(0));
 
