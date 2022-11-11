@@ -18,7 +18,7 @@ public class AlignWithVision2Auto extends Command {
 
 	public static PIDCoefficients controllerCoefficientsDistance = new PIDCoefficients(0.1,0,0.05);
 	protected BasicPID controller = new BasicPID(controllerCoefficientsDistance);
-	public static double referenceDistanceSensor = 10; // distance in inches away from the pole
+	public static double referenceDistanceSensor = 9; // distance in inches away from the pole
 
 	double error = 10;
 	double error_tolerance = 0.5;
@@ -36,10 +36,9 @@ public class AlignWithVision2Auto extends Command {
 
 	@Override
 	public void periodic() {
-
-		double power = controller.calculate(referenceDistanceSensor, distanceSensor.getDistance_in());
-		drivetrain.robotRelative(new Pose2d(-power,0,0));
 		error = referenceDistanceSensor - distanceSensor.getDistance_in();
+		double power = controller.calculate(referenceDistanceSensor, distanceSensor.getDistance_in()) + Math.signum(error) * 0.06;
+		drivetrain.robotRelative(new Pose2d(-power,0,0));
 	}
 
 	@Override

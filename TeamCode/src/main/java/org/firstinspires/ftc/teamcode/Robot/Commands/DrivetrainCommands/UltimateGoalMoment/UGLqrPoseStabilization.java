@@ -42,7 +42,7 @@ public class UGLqrPoseStabilization extends Command {
 		return  controller.errorMag() < 1
 				&& controller.headingErrorMag() < Math.toRadians(2)
 				&& controller.getErrorMagDeriv() < 1
-				&& Math.abs(drivetrain.getVelocity().getHeading()) < Math.toRadians(1);
+				&& Math.abs(drivetrain.getVelocity().getHeading()) < Math.toRadians(3);
 	}
 
 	@Override

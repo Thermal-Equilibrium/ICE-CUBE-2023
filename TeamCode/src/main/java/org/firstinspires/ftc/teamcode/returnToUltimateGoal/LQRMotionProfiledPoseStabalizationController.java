@@ -27,9 +27,9 @@ public class LQRMotionProfiledPoseStabalizationController {
 	protected double loop_time_est = 15;
 
 	// time in milliseconds we take to accelerate
-	protected double acceleration_time = 1800;
+	protected double acceleration_time = 2000;
 
-	BasicPID turnController = new BasicPID(new PIDCoefficients(0.55,0,0));
+	BasicPID turnController = new BasicPID(new PIDCoefficients(1.5,0,0));
 	AngleController turnControlWrapped = new AngleController(turnController);
 	ElapsedTime timer = new ElapsedTime();
 
@@ -103,7 +103,7 @@ public class LQRMotionProfiledPoseStabalizationController {
 		//double turnPower = clipPower(turnController.calculate(0,-headingError)) * powerScalar;
 		double turnPower = turnControlWrapped.calculate(targetAngle,angle);
 		turnPower *= powerScalar;
-		double headingFF = Math.signum(turnPower) * 0.03;
+		double headingFF = Math.signum(turnPower) * 0.06;
 
 		double errorMag = poseError.vec().norm();
 		errorMagDeriv = errorMag - previousErrorMag;

@@ -5,6 +5,9 @@ import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.FeedbackControlle
 import com.ThermalEquilibrium.homeostasis.Filters.FilterAlgorithms.LowPassFilter;
 import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.profile.MotionProfile;
+import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
+import com.acmerobotics.roadrunner.profile.MotionState;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -51,7 +54,7 @@ public class ScoringMechanism extends Subsystem {
     public static double SLIDES_HIGH = 16.5;
     public static double SLIDES_MID = 8;
     public static double SLIDES_LOW = 5;
-    public static double SLIDES_SAFE_FOR_STACK = 5;
+    public static double SLIDES_SAFE_FOR_STACK = 8;
 
     protected double currentWristPos = WRIST_STOW;
     protected double currentArmPos = ARM_CARRY;
@@ -77,7 +80,16 @@ public class ScoringMechanism extends Subsystem {
 
     public MotionConstraint slide_constraints = new MotionConstraint(45,30,50);
 
-    protected AsymmetricMotionProfile profile_slides = new AsymmetricMotionProfile(0,0,slide_constraints);
+    //protected AsymmetricMotionProfile profile_slides = new AsymmetricMotionProfile(0,0,slide_constraints);
+    MotionProfile profile_slides = MotionProfileGenerator.generateSimpleMotionProfile(
+            new MotionState(0, 0, 0),
+            new MotionState(0, 0, 0),
+            slide_constraints.max_velocity,
+            slide_constraints.max_acceleration,
+            100
+    );
+
+
     protected FeedbackController slideControllerLeft = new BasicPID(coefficients);
     protected FeedbackController slideControllerRight = new BasicPID(coefficients);
     protected FeedbackController betweenSlideController = new BasicPID(coefficients_between);
@@ -241,7 +253,7 @@ public class ScoringMechanism extends Subsystem {
             case AUTO_INTAKE_2:
             case AUTO_INTAKE_1:
                 commandActuatorSetpoints(WRIST_COLLECT_SHORT, ARM_IN_COLLECT, getSlideHeightForAutoIntaking(),INTAKE_SPEED);
-                if (TraverseTimer.seconds() > 1.5) {
+                if (getSlideHeightIN() <= getSlideHeightForAutoIntaking() + 0.25) {//if (TraverseTimer.seconds() > 1.5) {
                     System.out.println("going to AUTO_STOP_IN_TAKING");
                     currentStackProgress = getNextAutoIntake();
                     state = States.AUTO_STOP_IN_TAKING;
@@ -249,7 +261,7 @@ public class ScoringMechanism extends Subsystem {
                 break;
             case AUTO_STOP_IN_TAKING:
                 commandActuatorSetpoints(WRIST_COLLECT_SHORT, ARM_IN_COLLECT, SLIDES_SAFE_FOR_STACK,INTAKE_SPEED_HOLD);
-                if (getSlideHeightIN() > getSlideHeightForAutoIntaking()) {
+                if (getSlideHeightIN() > SLIDES_SAFE_FOR_STACK - 0.5) {
                     state = States.READY_TO_SCORE_AUTO;
                 }
                 break;
@@ -321,7 +333,7 @@ public class ScoringMechanism extends Subsystem {
     public void setPositions() {
         setServoPositions();
         regenerate_slide_profile();
-        double slide_profile_position = profile_slides.calculate(slide_profile_timer.seconds()).getX();
+        double slide_profile_position = profile_slides.get(slide_profile_timer.seconds()).getX();
         System.out.println("slide position from motion profile: " + slide_profile_position);
         slideControl(slide_profile_position);
     }
@@ -527,7 +539,13 @@ public class ScoringMechanism extends Subsystem {
 
     protected void regenerate_slide_profile() {
         if (currentMotorTarget != previousMotorTarget) {
-            profile_slides = new AsymmetricMotionProfile(getSlideHeightIN(),currentMotorTarget,slide_constraints);
+             profile_slides = MotionProfileGenerator.generateSimpleMotionProfile(
+                    new MotionState(getSlideHeightIN(), 0, 0),
+                    new MotionState(currentMotorTarget, 0, 0),
+                    slide_constraints.max_velocity,
+                    slide_constraints.max_acceleration,
+                    100
+            );
             slide_profile_timer.reset();
         }
         previousMotorTarget = currentMotorTarget;
@@ -548,10 +566,12 @@ public class ScoringMechanism extends Subsystem {
     public double getSlideHeightForAutoIntaking() {
         switch (currentStackProgress) {
             case AUTO_INTAKE_5:
-                return 4;
+                return 5;
             case AUTO_INTAKE_4:
-                return 3;
+                return 4;
             case AUTO_INTAKE_3:
+                return 3;
+            case AUTO_INTAKE_2:
                 return 2;
             default:
                 return 0;
