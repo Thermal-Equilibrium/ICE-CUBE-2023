@@ -37,7 +37,7 @@ public class ObjectProc {
         //double distance = poleDiameter/(2*Math.sin(Math.toRadians(.5*widthDegrees)));
         return poleDiameter/(Math.sin(Math.toRadians(.5*widthDegrees)));
     }
-    public static org.firstinspires.ftc.teamcode.visionPipelines.pole getPoleAt(ArrayList<org.firstinspires.ftc.teamcode.visionPipelines.pole> poles, double expectedAngle, double maxDeviation) {
+    public static pole getPoleAt(ArrayList<pole> poles, double expectedAngle, double maxDeviation) {
         if (poles.size() > 0) {
             best = 69420;
             for (int i = 0; i < poles.size(); i++) {
@@ -61,7 +61,7 @@ public class ObjectProc {
         }
         return noPole;
     }
-    public static org.firstinspires.ftc.teamcode.visionPipelines.pole getCenterPole(ArrayList<org.firstinspires.ftc.teamcode.visionPipelines.pole> poles) {
+    public static pole getCenterPole(ArrayList<pole> poles) {
         if (poles.size() > 0) {
             best = 69420;
             for (int i = 0; i < poles.size(); i++) {
@@ -78,7 +78,7 @@ public class ObjectProc {
         }
         return noPole;
     }
-    public static org.firstinspires.ftc.teamcode.visionPipelines.pole getBestPole(ArrayList<org.firstinspires.ftc.teamcode.visionPipelines.pole> poles) {
+    public static pole getBestPole(ArrayList<pole> poles) {
         if (poles.size() > 0) {
             largest = 0;
             for (int i = 0; i < poles.size(); i++) {

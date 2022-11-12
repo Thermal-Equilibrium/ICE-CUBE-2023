@@ -1,24 +1,15 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
-import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.BaseAuto;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
-import org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants;
-import org.firstinspires.ftc.teamcode.RR_quickstart.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.AlignWithVision2Auto;
-import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.AutoAlignWithVision;
-import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.AutoAlignWithVision2;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.ActivateIntakeAuto;
-import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.Deposit;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.DepositAuto;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.GoToScore;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism;

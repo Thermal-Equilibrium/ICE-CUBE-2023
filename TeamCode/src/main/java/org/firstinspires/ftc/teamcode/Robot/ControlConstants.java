@@ -11,7 +11,7 @@ public class ControlConstants {
 	public static PIDCoefficients distanceControlPP = new PIDCoefficients(0.2,0,0);
 
 	public static SqrtCoefficients angleControl = new SqrtCoefficients(0.36, 0.05,0);
-	public static SqrtCoefficients angleControl2 = new SqrtCoefficients(1,0.1,0.0);
+	public static SqrtCoefficients angleControl2 = new SqrtCoefficients(0.4,0,0.0);
 	public static SqrtCoefficients angleControl3 = new SqrtCoefficients(0.5,0.1,0.0);
 
 	public static PIDCoefficients AngularVelocityTeleop = new PIDCoefficients(0.1, 0,0);

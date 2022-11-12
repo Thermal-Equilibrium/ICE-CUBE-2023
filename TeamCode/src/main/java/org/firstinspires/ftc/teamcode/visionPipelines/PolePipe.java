@@ -52,28 +52,28 @@ public class PolePipe extends OpenCvPipeline {
 //        public static double uYCrCb2 =175;
 //        public static double uYCrCb3 =101;
         // ^ conservative filter
-        public static double lHSV1 =23;
+        public static double lHSV1 =21;
         public static double lHSV2 =0;
-        public static double lHSV3 =100;
+        public static double lHSV3 =0;
 
         public static double uHSV1 =50;
         public static double uHSV2 =255;
         public static double uHSV3 =255;
 
         public static double lLAB1 =0;
-        public static double lLAB2 =75;
-        public static double lLAB3 =149;
+        public static double lLAB2 =100;
+        public static double lLAB3 =165;
 
         public static double uLAB1 =255;
-        public static double uLAB2 =169;
-        public static double uLAB3 =205;
+        public static double uLAB2 =151;
+        public static double uLAB3 =195;
 
         public static double lYCrCb1 =0;
         public static double lYCrCb2 =135;
         public static double lYCrCb3 =25;
 
         public static double uYCrCb1 =255;
-        public static double uYCrCb2 =165;
+        public static double uYCrCb2 =175;
         public static double uYCrCb3 =90;
     }
     //    static Scalar lower1;
@@ -169,14 +169,14 @@ public class PolePipe extends OpenCvPipeline {
 
     @Override
     public Mat processFrame(Mat input) {
-        lower1 = new Scalar(cv.lHSV1, cv.lHSV2, cv.lHSV3);
-        upper1 = new Scalar(cv.uHSV1, cv.uHSV2, cv.uHSV3);
-
-        lower2  = new Scalar(cv.lLAB1, cv.lLAB2, cv.lLAB3);
-        upper2 = new Scalar(cv.uLAB1, cv.uLAB2, cv.uLAB3);
-
-        lower3  = new Scalar(cv.lYCrCb1, cv.lYCrCb2, cv.lYCrCb3);
-        upper3 = new Scalar(cv.uYCrCb1, cv.uYCrCb2, cv.uYCrCb3);
+//        lower1 = new Scalar(cv.lHSV1, cv.lHSV2, cv.lHSV3);
+//        upper1 = new Scalar(cv.uHSV1, cv.uHSV2, cv.uHSV3);
+//
+//        lower2  = new Scalar(cv.lLAB1, cv.lLAB2, cv.lLAB3);
+//        upper2 = new Scalar(cv.uLAB1, cv.uLAB2, cv.uLAB3);
+//
+//        lower3  = new Scalar(cv.lYCrCb1, cv.lYCrCb2, cv.lYCrCb3);
+//        upper3 = new Scalar(cv.uYCrCb1, cv.uYCrCb2, cv.uYCrCb3);
 
         //input = upContrast(input);
 
@@ -200,18 +200,18 @@ public class PolePipe extends OpenCvPipeline {
         poles.clear();
         poles = filterpoles(contours);
 
-        //Imgproc.drawContours(input,tempContours,-1, new Scalar(0, 0, 255), -1);
+        Imgproc.drawContours(input,tempContours,-1, new Scalar(0, 0, 255), -1);
 
         if (isDraw) {
-            //Imgproc.drawContours(input,toDraw,-1, new Scalar(0, 255, 0), -1);
+            Imgproc.drawContours(input,toDraw,-1, new Scalar(0, 255, 0), -1);
             toDraw.clear();
             isDraw=false;
         }
 
         tempContours.clear();
         contours.clear();
-//        roundupMemory(primary,secondary,tertiary,mask1,mask2,mask3,masked,yellowHierarchy);
-        roundupMemory(primary,secondary,tertiary,mask1,mask2,mask3,masked,yellowHierarchy,highContrast,singleChannel,mergedChannels);
+        roundupMemory(primary,secondary,tertiary,mask1,mask2,mask3,masked,yellowHierarchy);
+//        roundupMemory(primary,secondary,tertiary,mask1,mask2,mask3,masked,yellowHierarchy,highContrast,singleChannel,mergedChannels);
 //        roundupMemory(tertiary,mask3,yellowHierarchy);
         return input;
     }

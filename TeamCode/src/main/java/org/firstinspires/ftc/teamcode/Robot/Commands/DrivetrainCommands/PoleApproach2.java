@@ -12,6 +12,8 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.AngleController;
+import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
 import com.ThermalEquilibrium.homeostasis.Utils.Vector;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -19,10 +21,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.Math.Controllers.MotorModelController;
+import org.firstinspires.ftc.teamcode.Math.Controllers.SqrtControl;
 import org.firstinspires.ftc.teamcode.Math.Controllers.TurnOnlyControl;
+import org.firstinspires.ftc.teamcode.Robot.ControlConstants;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision;
+import org.firstinspires.ftc.teamcode.returnToUltimateGoal.LQRMotionProfiledPoseStabalizationController;
 import org.firstinspires.ftc.teamcode.visionPipelines.pole;
 import org.opencv.core.MatOfPoint;
 
@@ -37,8 +42,11 @@ public class PoleApproach2 extends Command {
     static pole thePole;
 
     Drivetrain drivetrain;
-    TurnOnlyControl angleController;
-    MotorModelController distanceController;
+//    TurnOnlyControl angleController;
+    BasicPID fuckingkillme;
+    AngleController angleController;
+//    MotorModelController distanceController;
+    LQRMotionProfiledPoseStabalizationController wtf = new LQRMotionProfiledPoseStabalizationController();
 
     static double distance;
     static double currentTargetHeading;
@@ -68,8 +76,8 @@ public class PoleApproach2 extends Command {
     static double meanMaxDeviation =.25;
     static double average;
     static double deviation;
-    Vector test;
-    @Config
+    double test;
+    //@Config
     public static class distancePID {
         public static double kV = .0001;
         public static double kA = .0001;
@@ -99,22 +107,18 @@ public class PoleApproach2 extends Command {
 
         return average;
     }
-    void approach(){
-        power=distanceController.calculate(targetDistance, currentDistance, distancePID.maxAccel);
-        Dashboard.packet.put("aaPower",power);
-        drivetrain.robotRelative(new Pose2d(power,power));
-//        drivetrain.setPower(power,power);
-    }
+//    void approach(){
+//        power=distanceController.calculate(targetDistance, currentDistance, distancePID.maxAccel);
+////        drivetrain.robotRelative(new Pose2d(power,power));
+//    }
     @RequiresApi(api = Build.VERSION_CODES.N)
     void face(){
         if (headingCache.size()!=0) {
-            test = angleController.calculate();
-
-//            drivetrain.setPower(test);
-            drivetrain.robotRelative(new Pose2d(test.get(0),test.get(1)));
+            drivetrain.fieldRelative(wtf.goToPosition(new Pose2d(drivetrain.getPose().getX(),drivetrain.getPose().getY(),currentTargetHeading),drivetrain.getPose()));
+//            test = angleController.calculate(currentTargetHeading, drivetrain.getPose().getHeading());
+//            drivetrain.robotRelative(new Pose2d(0,0,test));
         }
         else { // no poles have been detected
-            //drivetrain.setPower(0,0);
             drivetrain.robotRelative(new Pose2d(0,0));
         }
     }
@@ -122,14 +126,15 @@ public class PoleApproach2 extends Command {
     public PoleApproach2(Drivetrain drivetrain) {
         super(drivetrain);
         this.drivetrain = drivetrain;
-        this.angleController = new TurnOnlyControl(() -> drivetrain.getPose().getHeading(),0);
-        this.distanceController = new MotorModelController(distancePID.kV, distancePID.kA, distancePID.kS);
+//        this.angleController = new TurnOnlyControl(() -> drivetrain.getPose().getHeading(),0);
+
+        this.angleController = new AngleController(new SqrtControl(ControlConstants.angleControl2));
     }
 
     @Override
     public void init() {
         timer.reset();
-        Vision.resumeView();
+        //Vision.resumeView();
         lastVisionFrame=0;
     }
 
@@ -161,7 +166,7 @@ public class PoleApproach2 extends Command {
                 distanceCache.add(distance);
                 currentTargetHeading = mean(headingCache,true);
                 currentDistance = mean(distanceCache,true);
-                angleController.setHeadingReference(currentTargetHeading);
+                //angleController.setHeadingReference(currentTargetHeading);
                 Dashboard.packet.put("iwidth",thePole.size.width);
                 Dashboard.packet.put("iheight",thePole.size.height);
                 Dashboard.packet.put("idistance",distance);
@@ -169,37 +174,34 @@ public class PoleApproach2 extends Command {
                 Dashboard.packet.put("Ratio",thePole.ratio);
             }
             else {
-
-//                drivetrain.setPower(0,0);
-                drivetrain.robotRelative(new Pose2d(0,0));
+                drivetrain.robotRelative(new Pose2d(0,0,0));
             }
         }
 
-        if (Math.abs(currentTargetHeading - drivetrain.getPose().getHeading())<=maxApproachError && headingCache.size() > 0) { approach(); }
-        else { face(); }
-
+//        if (Math.abs(currentTargetHeading - drivetrain.getPose().getHeading())<=maxApproachError && headingCache.size() > 0) { approach(); }
+//        else { face(); }
+        face();
 
         Dashboard.packet.put("time",timer2.milliseconds());
         Dashboard.packet.put("distance", currentDistance);
         Dashboard.packet.put("angle",currentTargetHeading);
 
-        isComplete = Math.abs(angleController.getEndGoalError()) < Math.toRadians(2) && Math.abs(currentDistance - targetDistance) >= maxDistanceError && Math.abs(drivetrain.getVelocity().getHeading()) < Math.toRadians(10);
+        //isComplete = Math.abs(angleController.getEndGoalError()) < Math.toRadians(2) && Math.abs(currentDistance - targetDistance) >= maxDistanceError && Math.abs(drivetrain.getVelocity().getHeading()) < Math.toRadians(10);
         lastVisionFrame=currentVisionFrame;
     }
 
     @Override
     public boolean completed() {
-        if (isComplete){
-            Vision.pauseView();
-        }
-        return isComplete;
-//        return false;
+//        if (isComplete){
+//            Vision.pauseView();
+//        }
+//        return isComplete;
+        return false;
     }
 
     @Override
     public void shutdown() {
-//        drivetrain.setPower(0,0);
-        drivetrain.robotRelative(new Pose2d(0,0));
+        drivetrain.shutdown();
     }
 
 

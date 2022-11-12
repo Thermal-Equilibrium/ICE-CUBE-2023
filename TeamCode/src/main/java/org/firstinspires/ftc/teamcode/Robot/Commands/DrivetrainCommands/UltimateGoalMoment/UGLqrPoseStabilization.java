@@ -13,7 +13,7 @@ public class UGLqrPoseStabilization extends Command {
 
 	Drivetrain drivetrain;
 	Pose2d targetPose;
-	LQRMotionProfiledPoseStabalizationController controller = new LQRMotionProfiledPoseStabalizationController();
+	LQRMotionProfiledPoseStabalizationController controller = new LQRMotionProfiledPoseStabalizationController(false);
 
 	public UGLqrPoseStabilization(Drivetrain drivetrain, Pose2d targetPose) {
 		this.drivetrain = drivetrain;

@@ -55,8 +55,16 @@ public class LQRMotionProfiledPoseStabalizationController {
 	PIDCoefficients coefficients = new PIDCoefficients(0.09,0,0.35);
 	BasicPID pidX = new BasicPID(coefficients);
 	BasicPID pidY = new BasicPID(coefficients);
+	boolean shouldMotionProfile = true;
 
 	public LQRMotionProfiledPoseStabalizationController() {
+	}
+
+	public LQRMotionProfiledPoseStabalizationController(boolean shouldMotionProfile) {
+		this.shouldMotionProfile = shouldMotionProfile;
+		if (!shouldMotionProfile) {
+			powerScalar = 1;
+		}
 	}
 
 	public com.acmerobotics.roadrunner.geometry.Pose2d goToPosition(com.acmerobotics.roadrunner.geometry.Pose2d targetPose, com.acmerobotics.roadrunner.geometry.Pose2d robotPose) {
