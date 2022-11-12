@@ -32,7 +32,7 @@ public class Vision extends Subsystem {
     static final Size high = new Size(1280,720);
     static final Size hd = new Size(1920,1080);
 
-    static Size resolution = medium;
+    static Size resolution = low;
 
 
     public static void pauseView(){
@@ -56,8 +56,8 @@ public class Vision extends Subsystem {
 
         webcam.setPipeline(pipeline);
 
-        webcam.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.MAXIMIZE_EFFICIENCY); // camera.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
-        webcam.setViewportRenderer(OpenCvCamera.ViewportRenderer.GPU_ACCELERATED);
+        //webcam.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.MAXIMIZE_EFFICIENCY); // camera.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
+        //webcam.setViewportRenderer(OpenCvCamera.ViewportRenderer.GPU_ACCELERATED);
         webcam.setPipeline(pipeline);
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override

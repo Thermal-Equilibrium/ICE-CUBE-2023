@@ -178,7 +178,7 @@ public class PolePipe extends OpenCvPipeline {
         lower3  = new Scalar(cv.lYCrCb1, cv.lYCrCb2, cv.lYCrCb3);
         upper3 = new Scalar(cv.uYCrCb1, cv.uYCrCb2, cv.uYCrCb3);
 
-        input = upContrast(input);
+        //input = upContrast(input);
 
         Imgproc.cvtColor(input, primary, Imgproc.COLOR_RGB2HSV_FULL);
         Imgproc.cvtColor(input, secondary, Imgproc.COLOR_RGB2Lab);
@@ -200,10 +200,10 @@ public class PolePipe extends OpenCvPipeline {
         poles.clear();
         poles = filterpoles(contours);
 
-        Imgproc.drawContours(input,tempContours,-1, new Scalar(0, 0, 255), -1);
+        //Imgproc.drawContours(input,tempContours,-1, new Scalar(0, 0, 255), -1);
 
         if (isDraw) {
-            Imgproc.drawContours(input,toDraw,-1, new Scalar(0, 255, 0), -1);
+            //Imgproc.drawContours(input,toDraw,-1, new Scalar(0, 255, 0), -1);
             toDraw.clear();
             isDraw=false;
         }
