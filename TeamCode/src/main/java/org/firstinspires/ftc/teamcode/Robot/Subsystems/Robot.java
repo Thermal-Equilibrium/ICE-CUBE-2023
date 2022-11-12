@@ -18,9 +18,11 @@ public class Robot {
 	public Input gamepad1;
 	public Input gamepad2;
 	public Drivetrain drivetrain = new Drivetrain();
-	public PoleDetectionSubsystem detectionSubsystem = new PoleDetectionSubsystem(dashboard);
+	//public PoleDetectionSubsystem detectionSubsystem = new PoleDetectionSubsystem(dashboard);
 	public ScoringMechanism scoringMechanism = new ScoringMechanism();
 	public DistanceSensor distanceSensor = new DistanceSensor();
+
+	public Vision vision = new Vision();
 
 	// print subsystem for testing
 	public PrintSubsystem1 print = new PrintSubsystem1();
@@ -28,7 +30,7 @@ public class Robot {
 	protected CommandScheduler scheduler;
 
 	public Robot(HardwareMap hwMap, OpMode opMode, Gamepad gamepad1, Gamepad gamepad2) {
-		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard, detectionSubsystem, scoringMechanism, distanceSensor);
+		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard, scoringMechanism, distanceSensor, vision);//detectionSubsystem
 
 		this.gamepad1 = new Input(gamepad1, scheduler);
 		this.gamepad2 = new Input(gamepad2, scheduler);

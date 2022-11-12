@@ -3,14 +3,13 @@ package org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands;
 import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
 import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.PoleDetectionSubsystem;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Utils.LinearInterpolator;
-import org.firstinspires.ftc.teamcode.visionPiplines.Pole;
+import org.firstinspires.ftc.teamcode.visionPipelines.badpole;
 
 import java.util.ArrayList;
 
@@ -30,7 +29,7 @@ public class AutoAlignWithVision extends Command {
 	protected BasicPID forwardBackPID = new BasicPID(forwardCoefficients);
 	double horizontalReference = 363.0;
 	double widthReference = 138.0;
-	Pole pole = new Pole(0,0);
+	badpole badpole = new badpole(0,0);
 	LinearInterpolator interpolatorSide;
 	LinearInterpolator interpolatorForward;
 	LinearInterpolator angleInterpolator;
@@ -83,10 +82,10 @@ public class AutoAlignWithVision extends Command {
 
 	@Override
 	public void init() {
-		pole = poleVision.pipeline.getPole();
+		badpole = poleVision.pipeline.getPole();
 
-		if (pole.isValidPole) {
-			Pose2d relativePose = new Pose2d(interpolatorForward.getValue(pole.width), interpolatorSide.getValue(pole.xPixel), Math.toRadians(angleInterpolator.getValue(pole.xPixel)));
+		if (badpole.isValidPole) {
+			Pose2d relativePose = new Pose2d(interpolatorForward.getValue(badpole.width), interpolatorSide.getValue(badpole.xPixel), Math.toRadians(angleInterpolator.getValue(badpole.xPixel)));
 			drivetrain.setPose(relativePose);
 			Trajectory traj = drivetrain.getBuilder().trajectoryBuilder(relativePose)
 					.lineToLinearHeading(new Pose2d(-0.5,-2,0))
