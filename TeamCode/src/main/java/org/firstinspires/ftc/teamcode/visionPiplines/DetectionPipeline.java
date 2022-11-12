@@ -54,8 +54,8 @@ public class DetectionPipeline extends OpenCvPipeline {
         Imgproc.cvtColor(out, blackAndWhite, Imgproc.COLOR_BGR2GRAY);
 
 
-        ArrayList<MatOfPoint> detectedContours = new ArrayList<>();
         Imgproc.medianBlur(blackAndWhite,blackAndWhite,5);
+        ArrayList<MatOfPoint> detectedContours = new ArrayList<>();
         Imgproc.findContours(blackAndWhite,detectedContours,new Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_NONE);
 
 
@@ -64,7 +64,6 @@ public class DetectionPipeline extends OpenCvPipeline {
             return input;
         } else {
             // find largest height to width ratio
-
             int largestRatio = detectedContours.get(0).height() / detectedContours.get(0).width();
             MatOfPoint currentContour = detectedContours.get(0);
 
@@ -93,6 +92,7 @@ public class DetectionPipeline extends OpenCvPipeline {
 
             if (detectedContours.size() > 0) {
                 Rect boundingBox = Imgproc.boundingRect(detectedContours.get(0));
+                Imgproc.putText(input,"test",new Point(0,0),Imgproc.FONT_HERSHEY_COMPLEX,30,new Scalar(255,0,0));
                 int pos = boundingBox.x + boundingBox.width/2;
                 int width = boundingBox.width;
                 this.pole = new Pole(pos,width);

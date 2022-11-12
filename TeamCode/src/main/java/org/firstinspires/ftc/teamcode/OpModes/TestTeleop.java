@@ -39,6 +39,7 @@ public class TestTeleop extends BaseTeleop {
 		robot.gamepad1.whenLeftBumperPressed(new ActivateIntakeToggle(robot.scoringMechanism, gamepad1, intakeSupplier));
 		robot.gamepad1.whenTrianglePressed(new GoToScore(robot.scoringMechanism, ScoringMechanism.States.HIGH));
 		robot.gamepad1.whenSquarePressed(new GoToScore(robot.scoringMechanism, ScoringMechanism.States.MID));
+		robot.gamepad1.whenCirclePressed(new GoToScore(robot.scoringMechanism, ScoringMechanism.States.LOW));
 		robot.gamepad1.whenRightBumperPressed(new Deposit(robot.scoringMechanism));
 		//robot.gamepad1.whenLeftStickButtonPressed(new AutoAlignWithVision(robot.drivetrain,robot.detectionSubsystem)
 		robot.gamepad1.whenLeftStickButtonPressed(new AutoAlignWithVision2(robot.drivetrain, robot.distanceSensor, autoAlignSupplier)

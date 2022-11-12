@@ -16,7 +16,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
-import org.firstinspires.ftc.teamcode.Math.AsymmetricProfile.AsymmetricMotionProfile;
 import org.firstinspires.ftc.teamcode.Math.AsymmetricProfile.MotionConstraint;
 import org.firstinspires.ftc.teamcode.Utils.ProfiledServo;
 
@@ -74,18 +73,19 @@ public class ScoringMechanism extends Subsystem {
 
     protected LowPassFilter intake_power_filter = new LowPassFilter(0.5);
     protected PIDCoefficients coefficients = new PIDCoefficients(0.45,0,0);
-    protected PIDCoefficients coefficients_between = new PIDCoefficients(0.6,0,0);
+    protected PIDCoefficients coefficients_between = new PIDCoefficients(0.3,0,0);
 
     ElapsedTime slide_profile_timer = new ElapsedTime();
 
-    public MotionConstraint slide_constraints = new MotionConstraint(45,30,50);
+    public MotionConstraint slide_constraints_up = new MotionConstraint(55,30,60);
+    public MotionConstraint slide_constraints_down = new MotionConstraint(30,30,20);
 
     //protected AsymmetricMotionProfile profile_slides = new AsymmetricMotionProfile(0,0,slide_constraints);
     MotionProfile profile_slides = MotionProfileGenerator.generateSimpleMotionProfile(
             new MotionState(0, 0, 0),
             new MotionState(0, 0, 0),
-            slide_constraints.max_velocity,
-            slide_constraints.max_acceleration,
+            slide_constraints_up.max_velocity,
+            slide_constraints_up.max_acceleration,
             100
     );
 
@@ -539,13 +539,25 @@ public class ScoringMechanism extends Subsystem {
 
     protected void regenerate_slide_profile() {
         if (currentMotorTarget != previousMotorTarget) {
-             profile_slides = MotionProfileGenerator.generateSimpleMotionProfile(
-                    new MotionState(getSlideHeightIN(), 0, 0),
-                    new MotionState(currentMotorTarget, 0, 0),
-                    slide_constraints.max_velocity,
-                    slide_constraints.max_acceleration,
-                    100
-            );
+
+            if (currentMotorTarget > previousMotorTarget) {
+                profile_slides = MotionProfileGenerator.generateSimpleMotionProfile(
+                        new MotionState(getSlideHeightIN(), 0, 0),
+                        new MotionState(currentMotorTarget, 0, 0),
+                        slide_constraints_up.max_velocity,
+                        slide_constraints_up.max_acceleration,
+                        75
+                );
+            } else {
+                profile_slides = MotionProfileGenerator.generateSimpleMotionProfile(
+                        new MotionState(getSlideHeightIN(), 0, 0),
+                        new MotionState(currentMotorTarget, 0, 0),
+                        slide_constraints_down.max_velocity,
+                        slide_constraints_down.max_acceleration,
+                        75
+                );
+            }
+
             slide_profile_timer.reset();
         }
         previousMotorTarget = currentMotorTarget;
