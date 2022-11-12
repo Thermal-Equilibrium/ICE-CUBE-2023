@@ -4,17 +4,12 @@ import static com.ThermalEquilibrium.homeostasis.Utils.MathUtils.AngleWrap;
 
 import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.AngleController;
 import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
-import com.ThermalEquilibrium.homeostasis.Controllers.Feedforward.BasicFeedforward;
-import com.ThermalEquilibrium.homeostasis.Parameters.FeedforwardCoefficients;
 import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.Math.Controllers.Coefficient.SqrtCoefficients;
-import org.firstinspires.ftc.teamcode.Math.Controllers.SqrtControl;
-
-public class LQRMotionProfiledPoseStabalizationController {
+public class MotionProfiledADRCPoseStabilizationController {
 	private double integral_sum = 0;
 	// time that the last update occured at
 	protected double time_of_last_update = 0;
@@ -29,8 +24,8 @@ public class LQRMotionProfiledPoseStabalizationController {
 	// time in milliseconds we take to accelerate
 	protected double acceleration_time = 2000;
 
-	BasicPID turnController = new BasicPID(new PIDCoefficients(1.5,0,0));
-	AngleController turnControlWrapped = new AngleController(turnController);
+	BasicPID turnController;
+	AngleController turnControlWrapped;
 	ElapsedTime timer = new ElapsedTime();
 
 	com.acmerobotics.roadrunner.geometry.Pose2d poseError = new com.acmerobotics.roadrunner.geometry.Pose2d(10,10,10);
@@ -50,21 +45,26 @@ public class LQRMotionProfiledPoseStabalizationController {
 
 	double previousErrorMag = 0;
 	double errorMagDeriv = 10;
-	OneDimensionalLQRController translationLQRx = new OneDimensionalLQRController(LQR_K,LQR_Kr, LQR_scalar,ki);
-	OneDimensionalLQRController translationLQRy = new OneDimensionalLQRController(LQR_K,LQR_Kr, LQR_scalar,ki);
 	PIDCoefficients coefficients = new PIDCoefficients(0.09,0,0.35);
 	BasicPID pidX = new BasicPID(coefficients);
 	BasicPID pidY = new BasicPID(coefficients);
-	boolean shouldMotionProfile = true;
+	boolean notForVision = true;
 
-	public LQRMotionProfiledPoseStabalizationController() {
+	public MotionProfiledADRCPoseStabilizationController() {
+		turnController = new BasicPID(new PIDCoefficients(1.5,0,0));
+		turnControlWrapped = new AngleController(turnController);
 	}
 
-	public LQRMotionProfiledPoseStabalizationController(boolean shouldMotionProfile) {
-		this.shouldMotionProfile = shouldMotionProfile;
-		if (!shouldMotionProfile) {
+	public MotionProfiledADRCPoseStabilizationController(boolean notForVision) {
+		this.notForVision = notForVision;
+		if (!notForVision) {
 			powerScalar = 1;
+			// gain for vision
+			turnController = new BasicPID(new PIDCoefficients(0.4,.1,0));
+		} else {
+			turnController = new BasicPID(new PIDCoefficients(1.5,0,0));
 		}
+		turnControlWrapped = new AngleController(turnController);
 	}
 
 	public com.acmerobotics.roadrunner.geometry.Pose2d goToPosition(com.acmerobotics.roadrunner.geometry.Pose2d targetPose, com.acmerobotics.roadrunner.geometry.Pose2d robotPose) {
@@ -110,6 +110,9 @@ public class LQRMotionProfiledPoseStabalizationController {
 		//double turnPower = clipPower(headingError * kpTurn) * powerScaler;
 		//double turnPower = clipPower(turnController.calculate(0,-headingError)) * powerScalar;
 		double turnPower = turnControlWrapped.calculate(targetAngle,angle);
+		if (!this.notForVision) {
+			turnPower = Range.clip(turnPower,-0.3,0.3);
+		}
 		turnPower *= powerScalar;
 		double headingFF = Math.signum(turnPower) * 0.06;
 

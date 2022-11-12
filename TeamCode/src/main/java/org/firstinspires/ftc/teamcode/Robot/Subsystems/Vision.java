@@ -16,8 +16,11 @@ import org.openftc.easyopencv.OpenCvPipeline;
 public class Vision extends Subsystem {
     public static double camWidth;
     public static double camHeight;
-    public static final double FOV = 118;
 
+//    public static final double FOV = 118;
+//    public static final double FOV = 90;
+//    public static final double FOV = 118;
+    public static final double FOV = Math.toRadians(70.428); // for 78 dfov
 
     OpenCvPipeline pipeline = new PolePipe();
 
@@ -57,7 +60,7 @@ public class Vision extends Subsystem {
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                webcam.startStreaming( (int) resolution.width, (int) resolution.height,OpenCvCameraRotation.SIDEWAYS_RIGHT); //OpenCvCameraRotation.SIDEWAYS_RIGHT);
+                webcam.startStreaming( (int) resolution.width, (int) resolution.height,OpenCvCameraRotation.SIDEWAYS_LEFT); //OpenCvCameraRotation.SIDEWAYS_RIGHT);
             }
             @Override
             public void onError(int errorCode) {

@@ -42,7 +42,6 @@ public class Drivetrain extends Subsystem {
 		robotRelative(powers);
 	}
 
-
 	public void followTrajectory(Trajectory traj) {
 		drive.followTrajectoryAsync(traj);
 	}

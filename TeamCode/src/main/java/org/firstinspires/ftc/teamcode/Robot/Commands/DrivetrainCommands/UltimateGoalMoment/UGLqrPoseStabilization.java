@@ -1,19 +1,18 @@
 package org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.UltimateGoalMoment;
 
-import com.acmerobotics.roadrunner.drive.Drive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Drivetrain;
-import org.firstinspires.ftc.teamcode.returnToUltimateGoal.LQRMotionProfiledPoseStabalizationController;
+import org.firstinspires.ftc.teamcode.returnToUltimateGoal.MotionProfiledADRCPoseStabilizationController;
 
 public class UGLqrPoseStabilization extends Command {
 
 
 	Drivetrain drivetrain;
 	Pose2d targetPose;
-	LQRMotionProfiledPoseStabalizationController controller = new LQRMotionProfiledPoseStabalizationController(false);
+	MotionProfiledADRCPoseStabilizationController controller = new MotionProfiledADRCPoseStabilizationController(false);
 
 	public UGLqrPoseStabilization(Drivetrain drivetrain, Pose2d targetPose) {
 		this.drivetrain = drivetrain;

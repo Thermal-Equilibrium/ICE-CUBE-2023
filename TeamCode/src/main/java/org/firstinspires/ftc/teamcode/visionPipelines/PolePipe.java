@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.config.Config;
 import org.opencv.core.*;
 
 import org.opencv.imgproc.Imgproc;
+import org.opencv.imgproc.Moments;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
@@ -13,6 +14,9 @@ import java.util.Arrays;
 
 
 public class PolePipe extends OpenCvPipeline {
+    static boolean hasRun = false;
+    static double inputWidth;
+
     static ArrayList<pole> poles = new ArrayList<pole>();
     static ArrayList<MatOfPoint> tempContours = new ArrayList<MatOfPoint>();
 
@@ -24,6 +28,9 @@ public class PolePipe extends OpenCvPipeline {
 
     public static ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 
+    public static double getInputWidth() {
+        return inputWidth;
+    }
 
     @Config
     public static class cv {
@@ -106,7 +113,7 @@ public class PolePipe extends OpenCvPipeline {
     private static final Size minSize= new Size(5,20);
     private static final int poleAreaMin = 200;
     private static final double poleMin = 0;
-    private static final double poleMax = .05;
+    private static final double poleMax = .1;
 
     static MatOfPoint2f tempContour2f;
     static double tempArea;
@@ -136,8 +143,14 @@ public class PolePipe extends OpenCvPipeline {
     static ArrayList<pole> filterpoles(ArrayList<MatOfPoint> poleContours) {
         tempPoleList.clear();
         for (int i = 0; i < poleContours.size(); i++) {
+//
+            Moments moment= Imgproc.moments(poleContours.get(i),true);
+            tempPos = new Size((moment.get_m10() / moment.get_m00()), moment.get_m01() / moment.get_m00());
+//            Rect rect = Imgproc.boundingRect(polcontours.get(i));
+//            tempPos = new Size(rect.- getCamWidth()/2, rect.y- rect.height/2);
             tempContour2f = new MatOfPoint2f(poleContours.get(i).toArray());
             angledR = Imgproc.minAreaRect(tempContour2f);
+            //tempPos = new Size(angledR.center.x - inputWidth,angledR.center.y);// - (getCamWidth() / 2)
             size = angledR.size;
             if (size.width>size.height) { // make sure orientation is right
                 switchingDim=size.width;
@@ -147,7 +160,6 @@ public class PolePipe extends OpenCvPipeline {
             tempArea = size.area();
             tempPerimeter = Imgproc.arcLength(tempContour2f, true);
             tempRatio = tempArea / Math.pow(tempPerimeter, 2);
-            tempPos = new Size(angledR.center.x - (getCamWidth() / 2),angledR.center.y);
             if (Math.abs(tempArea) >= poleAreaMin && Math.abs(tempRatio) <= poleMax && Math.abs(tempRatio) >= poleMin && size.width >= minSize.width && size.height >= minSize.height && size.height > 4 * size.width){
                 tempPoleList.add(new pole(tempPos, size, tempPerimeter, tempRatio, angledR.angle, poleContours.get(i),true));
                 tempContours.add(poleContours.get(i));
@@ -169,14 +181,17 @@ public class PolePipe extends OpenCvPipeline {
 
     @Override
     public Mat processFrame(Mat input) {
-//        lower1 = new Scalar(cv.lHSV1, cv.lHSV2, cv.lHSV3);
-//        upper1 = new Scalar(cv.uHSV1, cv.uHSV2, cv.uHSV3);
-//
-//        lower2  = new Scalar(cv.lLAB1, cv.lLAB2, cv.lLAB3);
-//        upper2 = new Scalar(cv.uLAB1, cv.uLAB2, cv.uLAB3);
-//
-//        lower3  = new Scalar(cv.lYCrCb1, cv.lYCrCb2, cv.lYCrCb3);
-//        upper3 = new Scalar(cv.uYCrCb1, cv.uYCrCb2, cv.uYCrCb3);
+        if (!hasRun) {
+            inputWidth=input.width();
+        }
+        lower1 = new Scalar(cv.lHSV1, cv.lHSV2, cv.lHSV3);
+        upper1 = new Scalar(cv.uHSV1, cv.uHSV2, cv.uHSV3);
+
+        lower2  = new Scalar(cv.lLAB1, cv.lLAB2, cv.lLAB3);
+        upper2 = new Scalar(cv.uLAB1, cv.uLAB2, cv.uLAB3);
+
+        lower3  = new Scalar(cv.lYCrCb1, cv.lYCrCb2, cv.lYCrCb3);
+        upper3 = new Scalar(cv.uYCrCb1, cv.uYCrCb2, cv.uYCrCb3);
 
         //input = upContrast(input);
 

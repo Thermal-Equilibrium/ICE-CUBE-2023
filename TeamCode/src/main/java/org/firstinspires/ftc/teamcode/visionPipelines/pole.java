@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.visionPipelines;
 
+import static org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.FOV;
+import static org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.getCamWidth;
+import static org.firstinspires.ftc.teamcode.visionPipelines.ObjectProc.poleDiameter;
+
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Size;
 
@@ -20,5 +24,12 @@ public class pole {
         this.angle = angle;
         this.contour = contour;
         this.isReal = isReal;
+    }
+    public double getAngle() {
+        return this.pos.width*(FOV/getCamWidth());
+    }
+
+    public double getDistance(){
+        return poleDiameter/Math.sin( .5 * this.pos.width * FOV / getCamWidth() );
     }
 }

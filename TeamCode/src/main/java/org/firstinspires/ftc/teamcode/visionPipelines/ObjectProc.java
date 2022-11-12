@@ -5,8 +5,8 @@ import static org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.getCamWidth
 import static org.firstinspires.ftc.teamcode.visionPipelines.PolePipe.draw;
 
 import static java.lang.Math.abs;
-import static java.lang.Math.toRadians;
 
+import org.firstinspires.ftc.teamcode.Math.TheArcaneConceptThatIsTurningInPlace.Heading;
 import org.opencv.core.*;
 
 import java.util.ArrayList;
@@ -27,28 +27,24 @@ public class ObjectProc {
 
     static ArrayList<MatOfPoint> toDraw = new ArrayList<MatOfPoint>();
 
-    public static double getAngle(org.firstinspires.ftc.teamcode.visionPipelines.pole thePole){
-        return thePole.pos.width*(FOV/getCamWidth());
-    }
-    public static double getWidthDegrees(org.firstinspires.ftc.teamcode.visionPipelines.pole thePole){
-        return ((thePole.pos.width/2) * (FOV/getCamWidth()))*2;
-    }
-    public static double getDistance(double widthDegrees){
-        //double distance = poleDiameter/(2*Math.sin(Math.toRadians(.5*widthDegrees)));
-        return poleDiameter/(Math.sin(Math.toRadians(.5*widthDegrees)));
-    }
-    public static pole getPoleAt(ArrayList<pole> poles, double expectedAngle, double maxDeviation) {
+//    public static double getWidthAngle(org.firstinspires.ftc.teamcode.visionPipelines.pole thePole){
+//        return ((thePole.pos.width/2) * (FOV/getCamWidth()))*2;
+//    }
+//    public static double getDistance(double widthDegrees){
+//        return poleDiameter/(Math.sin(.5*widthDegrees));
+//    }
+    public static pole getPoleAt(ArrayList<pole> poles, Heading expectedHeading, double maxDeviation) {
         if (poles.size() > 0) {
             best = 69420;
             for (int i = 0; i < poles.size(); i++) {
-                error = abs(getAngle(poles.get(i)) - expectedAngle);
+                error = abs(poles.get(i).getAngle() - expectedHeading.asRR());
                 if (error < best) {
                     best = error;
                     bestPole = poles.get(i);
                 }
             }
-            bestAngle = toRadians(getAngle(bestPole));
-            if ((bestAngle-expectedAngle)/((bestAngle+expectedAngle)/2) > maxDeviation) {
+            bestAngle = bestPole.getAngle();
+            if (Math.abs((bestAngle-expectedHeading.asRR())/((bestAngle+expectedHeading.asRR())/2)) > maxDeviation) {
                 bestPole=noPole;
             }
             else {
