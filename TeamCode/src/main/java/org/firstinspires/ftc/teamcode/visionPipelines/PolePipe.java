@@ -3,6 +3,7 @@ import static org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.getCamWidth
 
 import com.acmerobotics.dashboard.config.Config;
 
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.opencv.core.*;
 
 import org.opencv.imgproc.Imgproc;
@@ -34,7 +35,6 @@ public class PolePipe extends OpenCvPipeline {
 
     @Config
     public static class cv {
-
         //        public static double lHSV1 =13;
 //        public static double lHSV2 =0;
 //        public static double lHSV3 =0;
@@ -110,10 +110,10 @@ public class PolePipe extends OpenCvPipeline {
 
     private static final ArrayList<Mat> splitChannels=new ArrayList<>(3);
 
-    private static final Size minSize= new Size(5,20);
-    private static final int poleAreaMin = 200;
+    private static final Size minSize= new Size(10,50);
+    private static final int poleAreaMin = 300;
     private static final double poleMin = 0;
-    private static final double poleMax = .1;
+    private static final double poleMax = .5;
 
     static MatOfPoint2f tempContour2f;
     static double tempArea;
@@ -144,10 +144,15 @@ public class PolePipe extends OpenCvPipeline {
         tempPoleList.clear();
         for (int i = 0; i < poleContours.size(); i++) {
 //
-            Moments moment= Imgproc.moments(poleContours.get(i),true);
-            tempPos = new Size((moment.get_m10() / moment.get_m00()), moment.get_m01() / moment.get_m00());
-//            Rect rect = Imgproc.boundingRect(polcontours.get(i));
-//            tempPos = new Size(rect.- getCamWidth()/2, rect.y- rect.height/2);
+//            Moments moment= Imgproc.moments(poleContours.get(i),true);
+//            tempPos = new Size((moment.get_m10() / moment.get_m00()), moment.get_m01() / moment.get_m00());
+            Rect rect = Imgproc.boundingRect(poleContours.get(i));
+            tempPos = new Size(rect.x - getCamWidth()/2, rect.y);
+//            Dashboard.packet.put("raw x",rect.x);
+//            Dashboard.packet.put("raw y",rect.y);
+//            Dashboard.packet.put("raw width",rect.width);
+//            Dashboard.packet.put("raw height",rect.height);
+//            Dashboard.packet.put("raw area",rect.area());
             tempContour2f = new MatOfPoint2f(poleContours.get(i).toArray());
             angledR = Imgproc.minAreaRect(tempContour2f);
             //tempPos = new Size(angledR.center.x - inputWidth,angledR.center.y);// - (getCamWidth() / 2)
@@ -160,8 +165,8 @@ public class PolePipe extends OpenCvPipeline {
             tempArea = size.area();
             tempPerimeter = Imgproc.arcLength(tempContour2f, true);
             tempRatio = tempArea / Math.pow(tempPerimeter, 2);
-            if (Math.abs(tempArea) >= poleAreaMin && Math.abs(tempRatio) <= poleMax && Math.abs(tempRatio) >= poleMin && size.width >= minSize.width && size.height >= minSize.height && size.height > 4 * size.width){
-                tempPoleList.add(new pole(tempPos, size, tempPerimeter, tempRatio, angledR.angle, poleContours.get(i),true));
+            if (tempArea >= poleAreaMin && Math.abs(tempRatio) <= poleMax && Math.abs(tempRatio) >= poleMin && size.width >= minSize.width && size.height >= minSize.height && size.height > 2 * size.width){
+                tempPoleList.add(new pole(tempPos, size, tempPerimeter, tempRatio, rect.x, poleContours.get(i),true));
                 tempContours.add(poleContours.get(i));
             }
         }
@@ -181,9 +186,6 @@ public class PolePipe extends OpenCvPipeline {
 
     @Override
     public Mat processFrame(Mat input) {
-        if (!hasRun) {
-            inputWidth=input.width();
-        }
         lower1 = new Scalar(cv.lHSV1, cv.lHSV2, cv.lHSV3);
         upper1 = new Scalar(cv.uHSV1, cv.uHSV2, cv.uHSV3);
 
@@ -193,7 +195,7 @@ public class PolePipe extends OpenCvPipeline {
         lower3  = new Scalar(cv.lYCrCb1, cv.lYCrCb2, cv.lYCrCb3);
         upper3 = new Scalar(cv.uYCrCb1, cv.uYCrCb2, cv.uYCrCb3);
 
-        //input = upContrast(input);
+        input = upContrast(input);
 
         Imgproc.cvtColor(input, primary, Imgproc.COLOR_RGB2HSV_FULL);
         Imgproc.cvtColor(input, secondary, Imgproc.COLOR_RGB2Lab);

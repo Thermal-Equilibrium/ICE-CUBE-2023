@@ -43,7 +43,7 @@ public class AlignWithVision2Auto extends Command {
 
 	@Override
 	public boolean completed() {
-		return Math.abs(error) < error_tolerance;
+		return Math.abs(error) < error_tolerance || distanceSensor.getDistance_in() > 24;
 	}
 
 	@Override

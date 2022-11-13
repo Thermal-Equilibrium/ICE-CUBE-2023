@@ -56,11 +56,12 @@ public class Vision extends Subsystem {
         int cameraMonitorViewId = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
+
         webcam.setPipeline(pipeline);
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                webcam.startStreaming( (int) resolution.width, (int) resolution.height,OpenCvCameraRotation.SIDEWAYS_LEFT); //OpenCvCameraRotation.SIDEWAYS_RIGHT);
+                webcam.startStreaming( (int) resolution.width, (int) resolution.height,OpenCvCameraRotation.UPRIGHT); //OpenCvCameraRotation.SIDEWAYS_RIGHT);
             }
             @Override
             public void onError(int errorCode) {

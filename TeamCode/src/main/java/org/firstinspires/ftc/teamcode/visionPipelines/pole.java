@@ -30,6 +30,6 @@ public class pole {
     }
 
     public double getDistance(){
-        return poleDiameter/Math.sin( .5 * this.pos.width * FOV / getCamWidth() );
+        return poleDiameter/(2*Math.sin( .5 * this.size.width * FOV / getCamWidth()));
     }
 }
