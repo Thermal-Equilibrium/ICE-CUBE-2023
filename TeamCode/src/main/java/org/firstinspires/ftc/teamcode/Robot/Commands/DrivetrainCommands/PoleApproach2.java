@@ -29,16 +29,15 @@ import java.util.ArrayList;
 
 public class PoleApproach2 extends Command {
 
-    DistanceSensor distanceSensor;
-
-    public static PIDCoefficients controllerCoefficientsDistance = new PIDCoefficients(0.1,0,0.05);
-    protected BasicPID controller = new BasicPID(controllerCoefficientsDistance);
-    public static double referenceDistanceSensor = 9; // distance in inches away from the pole
-
+    static final double maxApproachError=Math.toRadians(4);
+    public static double referenceDistanceSensor = 8.9;
     double error = 10;
     double error_tolerance = 1;
 
-
+    public static PIDCoefficients turnCoefficients = new PIDCoefficients(.7,0,0.000000);//.000095
+    public static PIDCoefficients controllerCoefficientsDistance = new PIDCoefficients(0.09,0,0.04);
+    BasicPID controller;
+    DistanceSensor distanceSensor;
 
 
     BasicPID turnController;
@@ -48,8 +47,6 @@ public class PoleApproach2 extends Command {
     static pole thePole;
 
     Drivetrain drivetrain;
-
-    MotionProfiledADRCPoseStabilizationController wtf;
 
     static double distance;
     static Heading targetHeading;
@@ -61,41 +58,34 @@ public class PoleApproach2 extends Command {
     static ArrayList<Double> headingCache = new ArrayList<Double>();
     static ArrayList<Double> distanceCache = new ArrayList<Double>();
 
-    static ElapsedTime timer = new ElapsedTime();
+    ElapsedTime timer = new ElapsedTime();
     static double clearCacheTimer = 1; // in ms
 
-    static double currentVisionFrame;
-    static double lastVisionFrame;
+    double currentVisionFrame;
+    double lastVisionFrame;
 
     static ArrayList<pole> poles = new ArrayList<pole>();
 
-    static boolean locked = false;
+    boolean locked;
 
-    static final double maxDistanceError = .25;
     static double posMaxDeviation =.5;
     static double meanMaxDeviation =.4;
-
-    static final double maxApproachError=Math.toRadians(6);
-    static final double targetDistance=5; // in inches (kinda)
 
     static double sum;
     static double average;
     static double deviation;
-    //@Config
-    public static class distancePID {
-        public static double kV = .0001;
-        public static double kA = .0001;
-        public static double kS = .0001;
-        public static double maxAccel = 1;
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public PoleApproach2(Drivetrain drivetrain,DistanceSensor distanceSensor) {
         super(drivetrain);
         this.drivetrain = drivetrain;
         this.distanceSensor = distanceSensor;
-
-        turnController = new BasicPID(new PIDCoefficients(.75,.0001,0));
+        this.locked = false;
+        this.currentVisionFrame=0;
+        this.lastVisionFrame=0;
+        this.timer = new ElapsedTime();
+        this.controller = new BasicPID(controllerCoefficientsDistance);
+        this.turnController = new BasicPID(turnCoefficients);
         this.turnControlWrapped = new AngleController(turnController);
     }
 
@@ -129,14 +119,8 @@ public class PoleApproach2 extends Command {
     @RequiresApi(api = Build.VERSION_CODES.N)
     void turn(){
         if (headingCache.size()!=0) {
-//            drivetrain.fieldRelative(wtf.goToPosition(new Pose2d(drivetrain.getPose().getX(),drivetrain.getPose().getY(),targetHeading.asFR()), drivetrain.getPose()));
-            //drivetrain.robotRelative(wtf.goToPosition(new Pose2d(0,0,targetHeading.asFR()), new Pose2d(0,0,0)));
             double turnPower = turnControlWrapped.calculate(0,targetHeading.asRR());
-            //turnPower = Range.clip(turnPower,-0.2,0.2);
             drivetrain.robotRelative(new Pose2d(0,0,turnPower));
-
-//            Pose2d powers = new Pose2d(0,0,targetHeading.asRR());
-//            drivetrain.robotRelative(powers);
         }
         else { // no poles have been detected
             drivetrain.fieldRelative(new Pose2d(0,0,0));
@@ -179,20 +163,17 @@ public class PoleApproach2 extends Command {
                 targetHeading = new Heading(drivetrain.getPose(),mean(headingCache,true),true);
                 currentDistance = mean(distanceCache,true);
 
-//                Dashboard.packet.put("iwidth",thePole.size.width);
-//                Dashboard.packet.put("iheight",thePole.size.height);
                 Dashboard.packet.put("idistance",distance);
 //                Dashboard.packet.put("Height",thePole.pos.height);
 //                Dashboard.packet.put("Ratio",thePole.ratio);
 
             }
             else {
-//                drivetrain.fieldRelative(new Pose2d(0,0,0));
                 drivetrain.robotRelative(new Pose2d(0,0,0));
             }
         }
         if (headingCache.size() > 0) {
-            if (Math.abs(targetHeading.asRR())<=maxApproachError && headingCache.size() > 0 && !(distanceSensor.getDistance_in() > 25)) { approach(); }
+            if (Math.abs(targetHeading.asRR())<=maxApproachError && headingCache.size() > 0 && !(distanceSensor.getDistance_in() > 100)) { approach(); }
             else { turn(); }
 
         }
@@ -208,8 +189,9 @@ public class PoleApproach2 extends Command {
         Dashboard.packet.put("Predicted Heading (RR)",expectedHeading.asRR());
         Dashboard.packet.put("Predicted Heading (FR)",expectedHeading.asFR());
 
-        Dashboard.packet.put("Complete",Math.abs(targetHeading.asRR()) - maxApproachError);
-
+        Dashboard.packet.put("Complete Heading",Math.abs(targetHeading.asRR()) - maxApproachError);
+        Dashboard.packet.put("Complete Velocity Heading",Math.abs(drivetrain.getVelocity().getHeading()) - Math.toRadians(6));
+        Dashboard.packet.put("Complete Distance",Math.abs(error) - error_tolerance);
 
         Dashboard.packet.put("pos",thePole.pos.width);
 

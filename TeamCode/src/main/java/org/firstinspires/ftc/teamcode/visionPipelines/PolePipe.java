@@ -73,7 +73,7 @@ public class PolePipe extends OpenCvPipeline {
 
         public static double uLAB1 =255;
         public static double uLAB2 =151;
-        public static double uLAB3 =195;
+        public static double uLAB3 =225;
 
         public static double lYCrCb1 =0;
         public static double lYCrCb2 =135;
