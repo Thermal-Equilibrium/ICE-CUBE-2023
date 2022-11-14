@@ -12,7 +12,7 @@ public class UGLqrPoseStabilization extends Command {
 
 	Drivetrain drivetrain;
 	Pose2d targetPose;
-	MotionProfiledADRCPoseStabilizationController controller = new MotionProfiledADRCPoseStabilizationController(false);
+	MotionProfiledADRCPoseStabilizationController controller = new MotionProfiledADRCPoseStabilizationController(true);
 
 	public UGLqrPoseStabilization(Drivetrain drivetrain, Pose2d targetPose) {
 		this.drivetrain = drivetrain;
@@ -38,11 +38,14 @@ public class UGLqrPoseStabilization extends Command {
 
 	@Override
 	public boolean completed() {
-		return  controller.errorMag() < 1
+		return  (controller.errorMag() < 1.2
 				&& controller.headingErrorMag() < Math.toRadians(2)
 				&& controller.getErrorMagDeriv() < 1
-				&& Math.abs(drivetrain.getVelocity().getHeading()) < Math.toRadians(3);
-	}
+				&& Math.abs(drivetrain.getVelocity().getHeading()) < Math.toRadians(3))
+				|| (
+				Math.abs(drivetrain.getVelocity().getHeading()) < Math.toRadians(0.5)
+						&& controller.getErrorMagDeriv() < 0.2 && controller.errorMag() < 4 // might die for short paths
+		);	}
 
 	@Override
 	public void shutdown() {

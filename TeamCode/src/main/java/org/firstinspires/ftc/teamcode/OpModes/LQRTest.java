@@ -11,6 +11,6 @@ import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
 public class LQRTest extends BaseAuto {
 	@Override
 	public Command setupAuto(CommandScheduler scheduler) {
-		return goToLQR(new Pose2d(0,0,Math.toRadians(90)));
+		return goToLQR(new Pose2d(60,0,Math.toRadians(90))).addNext(goToLQR(new Pose2d(0,0,0)));
 	}
 }

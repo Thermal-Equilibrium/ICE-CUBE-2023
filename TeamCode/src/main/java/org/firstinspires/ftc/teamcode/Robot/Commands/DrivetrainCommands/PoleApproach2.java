@@ -26,11 +26,12 @@ import org.firstinspires.ftc.teamcode.visionPipelines.pole;
 import org.opencv.core.MatOfPoint;
 
 import java.util.ArrayList;
+import java.util.function.BooleanSupplier;
 
 public class PoleApproach2 extends Command {
 
     static final double maxApproachError=Math.toRadians(4);
-    public static double referenceDistanceSensor = 8.9;
+    public static double referenceDistanceSensor = 7.9;
     double error = 10;
     double error_tolerance = 1;
 
@@ -44,36 +45,38 @@ public class PoleApproach2 extends Command {
     AngleController turnControlWrapped;
 
     boolean isComplete = false;
-    static pole thePole;
+     pole thePole;
 
     Drivetrain drivetrain;
 
-    static double distance;
-    static Heading targetHeading;
-    static Heading expectedHeading;
+     double distance;
+     Heading targetHeading;
+     Heading expectedHeading;
 
 
-    static double currentDistance;
+     double currentDistance;
 
-    static ArrayList<Double> headingCache = new ArrayList<Double>();
-    static ArrayList<Double> distanceCache = new ArrayList<Double>();
+     ArrayList<Double> headingCache = new ArrayList<Double>();
+     ArrayList<Double> distanceCache = new ArrayList<Double>();
 
     ElapsedTime timer = new ElapsedTime();
-    static double clearCacheTimer = 1; // in ms
+    double clearCacheTimer = 1; // in ms
 
     double currentVisionFrame;
     double lastVisionFrame;
 
-    static ArrayList<pole> poles = new ArrayList<pole>();
+    ArrayList<pole> poles = new ArrayList<pole>();
 
     boolean locked;
 
-    static double posMaxDeviation =.5;
-    static double meanMaxDeviation =.4;
+    double posMaxDeviation =.5;
+    double meanMaxDeviation =.4;
 
-    static double sum;
-    static double average;
-    static double deviation;
+    double sum;
+    double average;
+    double deviation;
+
+    BooleanSupplier exitSupplier;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public PoleApproach2(Drivetrain drivetrain,DistanceSensor distanceSensor) {
@@ -89,7 +92,22 @@ public class PoleApproach2 extends Command {
         this.turnControlWrapped = new AngleController(turnController);
     }
 
-    static double mean(ArrayList<Double> numbers, boolean excludeOutliers){
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public PoleApproach2(Drivetrain drivetrain,DistanceSensor distanceSensor, BooleanSupplier exitSupplier) {
+        super(drivetrain);
+        this.drivetrain = drivetrain;
+        this.distanceSensor = distanceSensor;
+        this.locked = false;
+        this.currentVisionFrame=0;
+        this.lastVisionFrame=0;
+        this.timer = new ElapsedTime();
+        this.controller = new BasicPID(controllerCoefficientsDistance);
+        this.turnController = new BasicPID(turnCoefficients);
+        this.turnControlWrapped = new AngleController(turnController);
+        this.exitSupplier = exitSupplier;
+    }
+
+    protected double mean(ArrayList<Double> numbers, boolean excludeOutliers){
         sum=0;
         for (int i=0; i<numbers.size(); i++){
             sum+=numbers.get(i);
@@ -179,21 +197,25 @@ public class PoleApproach2 extends Command {
         }
 
 //        Dashboard.packet.put("raw x",);
+//
+//        Dashboard.packet.put("Heading Speed",drivetrain.getVelocity().getHeading());
+//        Dashboard.packet.put("Current Heading (FR)",drivetrain.getPose().getHeading());
+//
+//        Dashboard.packet.put("Target Heading (FR)",targetHeading.asFR());
+//        Dashboard.packet.put("Target Heading (RR)",targetHeading.asRR());
+//
+//        Dashboard.packet.put("Predicted Heading (RR)",expectedHeading.asRR());
+//        Dashboard.packet.put("Predicted Heading (FR)",expectedHeading.asFR());
+//
+//        Dashboard.packet.put("Complete Heading",Math.abs(targetHeading.asRR()) - maxApproachError);
+//        Dashboard.packet.put("Complete Velocity Heading",Math.abs(drivetrain.getVelocity().getHeading()) - Math.toRadians(6));
+//        Dashboard.packet.put("Complete Distance",Math.abs(error) - error_tolerance);
+//
+//        Dashboard.packet.put("pos",thePole.pos.width);
 
-        Dashboard.packet.put("Heading Speed",drivetrain.getVelocity().getHeading());
-        Dashboard.packet.put("Current Heading (FR)",drivetrain.getPose().getHeading());
-
-        Dashboard.packet.put("Target Heading (FR)",targetHeading.asFR());
-        Dashboard.packet.put("Target Heading (RR)",targetHeading.asRR());
-
-        Dashboard.packet.put("Predicted Heading (RR)",expectedHeading.asRR());
-        Dashboard.packet.put("Predicted Heading (FR)",expectedHeading.asFR());
-
-        Dashboard.packet.put("Complete Heading",Math.abs(targetHeading.asRR()) - maxApproachError);
-        Dashboard.packet.put("Complete Velocity Heading",Math.abs(drivetrain.getVelocity().getHeading()) - Math.toRadians(6));
-        Dashboard.packet.put("Complete Distance",Math.abs(error) - error_tolerance);
-
-        Dashboard.packet.put("pos",thePole.pos.width);
+        if (targetHeading == null) {
+            return;
+        }
 
 
         isComplete = Math.abs(targetHeading.asRR()) < maxApproachError && Math.abs(drivetrain.getVelocity().getHeading()) < Math.toRadians(6) && headingCache.size() > 0 && Math.abs(error) < error_tolerance;
@@ -206,7 +228,16 @@ public class PoleApproach2 extends Command {
 //            Vision.pauseView();
             drivetrain.robotRelative(new Pose2d(0,0,0));
         }
-        return isComplete;
+
+        boolean gamepadExit = true;
+
+        if (exitSupplier != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                gamepadExit = exitSupplier.getAsBoolean();
+            }
+        }
+
+        return isComplete || !gamepadExit;
 //        return false;
     }
 

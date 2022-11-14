@@ -31,7 +31,7 @@ public class ActivateIntakeAuto extends Command {
 
 	@Override
 	public boolean completed() {
-		return mechanism.getState().equals(ScoringMechanism.States.AUTO_STOP_IN_TAKING) || invalidStart;
+		return mechanism.getState().equals(ScoringMechanism.States.READY_TO_SCORE_AUTO) || invalidStart;
 	}
 
 	@Override

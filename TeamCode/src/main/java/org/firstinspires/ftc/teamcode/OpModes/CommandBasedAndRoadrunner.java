@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -21,7 +20,7 @@ public class CommandBasedAndRoadrunner extends BaseAuto {
 //				.splineToSplineHeading(new Pose2d(0,0,0),Math.toRadians(180))
 //				.build();
 
-		return follow(traj);
+		return followRR(traj);
 
 	}
 

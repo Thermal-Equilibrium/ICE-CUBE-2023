@@ -5,9 +5,12 @@ import static com.ThermalEquilibrium.homeostasis.Utils.MathUtils.AngleWrap;
 import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.AngleController;
 import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
 import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+
+import java.util.Queue;
 
 public class MotionProfiledADRCPoseStabilizationController {
 	private double integral_sum = 0;
@@ -45,13 +48,22 @@ public class MotionProfiledADRCPoseStabilizationController {
 
 	double previousErrorMag = 0;
 	double errorMagDeriv = 10;
-	PIDCoefficients coefficients = new PIDCoefficients(0.09,0,0.35);
+	PIDCoefficients coefficients = new PIDCoefficients(0.05,0,0.2236067977);
 	BasicPID pidX = new BasicPID(coefficients);
 	BasicPID pidY = new BasicPID(coefficients);
+
+	PIDCoefficients turnNormal = new PIDCoefficients(1.5,0,0.3);
 	boolean notForVision = true;
 
+	public MotionProfiledADRCPoseStabilizationController(double acceleration_time) {
+		this.acceleration_time = acceleration_time;
+		rate_of_acceleration = 1 / (acceleration_time / loop_time_est);
+		turnController = new BasicPID(turnNormal);
+		turnControlWrapped = new AngleController(turnController);
+	}
+
 	public MotionProfiledADRCPoseStabilizationController() {
-		turnController = new BasicPID(new PIDCoefficients(1.5,0,0));
+		turnController = new BasicPID(turnNormal);
 		turnControlWrapped = new AngleController(turnController);
 	}
 
@@ -62,7 +74,7 @@ public class MotionProfiledADRCPoseStabilizationController {
 			// gain for vision
 			turnController = new BasicPID(new PIDCoefficients(0.4,.1,0));
 		} else {
-			turnController = new BasicPID(new PIDCoefficients(1.5,0,0));
+			turnController = new BasicPID(turnNormal);
 		}
 		turnControlWrapped = new AngleController(turnController);
 	}
@@ -102,8 +114,8 @@ public class MotionProfiledADRCPoseStabilizationController {
 		double errorX = targetPose.getX() - robotPose.getX();
 		double errorY = targetPose.getY() - robotPose.getY();
 
-		double ffX = Math.signum(errorX) * 0.05;
-		double ffY = Math.signum(errorY) * 0.05;
+		double ffX = Math.signum(errorX) * 0.06;
+		double ffY = Math.signum(errorY) * 0.06;
 		poseError = new com.acmerobotics.roadrunner.geometry.Pose2d(errorX,errorY,headingError);
 
 		//yPower = -yPower;

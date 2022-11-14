@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.Utils;
 
+import com.acmerobotics.roadrunner.profile.MotionProfile;
+import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
+import com.acmerobotics.roadrunner.profile.MotionState;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -17,25 +20,42 @@ public class ProfiledServo extends Subsystem {
 	protected double currentPosition;
 	protected String name;
 
-	public AsymmetricMotionProfile profile_m;
+	public MotionProfile profile_m;
 	public MotionConstraint forwardConstraint;
 	public MotionConstraint backwardContraint;
 	public ElapsedTime timer = new ElapsedTime();
 
-	public ProfiledServo(HardwareMap hwmap, String name1, String name2, double Forwardvelo, double Forwardaccel, double Forwarddecel, double BackwardVelo, double BackwardAccel, double backwawrdDecel, double initialPosition) {
+	public ProfiledServo(HardwareMap hwmap, String name1, String name2, double Forwardvelo, double Forwardaccel, double BackwardVelo, double BackwardAccel, double initialPosition) {
 		servo_left = hwmap.get(Servo.class, name1);
 		servo_right = hwmap.get(Servo.class,name2);
 		this.name = name1 + " " + name2 + " ";
 		this.endPosition = initialPosition;
 		this.currentPosition = initialPosition;
 		this.previousEndPosition = initialPosition + 100; // just guarantee that they are not equal
- 		this.forwardConstraint = new MotionConstraint(Forwardvelo,Forwardaccel,Forwarddecel);
-	 	this.backwardContraint = new MotionConstraint(BackwardVelo,BackwardAccel, backwawrdDecel);
+ 		this.forwardConstraint = new MotionConstraint(Forwardvelo,Forwardaccel,Forwardaccel);
+	 	this.backwardContraint = new MotionConstraint(BackwardVelo,BackwardAccel, BackwardAccel);
 		setPositionsSynced(initialPosition);
 	}
 
 	protected void regenerate_profile() {
-		profile_m = new AsymmetricMotionProfile(this.currentPosition,this.endPosition,this.forwardConstraint);
+		if (endPosition > previousEndPosition) {
+			profile_m = MotionProfileGenerator.generateSimpleMotionProfile(
+					new MotionState(currentPosition, 0, 0),
+					new MotionState(endPosition, 0, 0),
+					forwardConstraint.max_velocity,
+					forwardConstraint.max_acceleration,
+					75
+			);
+		} else {
+			profile_m = MotionProfileGenerator.generateSimpleMotionProfile(
+					new MotionState(currentPosition, 0, 0),
+					new MotionState(endPosition, 0, 0),
+					backwardContraint.max_velocity,
+					backwardContraint.max_acceleration,
+					75
+			);
+		}
+
 		timer.reset();
 	}
 
@@ -50,13 +70,13 @@ public class ProfiledServo extends Subsystem {
 			regenerate_profile();
 		}
 		previousEndPosition = endPosition;
-		double current_target = profile_m.calculate(timer.seconds()).getX();
+		double current_target = profile_m.get(timer.seconds()).getX();
 		setPositionsSynced(current_target);
 		Dashboard.packet.put(name + "position: ", current_target);
 	}
 
 	public boolean isBusy() {
-		return timer.seconds() < profile_m.getProfileDuration();
+		return timer.seconds() < profile_m.duration();
 	}
 
 	@Override

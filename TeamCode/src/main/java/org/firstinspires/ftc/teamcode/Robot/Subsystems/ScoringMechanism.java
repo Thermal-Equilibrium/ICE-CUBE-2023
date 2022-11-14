@@ -38,7 +38,7 @@ public class ScoringMechanism extends Subsystem {
     public static double ARM_CARRY = 0.1;
     public static double ARM_DEPOSIT_LONG_HIGH = 0.38;
     public static double ARM_DEPOSIT_LONG_MID = 0.38;
-    public static double ARM_DEPOSIT_LONG_LOW = 0.6;
+    public static double ARM_DEPOSIT_LONG_LOW = 0.48;
 
     public static double ARM_DEPOSIT_SHORT_HIGH = 0.6;
     public static double ARM_DEPOSIT_SHORT_MID = 0.6;
@@ -78,7 +78,7 @@ public class ScoringMechanism extends Subsystem {
     ElapsedTime slide_profile_timer = new ElapsedTime();
 
     public MotionConstraint slide_constraints_up = new MotionConstraint(55,30,60);
-    public MotionConstraint slide_constraints_down = new MotionConstraint(30,30,20);
+    public MotionConstraint slide_constraints_down = new MotionConstraint(50,30,30);
 
     //protected AsymmetricMotionProfile profile_slides = new AsymmetricMotionProfile(0,0,slide_constraints);
     MotionProfile profile_slides = MotionProfileGenerator.generateSimpleMotionProfile(
@@ -105,10 +105,9 @@ public class ScoringMechanism extends Subsystem {
 
     ElapsedTime TraverseTimer = new ElapsedTime();  // timer used to help assist some servo position specific maneuvers such as putting down the arm.
 
-    double GO_TO_INTAKE_TIME = 0.6; // time between fully out-taking and moving arm before slides go back down to prevent bad things
-    double OUTTAKE_DURATION = 0.6;  // time the out take occurs for before putting slides back in.
+    double GO_TO_INTAKE_TIME = 0.4; // time between fully out-taking and moving arm before slides go back down to prevent bad things
+    double OUTTAKE_DURATION = 0.4;  // time the out take occurs for before putting slides back in.
     private double previousMotorTarget = 10000000;
-    private double AUTO_INTAKE_DURATION = 0.5;
 
     /**
      * The initialization for both autonomous and teleop
@@ -120,14 +119,14 @@ public class ScoringMechanism extends Subsystem {
         slideRight.setDirection(DcMotorSimple.Direction.FORWARD);
         slideLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        double velocityForward = 0.8; //percent/s
-        double accelForward = 1; // percent/s^2
+        double velocityForward = 1.4; //percent/s
+        double accelForward = 1.5; // percent/s^2
 
-        double velocityBackward = 0.5;
-        double accelBackward = 0.7;
+        double velocityBackward = 0.2;
+        double accelBackward = 0.3;
 
 
-        arm = new ProfiledServo(hwMap, "arm_left","arm_right",velocityForward,accelForward * 1.5,accelForward / 2,velocityBackward,accelBackward * 1.5,accelBackward / 2,ARM_IN_COLLECT);
+        arm = new ProfiledServo(hwMap, "arm_left","arm_right", velocityForward, accelForward, velocityBackward, accelBackward,0);
 
         wrist = hwMap.get(Servo.class, "wrist");
 
@@ -144,12 +143,10 @@ public class ScoringMechanism extends Subsystem {
     @Override
     public void initAuto(HardwareMap hwMap) {
         commonInit(hwMap);
-
         slideLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         slideRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         slideLeft.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         slideRight.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-
     }
 
     /**
@@ -578,13 +575,13 @@ public class ScoringMechanism extends Subsystem {
     public double getSlideHeightForAutoIntaking() {
         switch (currentStackProgress) {
             case AUTO_INTAKE_5:
-                return 5;
-            case AUTO_INTAKE_4:
                 return 4;
-            case AUTO_INTAKE_3:
+            case AUTO_INTAKE_4:
                 return 3;
-            case AUTO_INTAKE_2:
+            case AUTO_INTAKE_3:
                 return 2;
+            case AUTO_INTAKE_2:
+                return 1;
             default:
                 return 0;
         }
