@@ -12,7 +12,7 @@ public class UGLqrPoseStabilization extends Command {
 
 	Drivetrain drivetrain;
 	Pose2d targetPose;
-	MotionProfiledADRCPoseStabilizationController controller = new MotionProfiledADRCPoseStabilizationController(true);
+	MotionProfiledADRCPoseStabilizationController controller = new MotionProfiledADRCPoseStabilizationController();
 
 	public UGLqrPoseStabilization(Drivetrain drivetrain, Pose2d targetPose) {
 		this.drivetrain = drivetrain;

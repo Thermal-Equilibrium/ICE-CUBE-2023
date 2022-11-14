@@ -22,21 +22,21 @@ public class BlueRight extends BaseAuto {
 	@Override
 	public Command setupAuto(CommandScheduler scheduler) {
 
-		Pose2d placeCone = new Pose2d( -36.10741466514628, 12.56727416105955, Math.toRadians(308.06138282915236));
-		Pose2d placeCone2 = new Pose2d( placeCone.getX() + 2, placeCone.getY() + 1, placeCone.getHeading());
+		Pose2d placeCone = new Pose2d( -36.60741466514628, 11, Math.toRadians(308.06138282915236));
+		Pose2d placeCone2 = new Pose2d( placeCone.getX() + 2, placeCone.getY() + 0.5, placeCone.getHeading());
 
 		Pose2d goNearScoring1 = new Pose2d(-36.0, 18, Math.toRadians(-90));
 
 		Pose2d goNearScoring = new Pose2d(-36.0, 18, placeCone.getHeading());
 
 		Pose2d pickupPartial = new Pose2d(-48,18,Math.toRadians(0));
-		Pose2d pickupFull = new Pose2d(-63,14.5,Math.toRadians(0));
+		Pose2d pickupFull = new Pose2d(-62,14.5,Math.toRadians(0));
 
-		double depositDelayS = 1;
+		double depositDelayS = 0.5;
 
 		return followPath(goNearScoring1,goNearScoring)
 				.addNext(new MultipleCommand(new GoToScore(robot.scoringMechanism, ScoringMechanism.States.HIGH), goToLQR(placeCone)))
-				.addNext(new AlignWithVision2Auto(robot.drivetrain, robot.distanceSensor))
+				//.addNext(new AlignWithVision2Auto(robot.drivetrain, robot.distanceSensor))
 				.addNext(new DepositAuto(robot.scoringMechanism))
 				.addNext(new Delay(depositDelayS))
 				// cone 2
@@ -44,7 +44,7 @@ public class BlueRight extends BaseAuto {
 				.addNext(new ActivateIntakeAuto(robot.scoringMechanism))
 				.addNext(goToLQR(goNearScoring))
 				.addNext(new MultipleCommand(new GoToScore(robot.scoringMechanism, ScoringMechanism.States.HIGH), goToLQR(placeCone2)))
-				.addNext(new AlignWithVision2Auto(robot.drivetrain, robot.distanceSensor))
+				//.addNext(new AlignWithVision2Auto(robot.drivetrain, robot.distanceSensor))
 				.addNext(new DepositAuto(robot.scoringMechanism))
 				.addNext(new Delay(depositDelayS))
 				// cone 3
@@ -52,7 +52,7 @@ public class BlueRight extends BaseAuto {
 				.addNext(new ActivateIntakeAuto(robot.scoringMechanism))
 				.addNext(goToLQR(goNearScoring))
 				.addNext(new MultipleCommand(new GoToScore(robot.scoringMechanism, ScoringMechanism.States.HIGH), goToLQR(placeCone2)))
-				.addNext(new AlignWithVision2Auto(robot.drivetrain, robot.distanceSensor))
+				//.addNext(new AlignWithVision2Auto(robot.drivetrain, robot.distanceSensor))
 				.addNext(new DepositAuto(robot.scoringMechanism))
 				.addNext(new Delay(depositDelayS));
 

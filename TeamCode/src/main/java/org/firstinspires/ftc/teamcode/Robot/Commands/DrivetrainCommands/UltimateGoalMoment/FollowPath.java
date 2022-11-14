@@ -15,7 +15,7 @@ import java.util.LinkedList;
  */
 public class FollowPath extends Command {
 
-	MotionProfiledADRCPoseStabilizationController controller = new MotionProfiledADRCPoseStabilizationController(true);
+	MotionProfiledADRCPoseStabilizationController controller = new MotionProfiledADRCPoseStabilizationController();
 	LinkedList<Pose2d> positions = new LinkedList<>();
 	Drivetrain drivetrain;
 	Pose2d currentTarget;
