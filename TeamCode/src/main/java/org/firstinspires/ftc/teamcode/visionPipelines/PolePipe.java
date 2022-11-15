@@ -8,6 +8,7 @@ import org.opencv.core.*;
 
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
+import org.opencv.photo.Photo;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
@@ -15,6 +16,8 @@ import java.util.Arrays;
 
 
 public class PolePipe extends OpenCvPipeline {
+    static Mat contourMap = new Mat();
+
     static boolean hasRun = false;
     static double inputWidth;
 
@@ -110,8 +113,8 @@ public class PolePipe extends OpenCvPipeline {
 
     private static final ArrayList<Mat> splitChannels=new ArrayList<>(3);
 
-    private static final Size minSize= new Size(10,50);
-    private static final int poleAreaMin = 300;
+    private static final Size minSize= new Size(20,50);
+    private static final int poleAreaMin = 400;
     private static final double poleMin = 0;
     private static final double poleMax = .5;
 
@@ -122,6 +125,7 @@ public class PolePipe extends OpenCvPipeline {
     static Size tempPos;
     static double switchingDim;
 
+    static double angle;
     static RotatedRect angledR;
     static Size size;
 
@@ -145,18 +149,14 @@ public class PolePipe extends OpenCvPipeline {
         for (int i = 0; i < poleContours.size(); i++) {
 //
 //            Moments moment= Imgproc.moments(poleContours.get(i),true);
-//            tempPos = new Size((moment.get_m10() / moment.get_m00()), moment.get_m01() / moment.get_m00());
-            Rect rect = Imgproc.boundingRect(poleContours.get(i));
-            tempPos = new Size(rect.x - getCamWidth()/2, rect.y);
-//            Dashboard.packet.put("raw x",rect.x);
-//            Dashboard.packet.put("raw y",rect.y);
-//            Dashboard.packet.put("raw width",rect.width);
-//            Dashboard.packet.put("raw height",rect.height);
-//            Dashboard.packet.put("raw area",rect.area());
+//            tempPos = new Size((moment.get_m10() / moment.get_m00()) - getCamWidth()/2, moment.get_m01() / moment.get_m00());
+//            Rect rect = Imgproc.boundingRect(poleContours.get(i));
+//            tempPos = new Size(rect.x - getCamWidth()/2, rect.y);
             tempContour2f = new MatOfPoint2f(poleContours.get(i).toArray());
             angledR = Imgproc.minAreaRect(tempContour2f);
-            //tempPos = new Size(angledR.center.x - inputWidth,angledR.center.y);// - (getCamWidth() / 2)
+            tempPos = new Size(angledR.center.x - getCamWidth()/2, angledR.center.y);
             size = angledR.size;
+            angle = angledR.angle;
             if (size.width>size.height) { // make sure orientation is right
                 switchingDim=size.width;
                 size.width=size.height;
@@ -166,7 +166,7 @@ public class PolePipe extends OpenCvPipeline {
             tempPerimeter = Imgproc.arcLength(tempContour2f, true);
             tempRatio = tempArea / Math.pow(tempPerimeter, 2);
             if (tempArea >= poleAreaMin && Math.abs(tempRatio) <= poleMax && Math.abs(tempRatio) >= poleMin && size.width >= minSize.width && size.height >= minSize.height && size.height > 2 * size.width){
-                tempPoleList.add(new pole(tempPos, size, tempPerimeter, tempRatio, rect.x, poleContours.get(i),true));
+                tempPoleList.add(new pole(tempPos, size, tempPerimeter, tempRatio, angle, poleContours.get(i),true));
                 tempContours.add(poleContours.get(i));
             }
         }
@@ -195,6 +195,11 @@ public class PolePipe extends OpenCvPipeline {
         lower3  = new Scalar(cv.lYCrCb1, cv.lYCrCb2, cv.lYCrCb3);
         upper3 = new Scalar(cv.uYCrCb1, cv.uYCrCb2, cv.uYCrCb3);
 
+//        Photo.fastNlMeansDenoisingColored(input,input);
+//        Photo.detailEnhance(input,input);
+//        Photo.edgePreservingFilter(input,input);
+//        Imgproc.Canny();
+//        Imgproc.drawContours(contourMap,);
         input = upContrast(input);
 
         Imgproc.cvtColor(input, primary, Imgproc.COLOR_RGB2HSV_FULL);
@@ -227,7 +232,7 @@ public class PolePipe extends OpenCvPipeline {
 
         tempContours.clear();
         contours.clear();
-        roundupMemory(primary,secondary,tertiary,mask1,mask2,mask3,masked,yellowHierarchy);
+        roundupMemory(primary,secondary,tertiary,mask1,mask2,mask3,masked,yellowHierarchy,highContrast,singleChannel,mergedChannels);
 //        roundupMemory(primary,secondary,tertiary,mask1,mask2,mask3,masked,yellowHierarchy,highContrast,singleChannel,mergedChannels);
 //        roundupMemory(tertiary,mask3,yellowHierarchy);
         return input;

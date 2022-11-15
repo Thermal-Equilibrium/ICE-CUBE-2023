@@ -14,8 +14,6 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 public class Vision extends Subsystem {
-    public static double camWidth;
-    public static double camHeight;
 
 //    public static final double FOV = 118;
 //    public static final double FOV = 90;
@@ -27,9 +25,7 @@ public class Vision extends Subsystem {
 
     public static OpenCvCamera webcam;
 
-    //public static FtcDashboard dashboard = FtcDashboard.getInstance();
-    //public static Telemetry dashboardTelemetry = dashboard.getTelemetry();
-
+    public static FtcDashboard dashboard = FtcDashboard.getInstance();
 
     static final Size low = new Size(320,240);
     static final Size medium = new Size(640,480);
@@ -75,9 +71,9 @@ public class Vision extends Subsystem {
 
     @Override
     public void periodic() {
-//        Dashboard.packet.put("Vision FPS", webcam.getFps());
-//        Dashboard.packet.put("Vision Frame", webcam.getFrameCount());
-//        Dashboard.packet.put("Vision Overhead (ms)", webcam.getOverheadTimeMs());
+        Dashboard.packet.put("Vision FPS", webcam.getFps());
+        Dashboard.packet.put("Vision Frame", webcam.getFrameCount());
+        Dashboard.packet.put("Vision Overhead (ms)", webcam.getOverheadTimeMs());
     }
 
     @Override

@@ -27,12 +27,6 @@ public class ObjectProc {
 
     static ArrayList<MatOfPoint> toDraw = new ArrayList<MatOfPoint>();
 
-//    public static double getWidthAngle(org.firstinspires.ftc.teamcode.visionPipelines.pole thePole){
-//        return ((thePole.pos.width/2) * (FOV/getCamWidth()))*2;
-//    }
-//    public static double getDistance(double widthDegrees){
-//        return poleDiameter/(Math.sin(.5*widthDegrees));
-//    }
     public static pole getPoleAt(ArrayList<pole> poles, Heading expectedHeading, double maxDeviation) {
         if (poles.size() > 0) {
             best = 69420;
