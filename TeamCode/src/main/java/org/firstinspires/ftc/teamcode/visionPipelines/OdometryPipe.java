@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.visionPipelines;
+import static org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.getCamHeight;
 import static org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.getCamWidth;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -12,11 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 
-public class PolePipe extends OpenCvPipeline {
-    static Mat contourMap = new Mat();
-
-    static boolean hasRun = false;
-    static double inputWidth;
+public class OdometryPipe extends OpenCvPipeline {
 
     static ArrayList<PoleVisual> rawPoles = new ArrayList<PoleVisual>();
     static ArrayList<MatOfPoint> tempContours = new ArrayList<MatOfPoint>();
@@ -28,10 +25,6 @@ public class PolePipe extends OpenCvPipeline {
     static Mat mergedChannels = new Mat();
 
     public static ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-
-    public static double getInputWidth() {
-        return inputWidth;
-    }
 
     @Config
     public static class cv {
@@ -122,16 +115,23 @@ public class PolePipe extends OpenCvPipeline {
     static Size tempPos;
     static double switchingDim;
 
-    static double angle;
+    static double verticalAngle;
     static RotatedRect angledR;
     static Size size;
+
+    static boolean top;
+    static boolean bottom;
+    static boolean left;
+    static boolean right;
+    static Touching touching;
+    static double nearest90;
 
     static boolean isDraw=false;
     static ArrayList<MatOfPoint> toDraw = new ArrayList<MatOfPoint>();
 
     private static ArrayList<PoleVisual> tempRawPoleList = new ArrayList<PoleVisual>();
 
-    public PolePipe() { }
+    public OdometryPipe() { }
 
     public static void draw(ArrayList<MatOfPoint> cnts) {
         isDraw=true;
@@ -144,16 +144,15 @@ public class PolePipe extends OpenCvPipeline {
     static ArrayList<PoleVisual> filterpoles(ArrayList<MatOfPoint> poleContours) {
         tempRawPoleList.clear();
         for (int i = 0; i < poleContours.size(); i++) {
-//
-//            Moments moment= Imgproc.moments(poleContours.get(i),true);
-//            tempPos = new Size((moment.get_m10() / moment.get_m00()) - getCamWidth()/2, moment.get_m01() / moment.get_m00());
-//            Rect rect = Imgproc.boundingRect(poleContours.get(i));
-//            tempPos = new Size(rect.x - getCamWidth()/2, rect.y);
             tempContour2f = new MatOfPoint2f(poleContours.get(i).toArray());
             angledR = Imgproc.minAreaRect(tempContour2f);
             tempPos = new Size(angledR.center.x - getCamWidth()/2, angledR.center.y);
             size = angledR.size;
-            angle = angledR.angle;
+            verticalAngle = angledR.angle;
+
+            nearest90 = Math.round(verticalAngle / 45) * 45;
+            verticalAngle -= nearest90;
+
             if (size.width>size.height) { // make sure orientation is right
                 switchingDim=size.width;
                 size.width=size.height;
@@ -162,8 +161,19 @@ public class PolePipe extends OpenCvPipeline {
             tempArea = size.area();
             tempPerimeter = Imgproc.arcLength(tempContour2f, true);
             tempRatio = tempArea / Math.pow(tempPerimeter, 2);
-            if (tempArea >= poleAreaMin && Math.abs(tempRatio) <= poleMax && Math.abs(tempRatio) >= poleMin && size.width >= minSize.width && size.height >= minSize.height && size.height > 2 * size.width){
-                tempRawPoleList.add(new PoleVisual(tempPos, size, tempPerimeter, tempRatio, angle, poleContours.get(i),true, new Touching(false,false,false,false)));
+
+            if (tempPos.height + size.height > getCamHeight() - 5) { top = true; }
+            else { top = false; }
+            if (tempPos.height - size.height > 5) { bottom = true; }
+            else { bottom = false; }
+            if (tempPos.width - size.width > 5) { left = true; }
+            else { left = false; }
+            if (tempPos.width + size.width > getCamWidth() - 5) { right = true; }
+            else { right = false; }
+            touching=new Touching(top,bottom,left,right);
+
+            if (tempArea >= poleAreaMin && Math.abs(tempRatio) <= poleMax && Math.abs(tempRatio) >= poleMin && size.width >= minSize.width && size.height >= minSize.height && size.height > 2 * size.width && !touching.horizontal){
+                tempRawPoleList.add(new PoleVisual(tempPos, size, tempPerimeter, tempRatio, verticalAngle, poleContours.get(i),true, touching));
                 tempContours.add(poleContours.get(i));
             }
         }
@@ -196,7 +206,7 @@ public class PolePipe extends OpenCvPipeline {
 //        Photo.detailEnhance(input,input);
 //        Photo.edgePreservingFilter(input,input);
 //        Imgproc.Canny();
-//        Imgproc.drawContours(contourMap,);
+
         input = upContrast(input);
 
         Imgproc.cvtColor(input, primary, Imgproc.COLOR_RGB2HSV_FULL);
@@ -230,8 +240,6 @@ public class PolePipe extends OpenCvPipeline {
         tempContours.clear();
         contours.clear();
         roundupMemory(primary,secondary,tertiary,mask1,mask2,mask3,masked,yellowHierarchy,highContrast,singleChannel,mergedChannels);
-//        roundupMemory(primary,secondary,tertiary,mask1,mask2,mask3,masked,yellowHierarchy,highContrast,singleChannel,mergedChannels);
-//        roundupMemory(tertiary,mask3,yellowHierarchy);
         return input;
     }
     public void roundupMemory(Mat... Mats) {

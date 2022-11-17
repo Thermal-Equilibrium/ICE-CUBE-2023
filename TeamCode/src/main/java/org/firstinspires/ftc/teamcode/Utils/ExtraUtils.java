@@ -108,6 +108,20 @@ public class ExtraUtils {
 
 	}
 
+	public static void drawPole(com.acmerobotics.roadrunner.geometry.Pose2d pose, TelemetryPacket packet) {
+
+		double ROBOT_RADIUS = 2;
+		Vector2d v = new Vector2d(Math.cos(pose.getHeading()), Math.sin(pose.getHeading())).times(ROBOT_RADIUS);
+
+
+		packet.fieldOverlay()
+				.setStroke("Green")
+				.strokeCircle(pose.getX() / FIELD_SCALE_FACTOR, pose.getY() / FIELD_SCALE_FACTOR, ROBOT_RADIUS);
+
+
+	}
+
+
 	public static final int TRAJECTORY_RESOLUTION = 4;
 
 	public static void drawRobotTrajectory(ArrayList<Pose2d> poses, String color, TelemetryPacket packet) {

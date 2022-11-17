@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
+import org.firstinspires.ftc.teamcode.visionPipelines.OdometryPipe;
 import org.firstinspires.ftc.teamcode.visionPipelines.PolePipe;
 import org.opencv.core.Size;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -18,9 +19,9 @@ public class Vision extends Subsystem {
 //    public static final double FOV = 118;
 //    public static final double FOV = 90;
 //    public static final double FOV = 118;
-    public static final double FOV = Math.toRadians(70.428); // for 78 dfov
+    public static final double FOV = 70.428; // for 78 dfov //Math.toRadians(
 
-    OpenCvPipeline pipeline = new PolePipe();
+    OpenCvPipeline pipeline = new OdometryPipe();
 
 
     public static OpenCvCamera webcam;
@@ -43,6 +44,7 @@ public class Vision extends Subsystem {
     }
     public static int getFrameCount(){ return webcam.getFrameCount(); }
     public static double getFrameRate(){ return webcam.getFps(); }
+    public static double getFov(){ return FOV; }
     public static double getCamWidth(){ return resolution.width; }
     public static double getCamHeight(){ return resolution.height; }
     @Override
