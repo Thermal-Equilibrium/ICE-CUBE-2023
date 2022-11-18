@@ -78,6 +78,7 @@ public class TrackWidthTuner extends LinearOpMode {
         telemetry.addLine(Misc.formatInvariant("Effective track width = %.2f (SE = %.3f)",
                 trackWidthStats.getMean(),
                 trackWidthStats.getStandardDeviation() / Math.sqrt(NUM_TRIALS)));
+        System.out.println("Effective track width is " + trackWidthStats.getMean());
         telemetry.update();
 
         while (!isStopRequested()) {

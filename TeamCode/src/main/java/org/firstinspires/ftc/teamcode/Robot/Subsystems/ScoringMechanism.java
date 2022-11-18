@@ -49,11 +49,10 @@ public class ScoringMechanism extends Subsystem {
     public static double OUT_TAKE = -INTAKE_SPEED;
 
     public static double SLIDES_IN = 0;
-    public static double SLIDES_CLEAR = 4;
     public static double SLIDES_HIGH = 16.5;
     public static double SLIDES_MID = 8;
     public static double SLIDES_LOW = 5;
-    public static double SLIDES_SAFE_FOR_STACK = 8;
+    public static double SLIDES_SAFE_FOR_STACK = 6;
 
     protected double currentWristPos = WRIST_STOW;
     protected double currentArmPos = ARM_CARRY;
@@ -71,13 +70,13 @@ public class ScoringMechanism extends Subsystem {
 
     protected States currentStackProgress = States.AUTO_INTAKE_5; // the 5 high stack is the first.
 
-    protected LowPassFilter intake_power_filter = new LowPassFilter(0.5);
+    protected LowPassFilter intake_power_filter = new LowPassFilter(0.01);
     protected PIDCoefficients coefficients = new PIDCoefficients(0.45,0,0);
     protected PIDCoefficients coefficients_between = new PIDCoefficients(0.3,0,0);
 
     ElapsedTime slide_profile_timer = new ElapsedTime();
 
-    public MotionConstraint slide_constraints_up = new MotionConstraint(55,30,60);
+    public MotionConstraint slide_constraints_up = new MotionConstraint(75,30,60);
     public MotionConstraint slide_constraints_down = new MotionConstraint(50,30,30);
 
     //protected AsymmetricMotionProfile profile_slides = new AsymmetricMotionProfile(0,0,slide_constraints);
@@ -526,6 +525,12 @@ public class ScoringMechanism extends Subsystem {
     public void GO_TO_SCORING() {
         if (state.equals(States.CARRY) || state.equals(States.READY_TO_SCORE_AUTO)) {
             should_traverse = true;
+        }
+    }
+
+    public void GO_TO_SAFE_HEIGHT() {
+        if (state.equals(States.CARRY)) {
+            state = States.READY_TO_SCORE_AUTO;
         }
     }
 

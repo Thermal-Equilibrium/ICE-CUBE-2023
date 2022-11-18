@@ -36,8 +36,10 @@ public class MeepMeepTesting {
 				.setConstraints(MAX_VEL, MAX_ACCEL, MAX_ANG_VEL, MAX_ANG_ACCEL, 12)
 				.followTrajectorySequence(drive ->
 						drive.trajectorySequenceBuilder(initialPose)
-								.lineToLinearHeading(goNearScoring1)
-								.lineToLinearHeading(placeCone)
+								.splineTo(goNearScoring1.vec(), Math.toRadians(270))
+								.splineToSplineHeading(placeCone,Math.toRadians(270),slowConstraint,slowConstraintAccel)
+//								.lineToLinearHeading(goNearScoring1)
+//								.lineToLinearHeading(placeCone)
 								.setReversed(true)
 								.splineTo(pickupPartial.vec(),Math.toRadians(180))
 								.splineToConstantHeading(pickupFull.vec(),Math.toRadians(180))

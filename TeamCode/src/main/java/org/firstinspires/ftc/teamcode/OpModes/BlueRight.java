@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.ActivateIntakeAuto;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.DepositAuto;
+import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.GoToSafeHeight;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.GoToScore;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism;
 
@@ -27,22 +28,27 @@ public class BlueRight extends BaseAuto {
 	@Override
 	public Command setupAuto(CommandScheduler scheduler) {
 
-		Pose2d placeCone = new Pose2d( -36.60741466514628, 11, Math.toRadians(308.06138282915236));
-		Pose2d placeCone2 = new Pose2d( placeCone.getX() + 2, placeCone.getY() + 0.5, placeCone.getHeading());
+		Pose2d placeCone = new Pose2d( -35.60741466514628, 11, Math.toRadians(308.06138282915236));
+		Pose2d goNearScoring1 = new Pose2d( placeCone.getX(), 24, Math.toRadians(0));
+
+		Pose2d placeCone2 = new Pose2d( placeCone.getX(), placeCone.getY(), placeCone.getHeading());
 
 		Pose2d pickupFull = new Pose2d(-62,14.5,Math.toRadians(0));
-		Pose2d pickupPartial = new Pose2d(-48,pickupFull.getY() + 3,Math.toRadians(0));
+		Pose2d pickupPartial = new Pose2d(-48, pickupFull.getY(),Math.toRadians(0));
+
+		Pose2d park = new Pose2d(-12,12,Math.toRadians(0));
+		TrajectoryVelocityConstraint slowConstraint = SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL / 1.5, Math.toRadians(80),DriveConstants.TRACK_WIDTH);
+		TrajectoryAccelerationConstraint slowConstraintAccel = SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL / 1.5);
 
 
 		Trajectory goToConePlacingFirst = robot.drivetrain.getBuilder().trajectoryBuilder(initialPose)
-				.lineToLinearHeading(placeCone)
+				.splineTo(goNearScoring1.vec(), Math.toRadians(270))
+				.splineToSplineHeading(placeCone,Math.toRadians(270),slowConstraint,slowConstraintAccel)
 				.build();
-		TrajectoryVelocityConstraint slowConstraint = SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL / 2, DriveConstants.MAX_ANG_VEL/2,DriveConstants.TRACK_WIDTH);
-		TrajectoryAccelerationConstraint slowConstraintAccel = SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL / 3);
 
 		Trajectory pickupConeFIRST = robot.drivetrain.getBuilder().trajectoryBuilder(placeCone,true)
-				.splineTo(pickupPartial.vec(),Math.toRadians(180))
-				.splineToConstantHeading(pickupFull.vec(),Math.toRadians(180))
+				.splineTo(pickupPartial.vec(),Math.toRadians(180),slowConstraint,slowConstraintAccel)
+				.splineToConstantHeading(pickupFull.vec(),Math.toRadians(180),slowConstraint,slowConstraintAccel)
 				.build();
 		Trajectory pickupCone = robot.drivetrain.getBuilder().trajectoryBuilder(placeCone2,true)
 				.splineTo(pickupPartial.vec(),Math.toRadians(180),slowConstraint,slowConstraintAccel)
@@ -54,35 +60,34 @@ public class BlueRight extends BaseAuto {
 				.splineTo(placeCone2.vec(), placeCone2.getHeading(),slowConstraint,slowConstraintAccel)
 				.build();
 
+		Trajectory goToPark = robot.drivetrain.getBuilder().trajectoryBuilder(placeConeTrajectory.end())
+				.lineToConstantHeading(park.vec())
+				.build();
 
-		double depositDelayS = 0.5;
+
+		double depositDelayS = 0.6;
 
 
 
-		return followRR(goToConePlacingFirst)
+		return new MultipleCommand(new GoToSafeHeight(robot.scoringMechanism),followRR(goToConePlacingFirst))
 				.addNext(new GoToScore(robot.scoringMechanism, ScoringMechanism.States.HIGH))
 				.addNext(new DepositAuto(robot.scoringMechanism))
 				.addNext(new Delay(depositDelayS))
+				// go pickup and place second cone (first of stack)
 				.addNext(followRR(pickupConeFIRST))
 				.addNext(new ActivateIntakeAuto(robot.scoringMechanism))
 				.addNext(followRR(placeConeTrajectory))
 				.addNext(new GoToScore(robot.scoringMechanism, ScoringMechanism.States.HIGH))
-				//.addNext(new MultipleCommand(new GoToScore(robot.scoringMechanism, ScoringMechanism.States.HIGH), followRR(placeConeTrajectory)))
 				.addNext(new DepositAuto(robot.scoringMechanism))
 				.addNext(new Delay(depositDelayS))
-				.addNext(followRR(pickupCone));
-//				.addNext(new GoToScore(robot.scoringMechanism, ScoringMechanism.States.HIGH))
-//				//.addNext(new AlignWithVision2Auto(robot.drivetrain, robot.distanceSensor))
-//				.addNext(new DepositAuto(robot.scoringMechanism))
-//				.addNext(new Delay(depositDelayS))
-//				// cone 2
-//				.addNext(followPath(pickupPartial,pickupFull))
-//				.addNext(new ActivateIntakeAuto(robot.scoringMechanism))
-//				.addNext(new MultipleCommand(new GoToScore(robot.scoringMechanism, ScoringMechanism.States.HIGH), followRR(placeConeTrajectory)))
-////				.addNext(goToLQR(goNearScoring))
-////				.addNext(new MultipleCommand(new GoToScore(robot.scoringMechanism, ScoringMechanism.States.HIGH), goToLQR(placeCone2)))
-//				.addNext(new DepositAuto(robot.scoringMechanism))
-//				.addNext(new Delay(depositDelayS));
+				// go pickup and place third cone
+				.addNext(followRR(pickupCone))
+				.addNext(new ActivateIntakeAuto(robot.scoringMechanism))
+				.addNext(followRR(placeConeTrajectory))
+				.addNext(new GoToScore(robot.scoringMechanism, ScoringMechanism.States.HIGH))
+				.addNext(new DepositAuto(robot.scoringMechanism))
+				.addNext(new Delay(depositDelayS))
+				.addNext(followRR(goToPark));
 
 
 

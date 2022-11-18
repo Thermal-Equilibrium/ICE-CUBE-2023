@@ -16,7 +16,7 @@ public class GoToScore extends Command {
 
 	public boolean hasStarted = false;
 
-	double arm_move_time = 3;
+	double arm_move_time = 1.4;
 
 	boolean invalidStart = true;
 
