@@ -55,6 +55,7 @@ import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
     static double translation_kp = 10;
+    static double rotation_Kp = 4;
     public static PIDCoefficients TRANSLATIONAL_PID;
 
     static {
@@ -67,11 +68,22 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
     }
 
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(6,0,0.1); // new PIDCoefficients(5, 0, 0.3);
+    public static PIDCoefficients HEADING_PID; // new PIDCoefficients(5, 0, 0.3);
+
+    static {
+        try {
+            HEADING_PID = new PIDCoefficients(rotation_Kp,0,solveKD(translation_kp, DriveConstants.kV / TRACK_WIDTH,DriveConstants.kA / TRACK_WIDTH));
+        } catch (Exception e) {
+            HEADING_PID = new PIDCoefficients(rotation_Kp,0,0);
+            System.out.println("heading controller synthesis failed, reverting to safe coefficients");
+
+        }
+    }
+
     public static double LATERAL_MULTIPLIER = 1;
 
     public static double VX_WEIGHT = 1;
-    public static double VY_WEIGHT = 1;
+    public static double VY_WEIGHT = 1.031236327;
     public static double OMEGA_WEIGHT = 1;
 
     private TrajectorySequenceRunner trajectorySequenceRunner;

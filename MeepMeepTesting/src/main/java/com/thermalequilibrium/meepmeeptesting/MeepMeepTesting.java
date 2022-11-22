@@ -42,10 +42,10 @@ public class MeepMeepTesting {
 //								.lineToLinearHeading(placeCone)
 								.setReversed(true)
 								.splineTo(pickupPartial.vec(),Math.toRadians(180))
-								.splineToConstantHeading(pickupFull.vec(),Math.toRadians(180))
+								.splineToSplineHeading(pickupFull,Math.toRadians(180))
 								.setReversed(false)
-								.splineTo(pickupPartial.vec(),Math.toRadians(0))
-								.splineTo(placeCone2.vec(), placeCone2.getHeading(),slowConstraint,slowConstraintAccel)
+								.splineTo(pickupPartial.vec(),Math.toRadians(0),slowConstraint,slowConstraintAccel)
+								.splineToSplineHeading(placeCone2, 0,slowConstraint,slowConstraintAccel)
 								.build()
 
 				);
