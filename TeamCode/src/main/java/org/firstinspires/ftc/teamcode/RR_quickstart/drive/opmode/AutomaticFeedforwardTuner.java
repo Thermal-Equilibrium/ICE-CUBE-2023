@@ -211,6 +211,9 @@ public class AutomaticFeedforwardTuner extends LinearOpMode {
             telemetry.addLine(Misc.formatInvariant("kA = %.5f (R^2 = %.2f)",
                     accelResult.kA, accelResult.rSquare));
             telemetry.update();
+            for (int i = 0; i < timeSamples.size(); ++i) {
+                System.out.println("" + timeSamples.get(i) + "," + positionSamples.get(i) + "," + powerSamples.get(i));
+            }
         }
 
         while (!isStopRequested()) {

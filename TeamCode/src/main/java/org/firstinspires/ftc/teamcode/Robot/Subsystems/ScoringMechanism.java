@@ -32,13 +32,13 @@ public class ScoringMechanism extends Subsystem {
     public static double WRIST_COLLECT_SHORT = 0;
     public static double WRIST_STOW = 1;
     public static double WRIST_CARRY_SHORT = 0;
-    public static double WRIST_DEPOSIT_LONG = 0.85;
+    public static double WRIST_DEPOSIT_LONG = 1;
 
     public static double ARM_IN_COLLECT = 0;
     public static double ARM_CARRY = 0.1;
-    public static double ARM_DEPOSIT_LONG_HIGH = 0.38;
-    public static double ARM_DEPOSIT_LONG_MID = 0.38;
-    public static double ARM_DEPOSIT_LONG_LOW = 0.48;
+    public static double ARM_DEPOSIT_LONG_HIGH = 0.37;
+    public static double ARM_DEPOSIT_LONG_MID = 0.37;
+    public static double ARM_DEPOSIT_LONG_LOW = 0.53;
 
     public static double ARM_DEPOSIT_SHORT_HIGH = 0.6;
     public static double ARM_DEPOSIT_SHORT_MID = 0.6;
@@ -51,7 +51,7 @@ public class ScoringMechanism extends Subsystem {
     public static double SLIDES_IN = 0;
     public static double SLIDES_HIGH = 16.5;
     public static double SLIDES_MID = 8;
-    public static double SLIDES_LOW = 5;
+    public static double SLIDES_LOW = 8;
     public static double SLIDES_SAFE_FOR_STACK = 6;
 
     protected double currentWristPos = WRIST_STOW;
@@ -85,7 +85,7 @@ public class ScoringMechanism extends Subsystem {
             new MotionState(0, 0, 0),
             slide_constraints_up.max_velocity,
             slide_constraints_up.max_acceleration,
-            100
+            300
     );
 
 
@@ -118,7 +118,7 @@ public class ScoringMechanism extends Subsystem {
         slideRight.setDirection(DcMotorSimple.Direction.FORWARD);
         slideLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        double velocityForward = 1.4; //percent/s
+        double velocityForward = 0.9; //percent/s
         double accelForward = 1.5; // percent/s^2
 
         double velocityBackward = 0.2;

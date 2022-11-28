@@ -29,8 +29,8 @@ public class MeepMeepTesting {
 		Pose2d pickupPartial = new Pose2d(-48,12,Math.toRadians(0));
 		Pose2d pickupFull = new Pose2d(-62,12,Math.toRadians(0));
 
-		TrajectoryVelocityConstraint slowConstraint = SampleMecanumDrive.getVelocityConstraint(30,Math.toRadians(120),12);
-		TrajectoryAccelerationConstraint slowConstraintAccel = SampleMecanumDrive.getAccelerationConstraint(25);
+		TrajectoryVelocityConstraint slowConstraint = SampleMecanumDrive.getVelocityConstraint(40,Math.toRadians(120),12);
+		TrajectoryAccelerationConstraint slowConstraintAccel = SampleMecanumDrive.getAccelerationConstraint(30);
 		RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
 				// Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
 				.setConstraints(MAX_VEL, MAX_ACCEL, MAX_ANG_VEL, MAX_ANG_ACCEL, 12)

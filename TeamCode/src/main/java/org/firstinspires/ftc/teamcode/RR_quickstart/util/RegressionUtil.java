@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.RR_quickstart.util;
 
 import androidx.annotation.Nullable;
 
+import com.ThermalEquilibrium.homeostasis.Filters.FilterAlgorithms.KalmanFilter;
 import com.acmerobotics.roadrunner.kinematics.Kinematics;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
@@ -51,12 +52,13 @@ public class RegressionUtil {
      * @return derivative values
      */
     private static List<Double> numericalDerivative(List<Double> x, List<Double> y) {
+        KalmanFilter filter = new KalmanFilter(0.2,0.4,3);
         List<Double> deriv = new ArrayList<>(x.size());
         for (int i = 1; i < x.size() - 1; i++) {
-            deriv.add(
+            deriv.add(filter.estimate(
                     (y.get(i + 1) - y.get(i - 1)) /
                     (x.get(i + 1) - x.get(i - 1))
-            );
+            ));
         }
         // copy endpoints to pad output
         deriv.add(0, deriv.get(0));
