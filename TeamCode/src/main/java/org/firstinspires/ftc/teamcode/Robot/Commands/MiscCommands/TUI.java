@@ -20,7 +20,7 @@ public class TUI extends Command {
 
     @Override
     public void periodic() {
-        virtualField.setPole(VirtualField.PoleState.RED);
+        virtualField.setPole(VirtualField.PoleState.US);
         virtualField.moveCursor(1, 0);
 
         virtualField.draw();
