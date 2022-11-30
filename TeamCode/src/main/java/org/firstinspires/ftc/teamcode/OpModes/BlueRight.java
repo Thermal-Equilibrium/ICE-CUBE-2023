@@ -31,13 +31,14 @@ public class BlueRight extends BaseAuto {
 		Pose2d placeCone = new Pose2d( -34.60741466514628 + 1.5, 12 - 1.5, Math.toRadians(308.06138282915236));
 		Pose2d goNearScoring1 = new Pose2d( -32, 24, Math.toRadians(0));
 
-		Pose2d placeCone2 = new Pose2d( placeCone.getX()+2, placeCone.getY() + 1, placeCone.getHeading());
+		Pose2d placeCone2 = new Pose2d( placeCone.getX()+2, placeCone.getY() + 1.8, placeCone.getHeading());
 
 		Pose2d pickupFull = new Pose2d(-62,14.5,Math.toRadians(0));
 		Pose2d pickupPartial = new Pose2d(-48, pickupFull.getY(),Math.toRadians(0));
 
 		Pose2d park_safe = new Pose2d(-36.60741466514628, 18, Math.toRadians(0));
 		Pose2d park = new Pose2d(-12,14,Math.toRadians(0));
+
 		TrajectoryVelocityConstraint slowConstraint = SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL / 1.5, Math.toRadians(80),DriveConstants.TRACK_WIDTH);
 		TrajectoryAccelerationConstraint slowConstraintAccel = SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL / 1.5);
 
@@ -58,7 +59,7 @@ public class BlueRight extends BaseAuto {
 
 		Trajectory placeConeTrajectory = robot.drivetrain.getBuilder().trajectoryBuilder(pickupFull)
 				.splineTo(pickupPartial.vec(),Math.toRadians(0),slowConstraint,slowConstraintAccel)
-				.splineToSplineHeading(placeCone2, Math.toRadians(315),slowConstraint,slowConstraintAccel)
+				.splineToSplineHeading(placeCone2, Math.toRadians(330),slowConstraint,slowConstraintAccel)
 				.build();
 
 		Trajectory goToPark1 = robot.drivetrain.getBuilder().trajectoryBuilder(placeConeTrajectory.end())
@@ -94,6 +95,13 @@ public class BlueRight extends BaseAuto {
 				.addNext(multiCommand(followRR(placeConeTrajectory), delayCommand(depositUpDelayS, goToScore())))
 				.addNext(deposit())
 				.addNext(wait(depositDelayS))
+				// go pickup and place fourth cone
+				.addNext(followRR(pickupCone))
+				.addNext(intake())
+				.addNext(multiCommand(followRR(placeConeTrajectory), delayCommand(depositUpDelayS, goToScore())))
+				.addNext(deposit())
+				.addNext(wait(depositDelayS))
+				// park
 				.addNext(followRR(goToPark1))
 				.addNext(followRR(goToPark2));
 		
