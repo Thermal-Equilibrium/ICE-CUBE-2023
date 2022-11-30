@@ -23,7 +23,7 @@ public class Robot {
 	public DistanceSensor distanceSensor = new DistanceSensor();
 	public FieldMap field = new FieldMap();
 	public Vision vision = new Vision();
-	public VisualOdometry visualOdometry = new VisualOdometry(drivetrain);
+	//public VisualOdometry visualOdometry = new VisualOdometry(drivetrain);
 
 	// print subsystem for testing
 	public PrintSubsystem1 print = new PrintSubsystem1();
@@ -31,7 +31,7 @@ public class Robot {
 	protected CommandScheduler scheduler;
 
 	public Robot(HardwareMap hwMap, OpMode opMode, Gamepad gamepad1, Gamepad gamepad2) {
-		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard, scoringMechanism, distanceSensor, vision, field, visualOdometry);//detectionSubsystem
+		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard, scoringMechanism, distanceSensor, vision, field);//detectionSubsystem
 
 		this.gamepad1 = new Input(gamepad1, scheduler);
 		this.gamepad2 = new Input(gamepad2, scheduler);

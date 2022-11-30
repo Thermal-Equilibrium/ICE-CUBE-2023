@@ -18,16 +18,19 @@ public class MeepMeepTesting {
 
 	public static void main(String[] args) {
 		MeepMeep meepMeep = new MeepMeep(800);
-		 final Pose2d initialPose = new Pose2d( -37.5, 63.5, Math.toRadians(-90));
-		Pose2d placeCone = new Pose2d( -36.60741466514628, 11, Math.toRadians(308.06138282915236));
-		Pose2d placeCone2 = new Pose2d( placeCone.getX() + 2, placeCone.getY() + 0.5, placeCone.getHeading());
+		 final Pose2d initialPose = new Pose2d( -37.3, 63.5, Math.toRadians(-90));
+		Pose2d placeCone = new Pose2d(-36.3, 9, Math.toRadians(308.06138282915236));
+		Pose2d goNearScoring1 = new Pose2d(-34.8, 24, Math.toRadians(0));
 
-		Pose2d goNearScoring1 = new Pose2d(-36.0, 18, Math.toRadians(-90));
+		Pose2d placeCone2 = new Pose2d( placeCone.getX() + 1, placeCone.getY() + 2, placeCone.getHeading());
 
-		Pose2d goNearScoring = new Pose2d(-36.0, 18, placeCone.getHeading());
+		Pose2d pickupFull = new Pose2d(-63.3,14.5,Math.toRadians(0));
+		Pose2d pickupPartial = new Pose2d(-50.8, pickupFull.getY(),Math.toRadians(0));
 
-		Pose2d pickupPartial = new Pose2d(-48,12,Math.toRadians(0));
-		Pose2d pickupFull = new Pose2d(-62,12,Math.toRadians(0));
+		Pose2d park_safe = new Pose2d(-38.80741466514628, 18, Math.toRadians(0));
+		Pose2d park = new Pose2d(-14.8,14,Math.toRadians(0));		Pose2d polePosition = new Pose2d(-24,0,0);
+
+		double angleToPole = -Math.atan2(placeCone2.getY()-polePosition.getY(), placeCone2.getX() - polePosition.getX());
 
 		TrajectoryVelocityConstraint slowConstraint = SampleMecanumDrive.getVelocityConstraint(40,Math.toRadians(120),12);
 		TrajectoryAccelerationConstraint slowConstraintAccel = SampleMecanumDrive.getAccelerationConstraint(30);
@@ -45,7 +48,7 @@ public class MeepMeepTesting {
 								.splineToSplineHeading(pickupFull,Math.toRadians(180))
 								.setReversed(false)
 								.splineTo(pickupPartial.vec(),Math.toRadians(0),slowConstraint,slowConstraintAccel)
-								.splineToSplineHeading(placeCone2, 0,slowConstraint,slowConstraintAccel)
+								.splineToSplineHeading(placeCone2, Math.toRadians(315),slowConstraint,slowConstraintAccel)
 								.build()
 
 				);

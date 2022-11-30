@@ -28,7 +28,7 @@ public class BlueRight extends BaseAuto {
 	@Override
 	public Command setupAuto(CommandScheduler scheduler) {
 
-		Pose2d placeCone = new Pose2d( -34.60741466514628, 12, Math.toRadians(308.06138282915236));
+		Pose2d placeCone = new Pose2d( -34.60741466514628 + 1.5, 12 - 1.5, Math.toRadians(308.06138282915236));
 		Pose2d goNearScoring1 = new Pose2d( -32, 24, Math.toRadians(0));
 
 		Pose2d placeCone2 = new Pose2d( placeCone.getX()+2, placeCone.getY() + 1, placeCone.getHeading());
@@ -58,7 +58,7 @@ public class BlueRight extends BaseAuto {
 
 		Trajectory placeConeTrajectory = robot.drivetrain.getBuilder().trajectoryBuilder(pickupFull)
 				.splineTo(pickupPartial.vec(),Math.toRadians(0),slowConstraint,slowConstraintAccel)
-				.splineToSplineHeading(placeCone2, 0,slowConstraint,slowConstraintAccel)
+				.splineToSplineHeading(placeCone2, Math.toRadians(315),slowConstraint,slowConstraintAccel)
 				.build();
 
 		Trajectory goToPark1 = robot.drivetrain.getBuilder().trajectoryBuilder(placeConeTrajectory.end())
