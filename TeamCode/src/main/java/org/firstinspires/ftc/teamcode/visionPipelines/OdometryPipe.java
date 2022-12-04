@@ -1,57 +1,26 @@
 package org.firstinspires.ftc.teamcode.visionPipelines;
-import static org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.getCamHeight;
-import static org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.getCamWidth;
 
 import com.acmerobotics.dashboard.config.Config;
 
+import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
 
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 
 public class OdometryPipe extends OpenCvPipeline {
-
-    static ArrayList<PoleVisual> rawPoles = new ArrayList<PoleVisual>();
-    static ArrayList<MatOfPoint> tempContours = new ArrayList<MatOfPoint>();
-
-    private ArrayList<Mat> matsToRelease = new ArrayList<>();
-
-    static Mat highContrast = new Mat();
-    static Mat singleChannel = new Mat();
-    static Mat mergedChannels = new Mat();
-
-    public static ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+    // MAIN CAM: c922 Pro
 
     @Config
     public static class cv {
-        //        public static double lHSV1 =13;
-//        public static double lHSV2 =0;
-//        public static double lHSV3 =0;
-//
-//        public static double uHSV1 =50;
-//        public static double uHSV2 =255;
-//        public static double uHSV3 =255;
-//
-//        public static double lLAB1 =0;
-//        public static double lLAB2 =99;
-//        public static double lLAB3 =149;
-//
-//        public static double uLAB1 =255;
-//        public static double uLAB2 =169;
-//        public static double uLAB3 =220;
-//
-//        public static double lYCrCb1 =0;
-//        public static double lYCrCb2 =135;
-//        public static double lYCrCb3 =25;
-//
-//        public static double uYCrCb1 =255;
-//        public static double uYCrCb2 =175;
-//        public static double uYCrCb3 =101;
-        // ^ conservative filter
+        public static double region = .333;
+        public static double rho = 9;
+        public static double dyMult = 1;
+        public static double dxMult = 1;
+
         public static double lHSV1 =21;
         public static double lHSV2 =0;
         public static double lHSV3 =0;
@@ -76,177 +45,169 @@ public class OdometryPipe extends OpenCvPipeline {
         public static double uYCrCb2 =175;
         public static double uYCrCb3 =90;
     }
-    //    static Scalar lower1;
-//    static Scalar lower2;
-//    static Scalar lower3;
-//
-//    static Scalar upper1;
-//    static Scalar upper2;
-//    static Scalar upper3;
-    static Scalar lower1 = new Scalar(cv.lHSV1, cv.lHSV2, cv.lHSV3);
-    static Scalar lower2  = new Scalar(cv.lLAB1, cv.lLAB2, cv.lLAB3);
-    static Scalar lower3  = new Scalar(cv.lYCrCb1, cv.lYCrCb2, cv.lYCrCb3);
 
-    static Scalar upper1 = new Scalar(cv.uHSV1, cv.uHSV2, cv.uHSV3);
-    static Scalar upper2 = new Scalar(cv.uLAB1, cv.uLAB2, cv.uLAB3);
-    static Scalar upper3 = new Scalar(cv.uYCrCb1, cv.uYCrCb2, cv.uYCrCb3);
+    Scalar lower1;// = new Scalar(cv.lHSV1, cv.lHSV2, cv.lHSV3);
+    Scalar lower2;//  = new Scalar(cv.lLAB1, cv.lLAB2, cv.lLAB3);
+    Scalar lower3;//  = new Scalar(cv.lYCrCb1, cv.lYCrCb2, cv.lYCrCb3);
 
-    private static final Mat primary = new Mat(); //hsv
-    private static final Mat secondary = new Mat(); //LAB
-    private static final Mat tertiary = new Mat(); //Ycrcb
+    Scalar upper1;// = new Scalar(cv.uHSV1, cv.uHSV2, cv.uHSV3);
+    Scalar upper2;// = new Scalar(cv.uLAB1, cv.uLAB2, cv.uLAB3);
+    Scalar upper3;// = new Scalar(cv.uYCrCb1, cv.uYCrCb2, cv.uYCrCb3);
 
-    private static final Mat mask1= new Mat();
-    private static final Mat mask2 = new Mat();
-    private static final Mat mask3 = new Mat();
-    private static final Mat masked = new Mat();
-    private static final Mat yellowHierarchy = new Mat();
+    final Size minSize= new Size(20,50);
+    final int poleAreaMin = 400;
+    final double poleMin = 0;
+    final double poleMax = .5;
 
-    private static final ArrayList<Mat> splitChannels=new ArrayList<>(3);
+    ArrayList<MatOfPoint> contours;
 
-    private static final Size minSize= new Size(20,50);
-    private static final int poleAreaMin = 400;
-    private static final double poleMin = 0;
-    private static final double poleMax = .5;
+    Mat primary; //hsv
+    Mat secondary; //LAB
+    Mat tertiary; //Ycrcb
 
-    static MatOfPoint2f tempContour2f;
-    static double tempArea;
-    static double tempPerimeter;
-    static double tempRatio;
-    static Size tempPos;
-    static double switchingDim;
+    Mat mask1;
+    Mat mask2;
+    Mat mask3;
+    Mat masked;
+    Mat hierarchy;
 
-    static double verticalAngle;
-    static RotatedRect angledR;
-    static Size size;
+    Mat highContrast;
+    Mat singleChannel;
+    Mat mergedChannels;
+    ArrayList<Mat> splitChannels;
 
-    static boolean top;
-    static boolean bottom;
-    static boolean left;
-    static boolean right;
-    static Touching touching;
-    static double nearest90;
+    ArrayList<MonocularPole> rawPoles;
+    Cam cam;
+    Mat frame;
+    Mat undistorted;
+    Mat roi;
+    Mat out=new Mat();
+    double region;
+    double rho;
+    double dyMult;
+    double dxMult;
+    double pixPerRad;
 
-    static boolean isDraw=false;
-    static ArrayList<MatOfPoint> toDraw = new ArrayList<MatOfPoint>();
+    public OdometryPipe(Cam cam) {
+        this.cam = cam;
+        this.frame=new Mat();
+        this.undistorted=new Mat();
+        this.roi=new Mat();
+        this.rho=cv.rho;
+        this.dyMult=cv.dyMult;
+        this.dxMult=cv.dxMult;
+        this.lower1 = new Scalar(cv.lHSV1, cv.lHSV2, cv.lHSV3);
+        this.lower2  = new Scalar(cv.lLAB1, cv.lLAB2, cv.lLAB3);
+        this.lower3  = new Scalar(cv.lYCrCb1, cv.lYCrCb2, cv.lYCrCb3);
+        this.upper1 = new Scalar(cv.uHSV1, cv.uHSV2, cv.uHSV3);
+        this.upper2 = new Scalar(cv.uLAB1, cv.uLAB2, cv.uLAB3);
+        this.upper3 = new Scalar(cv.uYCrCb1, cv.uYCrCb2, cv.uYCrCb3);
+//        this.updateFilters();
 
-    private static ArrayList<PoleVisual> tempRawPoleList = new ArrayList<PoleVisual>();
-
-    public OdometryPipe() { }
-
-    public static void draw(ArrayList<MatOfPoint> cnts) {
-        isDraw=true;
-        toDraw=cnts;
+        this.contours = new ArrayList<MatOfPoint>();
+        this.rawPoles = new ArrayList<MonocularPole>();
+        this.hierarchy = new Mat();
+        this.singleChannel=new Mat();
+        this.mergedChannels=new Mat();
+        this.highContrast=new Mat();
+        this.splitChannels=new ArrayList<>(3);
+        this.primary=new Mat();
+        this.secondary=new Mat();
+        this.tertiary=new Mat();
+        this.mask1=new Mat();
+        this.mask2=new Mat();
+        this.mask3=new Mat();
+        this.masked=new Mat();
     }
-    public static ArrayList<PoleVisual> getPoles(){
-        return rawPoles;
-    }
 
-    static ArrayList<PoleVisual> filterpoles(ArrayList<MatOfPoint> poleContours) {
-        tempRawPoleList.clear();
-        for (int i = 0; i < poleContours.size(); i++) {
-            tempContour2f = new MatOfPoint2f(poleContours.get(i).toArray());
-            angledR = Imgproc.minAreaRect(tempContour2f);
-            tempPos = new Size(angledR.center.x - getCamWidth()/2, angledR.center.y);
-            size = angledR.size;
-            verticalAngle = angledR.angle;
-
-            nearest90 = Math.round(verticalAngle / 45) * 45;
-            verticalAngle -= nearest90;
-
+    private void filterPoles() {
+        for (int i = 0; i < this.contours.size(); i++) {
+            MatOfPoint2f contour2f = new MatOfPoint2f(this.contours.get(i).toArray());
+            RotatedRect angledR = Imgproc.minAreaRect(contour2f);
+            Size pos = new Size(angledR.center.x - this.cam.res.width/2, angledR.center.y);
+            Size size = angledR.size;
+            angledR.angle-= Math.round(angledR.angle / 45) * 45;
             if (size.width>size.height) { // make sure orientation is right
-                switchingDim=size.width;
+                double switchingDim=size.width;
                 size.width=size.height;
                 size.height=switchingDim;
             }
-            tempArea = size.area();
-            tempPerimeter = Imgproc.arcLength(tempContour2f, true);
-            tempRatio = tempArea / Math.pow(tempPerimeter, 2);
-
-            if (tempPos.height + size.height > getCamHeight() - 5) { top = true; }
-            else { top = false; }
-            if (tempPos.height - size.height > 5) { bottom = true; }
-            else { bottom = false; }
-            if (tempPos.width - size.width > 5) { left = true; }
-            else { left = false; }
-            if (tempPos.width + size.width > getCamWidth() - 5) { right = true; }
-            else { right = false; }
-            touching=new Touching(top,bottom,left,right);
-
+            double tempArea = size.area();
+            double tempPerimeter = Imgproc.arcLength(contour2f, true);
+            double tempRatio = tempArea / Math.pow(tempPerimeter, 2);
+            Touching touching=new Touching(pos.height + size.height > this.cam.res.height - 5,pos.height - size.height > 5,pos.width - size.width > 5,pos.width + size.width > this.cam.res.width - 5);
             if (tempArea >= poleAreaMin && Math.abs(tempRatio) <= poleMax && Math.abs(tempRatio) >= poleMin && size.width >= minSize.width && size.height >= minSize.height && size.height > 2 * size.width && !touching.horizontal){
-                tempRawPoleList.add(new PoleVisual(tempPos, size, tempPerimeter, tempRatio, verticalAngle, poleContours.get(i),true, touching));
-                tempContours.add(poleContours.get(i));
+                Imgproc.drawContours(this.frame, contours,i, new Scalar(0, 0, 255), -1,1,hierarchy,0,new Point(0,this.cam.res.height * this.region));
+                double bearing = Math.toRadians(66) *  pos.width / this.cam.res.width;
+                double occupiedFOV = Math.toRadians(66) * size.width / this.cam.res.width;
+                double dEstimate = .5/Math.tan(occupiedFOV/2);
+                double dxEstimate = Math.copySign(Math.sin(bearing) * dEstimate, pos.width) * this.dxMult;
+                double dyEstimate = Math.cos(bearing) * dEstimate * this.dyMult;
+                Size poleEstimate= new Size(dxEstimate,dyEstimate);
+                this.rawPoles.add(new MonocularPole(pos, size, angledR,this.contours.get(i),poleEstimate));
+                Imgproc.putText(this.frame, String.valueOf(new Size(Math.round(dxEstimate),Math.round(dyEstimate))), new Point(angledR.center.x, angledR.center.y), Imgproc.FONT_HERSHEY_SIMPLEX, 1, new Scalar(255, 100, 0), 2);
             }
         }
-        return tempRawPoleList;
+        this.cam.detectedPoles=this.rawPoles;
+        this.rawPoles.clear();
+        this.contours.clear();
     }
-
-    private static Mat upContrast(Mat theInput){
-        splitChannels.clear();
-        Imgproc.cvtColor(theInput, highContrast, Imgproc.COLOR_RGB2YUV);
-        Core.split(highContrast, splitChannels);
-        Imgproc.equalizeHist(splitChannels.get(0),singleChannel);
-        splitChannels.set(0, singleChannel);
-        Core.merge(splitChannels,mergedChannels);
-        Imgproc.cvtColor(mergedChannels, highContrast, Imgproc.COLOR_YUV2RGB);
-        return highContrast;
+    private void upContrast(){
+        this.splitChannels.clear();
+        Imgproc.cvtColor(this.frame, this.highContrast, Imgproc.COLOR_RGB2YUV);
+        Core.split(this.highContrast, this.splitChannels);
+        Imgproc.equalizeHist(this.splitChannels.get(0),this.singleChannel);
+        splitChannels.set(0, this.singleChannel);
+        Core.merge(this.splitChannels,this.mergedChannels);
+        Imgproc.cvtColor(this.mergedChannels, this.frame, Imgproc.COLOR_YUV2RGB);
     }
-
+    private void updateFilters() {
+        this.lower1 = new Scalar(cv.lHSV1, cv.lHSV2, cv.lHSV3);
+        this.lower2  = new Scalar(cv.lLAB1, cv.lLAB2, cv.lLAB3);
+        this.lower3  = new Scalar(cv.lYCrCb1, cv.lYCrCb2, cv.lYCrCb3);
+        this.upper1 = new Scalar(cv.uHSV1, cv.uHSV2, cv.uHSV3);
+        this.upper2 = new Scalar(cv.uLAB1, cv.uLAB2, cv.uLAB3);
+        this.upper3 = new Scalar(cv.uYCrCb1, cv.uYCrCb2, cv.uYCrCb3);
+        this.region=cv.region;
+        this.rho=cv.rho;
+        this.dxMult=cv.dxMult;
+        this.dyMult=cv.dyMult;
+    }
+    private void mask() {
+        Imgproc.cvtColor(this.frame, this.primary, Imgproc.COLOR_RGB2HSV_FULL);
+        Imgproc.cvtColor(this.frame, this.secondary, Imgproc.COLOR_RGB2Lab);
+        Imgproc.cvtColor(this.frame, this.tertiary, Imgproc.COLOR_RGB2YCrCb);
+        Core.inRange(this.primary, this.lower1, this.upper1, this.mask1);
+        Core.inRange(this.secondary, this.lower2, this.upper2, this.mask2);
+        Core.inRange(this.tertiary, this.lower3, this.upper3, this.mask3);
+        Core.bitwise_and(this.mask1, this.mask2, this.masked);
+        Core.bitwise_and(this.mask3, this.masked, this.masked);
+        this.masked=masked.submat((int) Math.round(this.cam.res.height * this.region),(int) Math.round(this.cam.res.height * this.region * 2),0,(int) this.cam.res.width);
+    }
+    private void markings() {
+        Imgproc.line(this.frame, new Point(cv.rho, this.cam.res.height/2 + 25), new Point(cv.rho, this.cam.res.height/2 -25), new Scalar(0, 255, 100), 2);
+        Imgproc.line(this.frame, new Point(this.cam.res.width/2 + this.pixPerRad * Math.toRadians(30), this.cam.res.height/2 + 5), new Point(this.cam.res.width/2 + this.pixPerRad * Math.toRadians(30), this.cam.res.height/2 -5), new Scalar(0, 255, 100), 2);
+        Imgproc.line(this.frame, new Point(this.cam.res.width/2 - this.pixPerRad * Math.toRadians(30), this.cam.res.height/2 + 5), new Point(this.cam.res.width/2 - this.pixPerRad * Math.toRadians(30), this.cam.res.height/2 -5), new Scalar(0, 255, 100), 2);
+        Imgproc.line(this.frame, new Point(this.cam.res.width/2, this.cam.res.height/2 + 15), new Point(this.cam.res.width/2, this.cam.res.height/2 -15), new Scalar(0, 255, 100), 2);
+    }
     @Override
     public Mat processFrame(Mat input) {
-        lower1 = new Scalar(cv.lHSV1, cv.lHSV2, cv.lHSV3);
-        upper1 = new Scalar(cv.uHSV1, cv.uHSV2, cv.uHSV3);
-
-        lower2  = new Scalar(cv.lLAB1, cv.lLAB2, cv.lLAB3);
-        upper2 = new Scalar(cv.uLAB1, cv.uLAB2, cv.uLAB3);
-
-        lower3  = new Scalar(cv.lYCrCb1, cv.lYCrCb2, cv.lYCrCb3);
-        upper3 = new Scalar(cv.uYCrCb1, cv.uYCrCb2, cv.uYCrCb3);
-
-//        Photo.fastNlMeansDenoisingColored(input,input);
-//        Photo.detailEnhance(input,input);
-//        Photo.edgePreservingFilter(input,input);
-//        Imgproc.Canny();
-
-        input = upContrast(input);
-
-        Imgproc.cvtColor(input, primary, Imgproc.COLOR_RGB2HSV_FULL);
-        Imgproc.cvtColor(input, secondary, Imgproc.COLOR_RGB2Lab);
-        Imgproc.cvtColor(input, tertiary, Imgproc.COLOR_RGB2YCrCb);
-
-
-        Core.inRange(primary, lower1, upper1, mask1);
-        Core.inRange(secondary, lower2, upper2, mask2);
-        Core.inRange(tertiary, lower3, upper3, mask3);
-
-        Core.bitwise_and(mask1, mask2, masked);
-        Core.bitwise_and(mask3, masked, masked);
-
-
-        Imgproc.findContours(masked, contours, yellowHierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
-
-        Imgproc.drawContours(input,contours,-1, new Scalar(255, 0, 0), -1);
-
-        rawPoles.clear();
-        rawPoles = filterpoles(contours);
-
-        Imgproc.drawContours(input,tempContours,-1, new Scalar(0, 0, 255), -1);
-
-        if (isDraw) {
-            Imgproc.drawContours(input,toDraw,-1, new Scalar(0, 255, 0), -1);
-            toDraw.clear();
-            isDraw=false;
-        }
-
-        tempContours.clear();
-        contours.clear();
-        roundupMemory(primary,secondary,tertiary,mask1,mask2,mask3,masked,yellowHierarchy,highContrast,singleChannel,mergedChannels);
-        return input;
+        this.updateFilters();
+        this.pixPerRad= (this.cam.res.width - this.rho*2) / Math.toRadians(this.cam.FOV);
+        this.frame=input;
+        input.release();
+        Calib3d.undistort(input, this.undistorted,this.cam.newCamMat, this.cam.dists);
+        Imgproc.cvtColor(this.undistorted,this.undistorted,Imgproc.COLOR_BGRA2BGR);
+        Imgproc.bilateralFilter(this.undistorted, this.frame, 10, 250, 50,Core.BORDER_DEFAULT);
+        this.upContrast();
+        this.mask();
+        this.markings();
+        Imgproc.findContours(this.masked, this.contours, this.hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.drawContours(this.frame,this.contours,-1, new Scalar(255, 0, 0), -1,1,hierarchy,0,new Point(0,this.cam.res.height * this.region));
+        this.filterPoles();
+        this.frame.copyTo(out);
+        return out;
     }
-    public void roundupMemory(Mat... Mats) {
-        matsToRelease.clear();
-        matsToRelease.addAll(Arrays.asList(Mats));
-    }
-
 
 }
 

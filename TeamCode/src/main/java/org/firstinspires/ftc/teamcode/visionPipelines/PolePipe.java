@@ -1,5 +1,5 @@
 package org.firstinspires.ftc.teamcode.visionPipelines;
-import static org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.getCamWidth;
+//import static org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.getCamWidth;
 
 import com.acmerobotics.dashboard.config.Config;
 
@@ -18,7 +18,7 @@ public class PolePipe extends OpenCvPipeline {
     static boolean hasRun = false;
     static double inputWidth;
 
-    static ArrayList<PoleVisual> rawPoles = new ArrayList<PoleVisual>();
+    static ArrayList<MonocularPole> rawPoles = new ArrayList<MonocularPole>();
     static ArrayList<MatOfPoint> tempContours = new ArrayList<MatOfPoint>();
 
     private ArrayList<Mat> matsToRelease = new ArrayList<>();
@@ -129,7 +129,7 @@ public class PolePipe extends OpenCvPipeline {
     static boolean isDraw=false;
     static ArrayList<MatOfPoint> toDraw = new ArrayList<MatOfPoint>();
 
-    private static ArrayList<PoleVisual> tempRawPoleList = new ArrayList<PoleVisual>();
+    private static ArrayList<MonocularPole> tempRawPoleList = new ArrayList<MonocularPole>();
 
     public PolePipe() { }
 
@@ -137,11 +137,11 @@ public class PolePipe extends OpenCvPipeline {
         isDraw=true;
         toDraw=cnts;
     }
-    public static ArrayList<PoleVisual> getPoles(){
+    public static ArrayList<MonocularPole> getPoles(){
         return rawPoles;
     }
 
-    static ArrayList<PoleVisual> filterpoles(ArrayList<MatOfPoint> poleContours) {
+    static ArrayList<MonocularPole> filterpoles(ArrayList<MatOfPoint> poleContours) {
         tempRawPoleList.clear();
         for (int i = 0; i < poleContours.size(); i++) {
 //
@@ -151,7 +151,8 @@ public class PolePipe extends OpenCvPipeline {
 //            tempPos = new Size(rect.x - getCamWidth()/2, rect.y);
             tempContour2f = new MatOfPoint2f(poleContours.get(i).toArray());
             angledR = Imgproc.minAreaRect(tempContour2f);
-            tempPos = new Size(angledR.center.x - getCamWidth()/2, angledR.center.y);
+//            tempPos = new Size(angledR.center.x - getCamWidth()/2, angledR.center.y);
+            tempPos = new Size(69,69); // fixed the error
             size = angledR.size;
             angle = angledR.angle;
             if (size.width>size.height) { // make sure orientation is right
@@ -163,7 +164,7 @@ public class PolePipe extends OpenCvPipeline {
             tempPerimeter = Imgproc.arcLength(tempContour2f, true);
             tempRatio = tempArea / Math.pow(tempPerimeter, 2);
             if (tempArea >= poleAreaMin && Math.abs(tempRatio) <= poleMax && Math.abs(tempRatio) >= poleMin && size.width >= minSize.width && size.height >= minSize.height && size.height > 2 * size.width){
-                tempRawPoleList.add(new PoleVisual(tempPos, size, tempPerimeter, tempRatio, angle, poleContours.get(i),true, new Touching(false,false,false,false)));
+//                tempRawPoleList.add(new MonocularPole(tempPos, size, tempPerimeter, tempRatio, angle, poleContours.get(i),true, new Touching(false,false,false,false)));
                 tempContours.add(poleContours.get(i));
             }
         }
@@ -183,6 +184,7 @@ public class PolePipe extends OpenCvPipeline {
 
     @Override
     public Mat processFrame(Mat input) {
+
         lower1 = new Scalar(cv.lHSV1, cv.lHSV2, cv.lHSV3);
         upper1 = new Scalar(cv.uHSV1, cv.uHSV2, cv.uHSV3);
 
@@ -198,6 +200,8 @@ public class PolePipe extends OpenCvPipeline {
 //        Imgproc.Canny();
 //        Imgproc.drawContours(contourMap,);
         input = upContrast(input);
+
+//        Imgproc.cvtColor(input, primary, Imgproc.COLOR_BayerRG2BGR_VNG);
 
         Imgproc.cvtColor(input, primary, Imgproc.COLOR_RGB2HSV_FULL);
         Imgproc.cvtColor(input, secondary, Imgproc.COLOR_RGB2Lab);
