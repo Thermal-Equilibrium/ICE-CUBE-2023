@@ -1,10 +1,5 @@
 package org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands;
 
-import static org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.getFrameCount;
-import static org.firstinspires.ftc.teamcode.visionPipelines.ObjectProc.getBestPole;
-import static org.firstinspires.ftc.teamcode.visionPipelines.ObjectProc.getPoleAt;
-import static org.firstinspires.ftc.teamcode.visionPipelines.PolePipe.getPoles;
-
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
@@ -23,7 +18,7 @@ import org.firstinspires.ftc.teamcode.Math.TheArcaneConceptThatIsTurningInPlace.
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.DistanceSensor;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Drivetrain;
-import org.firstinspires.ftc.teamcode.visionPipelines.PoleVisual;
+import org.firstinspires.ftc.teamcode.visionPipelines.MonocularPole;
 
 import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
@@ -53,7 +48,7 @@ public class PoleApproach2 extends Command {
     AngleController turnControlWrapped;
 
     boolean isComplete = false;
-    PoleVisual theRawPole;
+    MonocularPole theRawPole;
 
     Drivetrain drivetrain;
 
@@ -70,7 +65,7 @@ public class PoleApproach2 extends Command {
     double currentVisionFrame;
     double lastVisionFrame;
 
-    ArrayList<PoleVisual> rawPoles = new ArrayList<PoleVisual>();
+    ArrayList<MonocularPole> rawPoles = new ArrayList<MonocularPole>();
 
     boolean locked;
 
@@ -149,83 +144,83 @@ public class PoleApproach2 extends Command {
 
     @Override
     public void periodic() {
-        currentVisionFrame=getFrameCount();
-        if (currentVisionFrame>lastVisionFrame){ // make sure it isn't processing the same thing multiple times
-
-            rawPoles = getPoles();
-
-            if (locked) { theRawPole = getPoleAt(rawPoles, expectedHeading, posMaxDeviation); }
-            else { theRawPole =getBestPole(rawPoles); }
-
-            if (theRawPole.isReal) { locked = true; framesSincePole=0; }
-            else { framesSincePole++; }
-
-            if (framesSincePole >= loseLockFrames) { locked = false; }
-
-            if (theRawPole.isReal && !(drivetrain.getVelocity().getHeading() < Math.toRadians(5))) {
-
-                targetHeading = new Heading(drivetrain.getPose(), theRawPole.angle, true);
-
-
-                distanceRaw = theRawPole.distance;
-                distance = distanceFilter.estimate(distanceRaw);
-                currentDistance = distance;
-
-                Dashboard.packet.put("distanceRaw",distanceRaw);
-                Dashboard.packet.put("distance",distance);
-                Dashboard.packet.put("Ratio", theRawPole.ratio);
-                Dashboard.packet.put("posX", theRawPole.pos.width);
-                Dashboard.packet.put("posY", theRawPole.pos.height);
-                Dashboard.packet.put("Target Heading (RR)",targetHeading.asRR());
-                Dashboard.packet.put("Target Heading (RF)",targetHeading.asFR());
-
-                Dashboard.packet.put("Complete (Heading)",Math.abs(targetHeading.asRR()) - maxApproachError);
-                Dashboard.packet.put("Complete (Distance)",Math.abs(distanceError) - error_tolerance);
-                Dashboard.packet.put("Current Heading error (deg)",Math.toDegrees(targetHeading.asRR()));
-
-
-                if (Math.abs(targetHeading.asRR()) < maxApproachError && currentDistance < 40) {
-                    //approach();
-                } //!(distanceSensor.getDistance_in() > 100)
-                else {
-                    Dashboard.packet.put("Target Heading (RR)",targetHeading.asRR());
-                    Dashboard.packet.put("Target Heading (FR)",targetHeading.asFR());
-//                    if (Math.abs(targetHeading.asRR())<.1) { pixelTurn(); }
-//                    else { turn(); }
-
-//                    pixelTurn();
-                }
-
-                turn();
-
-                isComplete = Math.abs(targetHeading.asRR()) < maxFinalTurnError && Math.abs(drivetrain.getVelocity().getHeading()) < Math.toRadians(3) && Math.abs(distanceError) < error_tolerance;
-            }
-            else {
-                if (locked) {
-                    turnBlind();
-
-                    //drivetrain.robotRelative(new Pose2d(0,0,0));
-
-                }
-                else {
-                    drivetrain.robotRelative(new Pose2d(0,0,0));
-
-                }
-
-
-
-            }
-        }
-
-        Dashboard.packet.put("Locked",locked);
-        if (theRawPole != null) {
-            Dashboard.packet.put("Isreal?", theRawPole.isReal);
-        }
-
-        Dashboard.packet.put("Heading Speed",drivetrain.getVelocity().getHeading());
-        Dashboard.packet.put("Complete (Velocity Heading)",Math.abs(drivetrain.getVelocity().getHeading()) - Math.toRadians(6));
-
-        lastVisionFrame=currentVisionFrame;
+//        currentVisionFrame=getFrameCount();
+//        if (currentVisionFrame>lastVisionFrame){ // make sure it isn't processing the same thing multiple times
+//
+//            rawPoles = getPoles();
+//
+//            if (locked) { theRawPole = getPoleAt(rawPoles, expectedHeading, posMaxDeviation); }
+//            else { theRawPole =getBestPole(rawPoles); }
+//
+//            if (theRawPole.isReal) { locked = true; framesSincePole=0; }
+//            else { framesSincePole++; }
+//
+//            if (framesSincePole >= loseLockFrames) { locked = false; }
+//
+//            if (theRawPole.isReal && !(drivetrain.getVelocity().getHeading() < Math.toRadians(5))) {
+//
+//                targetHeading = new Heading(drivetrain.getPose(), theRawPole.angle, true);
+//
+//
+//                distanceRaw = theRawPole.distance;
+//                distance = distanceFilter.estimate(distanceRaw);
+//                currentDistance = distance;
+//
+//                Dashboard.packet.put("distanceRaw",distanceRaw);
+//                Dashboard.packet.put("distance",distance);
+//                Dashboard.packet.put("Ratio", theRawPole.ratio);
+//                Dashboard.packet.put("posX", theRawPole.pos.width);
+//                Dashboard.packet.put("posY", theRawPole.pos.height);
+//                Dashboard.packet.put("Target Heading (RR)",targetHeading.asRR());
+//                Dashboard.packet.put("Target Heading (RF)",targetHeading.asFR());
+//
+//                Dashboard.packet.put("Complete (Heading)",Math.abs(targetHeading.asRR()) - maxApproachError);
+//                Dashboard.packet.put("Complete (Distance)",Math.abs(distanceError) - error_tolerance);
+//                Dashboard.packet.put("Current Heading error (deg)",Math.toDegrees(targetHeading.asRR()));
+//
+//
+//                if (Math.abs(targetHeading.asRR()) < maxApproachError && currentDistance < 40) {
+//                    //approach();
+//                } //!(distanceSensor.getDistance_in() > 100)
+//                else {
+//                    Dashboard.packet.put("Target Heading (RR)",targetHeading.asRR());
+//                    Dashboard.packet.put("Target Heading (FR)",targetHeading.asFR());
+////                    if (Math.abs(targetHeading.asRR())<.1) { pixelTurn(); }
+////                    else { turn(); }
+//
+////                    pixelTurn();
+//                }
+//
+//                turn();
+//
+//                isComplete = Math.abs(targetHeading.asRR()) < maxFinalTurnError && Math.abs(drivetrain.getVelocity().getHeading()) < Math.toRadians(3) && Math.abs(distanceError) < error_tolerance;
+//            }
+//            else {
+//                if (locked) {
+//                    turnBlind();
+//
+//                    //drivetrain.robotRelative(new Pose2d(0,0,0));
+//
+//                }
+//                else {
+//                    drivetrain.robotRelative(new Pose2d(0,0,0));
+//
+//                }
+//
+//
+//
+//            }
+//        }
+//
+//        Dashboard.packet.put("Locked",locked);
+//        if (theRawPole != null) {
+//            Dashboard.packet.put("Isreal?", theRawPole.isReal);
+//        }
+//
+//        Dashboard.packet.put("Heading Speed",drivetrain.getVelocity().getHeading());
+//        Dashboard.packet.put("Complete (Velocity Heading)",Math.abs(drivetrain.getVelocity().getHeading()) - Math.toRadians(6));
+//
+//        lastVisionFrame=currentVisionFrame;
     }
 
     @Override
