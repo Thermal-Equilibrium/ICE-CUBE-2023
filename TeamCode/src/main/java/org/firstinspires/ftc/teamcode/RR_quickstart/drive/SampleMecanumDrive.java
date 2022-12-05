@@ -54,8 +54,8 @@ import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    static double translation_kp = 10;
-    static double rotation_Kp = 4;
+    static double translation_kp = 12;
+    static double rotation_Kp = 4.3;
     public static PIDCoefficients TRANSLATIONAL_PID;
 
     static {

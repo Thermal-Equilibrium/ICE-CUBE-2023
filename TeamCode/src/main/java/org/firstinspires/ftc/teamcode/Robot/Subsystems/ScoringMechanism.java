@@ -32,7 +32,7 @@ public class ScoringMechanism extends Subsystem {
     public static double WRIST_COLLECT_SHORT = 0;
     public static double WRIST_STOW = 1;
     public static double WRIST_CARRY_SHORT = 0;
-    public static double WRIST_DEPOSIT_LONG = 0.95;
+    public static double WRIST_DEPOSIT_LONG = 1;
 
     public static double ARM_IN_COLLECT = 0;
     public static double ARM_CARRY = 0.1;
@@ -48,9 +48,9 @@ public class ScoringMechanism extends Subsystem {
     public static double OUT_TAKE = -INTAKE_SPEED;
 
     public static double SLIDES_IN = 0;
-    public static double SLIDES_HIGH = 17.2;
-    public static double SLIDES_MID = 8;
-    public static double SLIDES_LOW = 8;
+    public static double SLIDES_HIGH = 16.2;
+    public static double SLIDES_MID = 7;
+    public static double SLIDES_LOW = 7;
     public static double SLIDES_SAFE_FOR_STACK = 5;
 
     protected double currentWristPos = WRIST_STOW;
@@ -75,8 +75,8 @@ public class ScoringMechanism extends Subsystem {
 
     ElapsedTime slide_profile_timer = new ElapsedTime();
 
-    public MotionConstraint slide_constraints_up = new MotionConstraint(75,30,60);
-    public MotionConstraint slide_constraints_down = new MotionConstraint(50,30,30);
+    public MotionConstraint slide_constraints_up = new MotionConstraint(75,30,80);
+    public MotionConstraint slide_constraints_down = new MotionConstraint(50,30,40);
 
     //protected AsymmetricMotionProfile profile_slides = new AsymmetricMotionProfile(0,0,slide_constraints);
     MotionProfile profile_slides = MotionProfileGenerator.generateSimpleMotionProfile(
@@ -115,7 +115,7 @@ public class ScoringMechanism extends Subsystem {
         slideLeft = hwMap.get(DcMotorEx.class, "left_lift");
         slideRight = hwMap.get(DcMotorEx.class, "right_lift");
         slideRight.setDirection(DcMotorSimple.Direction.FORWARD);
-        slideLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        slideLeft.setDirection(DcMotorSimple.Direction.FORWARD);
 
         double velocityForward = 0.9; //percent/s
         double accelForward = 1.5; // percent/s^2
@@ -205,7 +205,7 @@ public class ScoringMechanism extends Subsystem {
             case GO_TO_MID:
             case GO_TO_LOW:
                 commandActuatorSetpoints(WRIST_DEPOSIT_LONG,ARM_IN_COLLECT,getDesiredHeight(desiredEnd),INTAKE_SPEED_HOLD);
-                if (getSlideHeightIN() > CUTOFF_POINT) {
+                if (getSlideHeightIN() > 1) {
                     state = desiredEnd;
                     should_traverse = false;
                 }

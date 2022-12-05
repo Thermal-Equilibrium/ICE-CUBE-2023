@@ -28,16 +28,16 @@ public class BlueRight extends BaseAuto {
 	@Override
 	public Command setupAuto(CommandScheduler scheduler) {
 
-		Pose2d placeCone = new Pose2d( -34.60741466514628 + 1.5, 12 - 1.5, Math.toRadians(308.06138282915236));
+		Pose2d placeCone = new Pose2d(-30.60741466514628, 9.5, Math.toRadians(308.06138282915236));
 		Pose2d goNearScoring1 = new Pose2d( -32, 24, Math.toRadians(0));
 
-		Pose2d placeCone2 = new Pose2d( placeCone.getX()+2, placeCone.getY() + 1.8, placeCone.getHeading());
+		Pose2d placeCone2 = new Pose2d(-29.60741466514628, 10, placeCone.getHeading());
 
-		Pose2d pickupFull = new Pose2d(-62,14.5,Math.toRadians(0));
+		Pose2d pickupFull = new Pose2d(-61.5,14.5,Math.toRadians(0));
 		Pose2d pickupPartial = new Pose2d(-48, pickupFull.getY(),Math.toRadians(0));
 
 		Pose2d park_safe = new Pose2d(-36.60741466514628, 18, Math.toRadians(0));
-		Pose2d park = new Pose2d(-12,14,Math.toRadians(0));
+		Pose2d park = new Pose2d(-9,14,Math.toRadians(0));
 
 		TrajectoryVelocityConstraint slowConstraint = SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL / 1.5, Math.toRadians(80),DriveConstants.TRACK_WIDTH);
 		TrajectoryAccelerationConstraint slowConstraintAccel = SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL / 1.5);
@@ -74,7 +74,7 @@ public class BlueRight extends BaseAuto {
 
 		double depositDelayS = 0.6;
 
-		double depositUpDelayS = 0.9;
+		double depositUpDelayS = 0.4;
 
 
 		return multiCommand(new GoToSafeHeight(robot.scoringMechanism),followRR(goToConePlacingFirst))
