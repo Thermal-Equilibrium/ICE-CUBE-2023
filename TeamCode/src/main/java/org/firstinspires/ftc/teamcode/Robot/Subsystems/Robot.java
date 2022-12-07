@@ -20,7 +20,7 @@ public class Robot {
 	public Drivetrain drivetrain = new Drivetrain();
 	//public PoleDetectionSubsystem detectionSubsystem = new PoleDetectionSubsystem(dashboard);
 	public ScoringMechanism scoringMechanism = new ScoringMechanism();
-	public DistanceSensor distanceSensor = new DistanceSensor();
+	public DistanceSensor distanceSensor = new DistanceSensor(drivetrain);
 	public FieldMap field = new FieldMap();
 	public Vision vision = new Vision(drivetrain);
 
@@ -30,7 +30,7 @@ public class Robot {
 	protected CommandScheduler scheduler;
 
 	public Robot(HardwareMap hwMap, OpMode opMode, Gamepad gamepad1, Gamepad gamepad2) {
-		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard, scoringMechanism, distanceSensor, vision, field);//detectionSubsystem,visualOdometry
+		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard, scoringMechanism, distanceSensor, field);//detectionSubsystem,visualOdometry
 		this.gamepad1 = new Input(gamepad1, scheduler);
 		this.gamepad2 = new Input(gamepad2, scheduler);
 

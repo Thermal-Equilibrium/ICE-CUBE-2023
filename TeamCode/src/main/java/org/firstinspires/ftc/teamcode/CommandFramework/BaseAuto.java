@@ -13,6 +13,8 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Ultimate
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.DelayedCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
+import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.RelocalizeRobotFromPole;
+import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.SetPoleContext;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.ActivateIntakeAuto;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.DepositAuto;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.GoToSafeHeight;
@@ -82,6 +84,14 @@ public abstract class BaseAuto extends LinearOpMode {
 
 	public GoToSafeHeight pregameScoring() {
 		return new GoToSafeHeight(robot.scoringMechanism);
+	}
+
+	public RelocalizeRobotFromPole relocalizeRobot() {
+		return new RelocalizeRobotFromPole(robot.distanceSensor);
+	}
+
+	public SetPoleContext getPoleContextualPosition() {
+		return new SetPoleContext(robot.distanceSensor);
 	}
 
 	public void setRobotPosition() {

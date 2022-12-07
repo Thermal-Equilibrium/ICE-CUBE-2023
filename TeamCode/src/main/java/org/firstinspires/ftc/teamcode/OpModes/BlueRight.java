@@ -28,11 +28,11 @@ public class BlueRight extends BaseAuto {
 	@Override
 	public Command setupAuto(CommandScheduler scheduler) {
 
-		Pose2d placeCone = new Pose2d(-30.60741466514628, 9.5, Math.toRadians(308.06138282915236));
+		Pose2d placeCone = new Pose2d(-31.60741466514628, 10.5, Math.toRadians(308.06138282915236));
 		Pose2d goNearScoring1 = new Pose2d( -32, 24, Math.toRadians(0));
 
-		Pose2d placeCone2 = new Pose2d(-29.60741466514628, 10, placeCone.getHeading());
-
+		//Pose2d placeCone2 = new Pose2d(-29.60741466514628, 10, placeCone.getHeading());
+		Pose2d placeCone2 = placeCone;
 		Pose2d pickupFull = new Pose2d(-61.5,14.5,Math.toRadians(0));
 		Pose2d pickupPartial = new Pose2d(-48, pickupFull.getY(),Math.toRadians(0));
 
@@ -79,28 +79,26 @@ public class BlueRight extends BaseAuto {
 
 		return multiCommand(new GoToSafeHeight(robot.scoringMechanism),followRR(goToConePlacingFirst))
 				.addNext(goToScore())
+				.addNext(getPoleContextualPosition()) // yeah
 				.addNext(deposit())
 				.addNext(wait(depositDelayS))
 				// go pickup and place second cone (first of stack)
 				.addNext(followRR(pickupConeFIRST))
 				.addNext(intake())
-//				.addNext(followRR(placeConeTrajectory))
-//				.addNext(goToScore())
 				.addNext(multiCommand(followRR(placeConeTrajectory), delayCommand(depositUpDelayS, goToScore())))
+				.addNext(relocalizeRobot())
 				.addNext(deposit())
+
 				.addNext(wait(depositDelayS))
 				// go pickup and place third cone
 				.addNext(followRR(pickupCone))
 				.addNext(intake())
 				.addNext(multiCommand(followRR(placeConeTrajectory), delayCommand(depositUpDelayS, goToScore())))
+				.addNext(relocalizeRobot())
 				.addNext(deposit())
 				.addNext(wait(depositDelayS))
 				// go pickup and place fourth cone
-				.addNext(followRR(pickupCone))
-				.addNext(intake())
-				.addNext(multiCommand(followRR(placeConeTrajectory), delayCommand(depositUpDelayS, goToScore())))
-				.addNext(deposit())
-				.addNext(wait(depositDelayS))
+
 				// park
 				.addNext(followRR(goToPark1))
 				.addNext(followRR(goToPark2));
