@@ -100,7 +100,7 @@ public class DistanceSensor extends Subsystem {
 	}
 
 	public boolean isValueBad() {
-		return false;
+		return getDistance_in() > 15;
 	}
 
 	public Pose2d getPolePositionInContext() {
