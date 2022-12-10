@@ -25,7 +25,6 @@ public class CurvePoint {
         this.y = y;
         this.moveSpeed = moveSpeed;
         this.followDistance = followDistance;
-
     }
 
 
