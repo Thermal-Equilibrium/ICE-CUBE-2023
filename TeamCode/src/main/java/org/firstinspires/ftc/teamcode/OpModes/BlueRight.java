@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
+import static org.firstinspires.ftc.teamcode.RR_quickstart.util.BasedMath.shiftRobotRelative;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
@@ -23,21 +26,37 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism;
 
 @Autonomous
 public class BlueRight extends BaseAuto {
+
 	public final Pose2d initialPose = new Pose2d( -35.5, 63.5, Math.toRadians(-90));
+	Pose2d driftVector = new Pose2d(0,0,0);
 
 	@Override
 	public Command setupAuto(CommandScheduler scheduler) {
 
-		Pose2d placeCone = new Pose2d(-31.60741466514628, 10.5, Math.toRadians(308.06138282915236));
+		Pose2d placeCone = new Pose2d(-32, 10.5, Math.toRadians(308.06138282915236));
+		placeCone = shiftRobotRelative(placeCone, 2.5,0);
 		Pose2d goNearScoring1 = new Pose2d( -32, 24, Math.toRadians(0));
 
 		//Pose2d placeCone2 = new Pose2d(-29.60741466514628, 10, placeCone.getHeading());
-		Pose2d placeCone2 = placeCone;
-		Pose2d pickupFull = new Pose2d(-61.5,14.5,Math.toRadians(0));
+		Pose2d placeCone2 = shiftRobotRelative(placeCone, 0,-1.5);
+		Pose2d pickupFull = new Pose2d(-60.5,12,Math.toRadians(0));
 		Pose2d pickupPartial = new Pose2d(-48, pickupFull.getY(),Math.toRadians(0));
 
 		Pose2d park_safe = new Pose2d(-36.60741466514628, 18, Math.toRadians(0));
-		Pose2d park = new Pose2d(-9,14,Math.toRadians(0));
+
+		Pose2d parkLeft = new Pose2d(-9,14,Math.toRadians(0));
+		Pose2d parkMid = new Pose2d(-33,14,Math.toRadians(0));
+		Pose2d parkRight = new Pose2d(-57,10,Math.toRadians(0));
+
+		Pose2d park = parkRight;
+		switch (parkingPosition) {
+			case LEFT:
+				park = parkLeft;
+				break;
+			case CENTER:
+				park = parkMid;
+				break;
+		}
 
 		TrajectoryVelocityConstraint slowConstraint = SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL / 1.5, Math.toRadians(80),DriveConstants.TRACK_WIDTH);
 		TrajectoryAccelerationConstraint slowConstraintAccel = SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL / 1.5);
@@ -72,9 +91,9 @@ public class BlueRight extends BaseAuto {
 				.build();
 
 
-		double depositDelayS = 0.6;
+		double depositDelayS = 1;
 
-		double depositUpDelayS = 0.4;
+		double depositUpDelayS = 0.3;
 
 
 		return multiCommand(new GoToSafeHeight(robot.scoringMechanism),followRR(goToConePlacingFirst))
@@ -86,7 +105,7 @@ public class BlueRight extends BaseAuto {
 				.addNext(followRR(pickupConeFIRST))
 				.addNext(intake())
 				.addNext(multiCommand(followRR(placeConeTrajectory), delayCommand(depositUpDelayS, goToScore())))
-				.addNext(relocalizeRobot())
+				//.addNext(relocalizeRobot())
 				.addNext(deposit())
 
 				.addNext(wait(depositDelayS))
@@ -94,7 +113,7 @@ public class BlueRight extends BaseAuto {
 				.addNext(followRR(pickupCone))
 				.addNext(intake())
 				.addNext(multiCommand(followRR(placeConeTrajectory), delayCommand(depositUpDelayS, goToScore())))
-				.addNext(relocalizeRobot())
+				//.addNext(relocalizeRobot())
 				.addNext(deposit())
 				.addNext(wait(depositDelayS))
 				// go pickup and place fourth cone

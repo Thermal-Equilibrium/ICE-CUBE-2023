@@ -33,7 +33,9 @@ public class CommandScheduler {
 
     public void run() {
         for (Subsystem subsystem : subsystems) {
+            subsystem.startTimer();
             subsystem.periodic();
+            subsystem.stopTimer();
         }
 
         Iterator<Command> commands = activeCommands.iterator();
@@ -42,7 +44,6 @@ public class CommandScheduler {
         while (commands.hasNext()) {
             Command command = commands.next();
             command.periodic();
-            System.out.println("current command: " + command);
 
             if (command.completed()) {
                 command.shutdown();

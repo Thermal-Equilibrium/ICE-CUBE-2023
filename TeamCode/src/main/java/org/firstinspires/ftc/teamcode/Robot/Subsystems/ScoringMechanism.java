@@ -179,7 +179,6 @@ public class ScoringMechanism extends Subsystem {
      * This is where the state transitions are defined.
      */
     public void transitionLogic() {
-        System.out.println("current state in ScoringMechanism is " + state);
         switch (state) {
             case STOW:
                 commandActuatorSetpoints(WRIST_STOW,ARM_IN_COLLECT,SLIDES_IN,INTAKE_SPEED_HOLD);
@@ -236,7 +235,6 @@ public class ScoringMechanism extends Subsystem {
             case AUTO_INTAKE_SAFE: // at safe height to approach stack and then begin intaking
                 commandActuatorSetpoints(WRIST_COLLECT_SHORT, ARM_IN_COLLECT, SLIDES_SAFE_FOR_STACK, INTAKE_SPEED_HOLD);
                 if (should_traverse) {
-                    System.out.println("Traversing from AUTO_INTAKE_SAFE");
                     should_traverse = false;
                     state = currentStackProgress;
                     TraverseTimer.reset();
@@ -249,7 +247,6 @@ public class ScoringMechanism extends Subsystem {
             case AUTO_INTAKE_1:
                 commandActuatorSetpoints(WRIST_COLLECT_SHORT, ARM_IN_COLLECT, getSlideHeightForAutoIntaking(),INTAKE_SPEED);
                 if (getSlideHeightIN() <= getSlideHeightForAutoIntaking() + 0.25) {//if (TraverseTimer.seconds() > 1.5) {
-                    System.out.println("going to AUTO_STOP_IN_TAKING");
                     currentStackProgress = getNextAutoIntake();
                     state = States.AUTO_STOP_IN_TAKING;
                 }
@@ -304,8 +301,6 @@ public class ScoringMechanism extends Subsystem {
     public void setServoPositions() {
         setArmPosition(currentArmPos);
         intake.setPower(intake_power_filter.estimate(intakePower));
-        System.out.println("set intake to power: " + intakePower + " at Current state: " + state);
-        System.out.println();
 
         wrist.setPosition(currentWristPos);
     }
@@ -329,7 +324,6 @@ public class ScoringMechanism extends Subsystem {
         setServoPositions();
         regenerate_slide_profile();
         double slide_profile_position = profile_slides.get(slide_profile_timer.seconds()).getX();
-        System.out.println("slide position from motion profile: " + slide_profile_position);
         slideControl(slide_profile_position);
     }
 
@@ -367,7 +361,6 @@ public class ScoringMechanism extends Subsystem {
     protected void slideControl(double ticks) {
         double left = encoderTicksToInches(slideLeft.getCurrentPosition());
         double right = encoderTicksToInches(slideRight.getCurrentPosition());
-        System.out.println("left motor pos: " + left + " right motor pos: " + right);
         previousMotorTarget = currentMotorTarget;
         double betweenSlideOutput = betweenSlideController.calculate(left,right);
         double leftCommand = slideControllerLeft.calculate(ticks,left) - betweenSlideOutput;

@@ -33,11 +33,9 @@ public class RobotRelative extends Command {
         double x;
         double y;
         double turn;
-        x = game_pad1.getForwardJoystick();
         y = game_pad1.getStrafeJoystick();
+        x = game_pad1.getForwardJoystick();
         turn = game_pad1.getTurnJoystick();
-        System.out.println("forward: " + x + " strafe: " + y + " turn: " + turn);
-
 
         if (Math.abs(y) < strafe_dead_band) {
             y = 0;

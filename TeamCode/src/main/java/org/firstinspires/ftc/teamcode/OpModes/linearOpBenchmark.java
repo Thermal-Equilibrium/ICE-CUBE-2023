@@ -11,7 +11,6 @@ public class linearOpBenchmark extends LinearOpMode {
 		waitForStart();
 		ElapsedTime timer = new ElapsedTime();
 		while (opModeIsActive()) {
-			System.out.println("DT: " + timer.seconds());
 			timer.reset();
 		}
 	}

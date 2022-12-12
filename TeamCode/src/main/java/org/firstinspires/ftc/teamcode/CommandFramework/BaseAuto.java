@@ -22,27 +22,38 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.GoToScore;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism;
+import org.firstinspires.ftc.teamcode.visionPipelines.SleeveDetection;
 
 public abstract class BaseAuto extends LinearOpMode {
 
 	protected Robot robot;
 	protected TrajectoryBuilder trajectoryBuilder;
 
+	protected SleeveDetection.ParkingPosition parkingPosition = SleeveDetection.ParkingPosition.CENTER;
+
 	@Override
 	public void runOpMode() {
 		robot = new Robot(hardwareMap, Robot.OpMode.Auto, gamepad1, gamepad2);
 		setRobotPosition();
-		waitForStart();
+
+		while (!isStopRequested() && !opModeIsActive() && opModeInInit()) {
+			parkingPosition = robot.detectionSubsystem.getPosition();
+			telemetry.addData("current parking position is: ", parkingPosition);
+			telemetry.update();
+		}
+
+		robot.detectionSubsystem.destroy(); // TODO, Dear Worth this may cause issues...
 
 
 		robot.getScheduler().forceCommand(setupAuto(robot.getScheduler()));
 
-		while (opModeIsActive()) {
+		while (opModeIsActive() && !isStopRequested()) {
 			robot.update();
 		}
 		robot.scoringMechanism.setWristToStow();
 
 	}
+
 
 	public abstract Command setupAuto(CommandScheduler scheduler);
 

@@ -173,10 +173,6 @@ public class MotionProfileDebug {
 		}
 
 
-		System.out.println("profile distance variable: " + distance);
-		System.out.println("profile initial position: " + initialPosition);
-		System.out.println("profile position: " + position);
-
 
 		// construct the motion state object.  We take the signum of the distance to accurately describe the direction of travel.
 		// this is because in the previous calculations our excessive use of Math.abs would only work for positive directions

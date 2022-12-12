@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.RR_quickstart.drive;
 
+import static com.ThermalEquilibrium.homeostasis.Utils.MathUtils.AngleWrap;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -19,6 +21,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAcceleration
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -55,8 +58,9 @@ import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
     static double translation_kp = 12;
-    static double rotation_Kp = 4.3;
+    static double rotation_Kp = 5.5;
     public static PIDCoefficients TRANSLATIONAL_PID;
+    AnalogInput gyro;
 
     static {
         try {
@@ -72,7 +76,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     static {
         try {
-            HEADING_PID = new PIDCoefficients(rotation_Kp,0,solveKD(translation_kp, DriveConstants.kV / TRACK_WIDTH,DriveConstants.kA / TRACK_WIDTH));
+            HEADING_PID = new PIDCoefficients(rotation_Kp,0.008,solveKD(translation_kp, DriveConstants.kV / TRACK_WIDTH,DriveConstants.kA / TRACK_WIDTH));
         } catch (Exception e) {
             HEADING_PID = new PIDCoefficients(rotation_Kp,0,0);
             System.out.println("heading controller synthesis failed, reverting to safe coefficients");
@@ -96,29 +100,32 @@ public class SampleMecanumDrive extends MecanumDrive {
     private DcMotorEx leftFront, leftRear, rightRear, rightFront;
     private List<DcMotorEx> motors;
 
-    private BNO055IMU imu;
+//    private BNO055IMU imu;
     private VoltageSensor batteryVoltageSensor;
 
     public SampleMecanumDrive(HardwareMap hardwareMap) {
         super(DriveConstants.kV, DriveConstants.kA, DriveConstants.kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
 
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
-                new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
+                new Pose2d(0.5, 0.5, Math.toRadians(2.0)), 0.5);
 
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
 
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
 
 
-        for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
-            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-        }
+
+
+
 
         // TODO: adjust the names of the following hardware devices to match your configuration
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
-        imu.initialize(parameters);
+//        imu = hardwareMap.get(BNO055IMU.class, "imu");
+//        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+//        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
+//        imu.initialize(parameters);
+
+        gyro = hardwareMap.get(com.qualcomm.robotcore.hardware.AnalogInput.class, "LRGYRO");
+
 
         // TODO: If the hub containing the IMU you are using is mounted so that the "REV" logo does
         // not face up, remap the IMU axes so that the z-axis points upward (normal to the floor.)
@@ -324,7 +331,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     @Override
     public double getRawExternalHeading() {
-        return imu.getAngularOrientation().firstAngle;
+        return voltageToAngle(gyro.getVoltage()); //imu.getAngularOrientation().firstAngle;
     }
 
     @Override
@@ -334,7 +341,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         // expected). This bug does NOT affect orientation. 
         //
         // See https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/251 for details.
-        return (double) -imu.getAngularVelocity().xRotationRate;
+        return 0.0;// (double) -imu.getAngularVelocity().xRotationRate;
     }
 
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {
@@ -347,4 +354,17 @@ public class SampleMecanumDrive extends MecanumDrive {
     public static TrajectoryAccelerationConstraint getAccelerationConstraint(double maxAccel) {
         return new ProfileAccelerationConstraint(maxAccel);
     }
+    /**
+     * convert the 3.3 to 0 voltage into an angle
+     * @param voltage voltage from the sensor
+     * @return converted angle
+     */
+    public double voltageToAngle(double voltage) {
+        double computedAngle = ((voltage / 3.3) * 360);
+        computedAngle = Math.toRadians(computedAngle);
+//        computedAngle = AngleWrap(computedAngle + initialAngle);
+
+        return -computedAngle;
+    }
+
 }
