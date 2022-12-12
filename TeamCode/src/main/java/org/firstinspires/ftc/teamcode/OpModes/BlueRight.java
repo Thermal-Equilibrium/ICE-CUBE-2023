@@ -35,14 +35,14 @@ public class BlueRight extends BaseAuto {
 
 		Pose2d placeCone = new Pose2d(-32, 10.5, Math.toRadians(308.06138282915236));
 		placeCone = shiftRobotRelative(placeCone, 2.5,0);
-		Pose2d goNearScoring1 = new Pose2d( -32, 24, Math.toRadians(0));
+		Pose2d goNearScoring1 = new Pose2d( -38, 24, Math.toRadians(0));
 
 		//Pose2d placeCone2 = new Pose2d(-29.60741466514628, 10, placeCone.getHeading());
-		Pose2d placeCone2 = shiftRobotRelative(placeCone, 0,-1.5);
+		Pose2d placeCone2 = shiftRobotRelative(placeCone, 1.5,-3.2);
 		Pose2d pickupFull = new Pose2d(-60.5,12,Math.toRadians(0));
 		Pose2d pickupPartial = new Pose2d(-48, pickupFull.getY(),Math.toRadians(0));
 
-		Pose2d park_safe = new Pose2d(-36.60741466514628, 18, Math.toRadians(0));
+		Pose2d park_safe = new Pose2d(-36.60741466514628, 15, Math.toRadians(0));
 
 		Pose2d parkLeft = new Pose2d(-9,14,Math.toRadians(0));
 		Pose2d parkMid = new Pose2d(-33,14,Math.toRadians(0));
@@ -64,21 +64,21 @@ public class BlueRight extends BaseAuto {
 
 		Trajectory goToConePlacingFirst = robot.drivetrain.getBuilder().trajectoryBuilder(initialPose)
 				.splineTo(goNearScoring1.vec(), Math.toRadians(270))
-				.splineToSplineHeading(placeCone,Math.toRadians(270),slowConstraint,slowConstraintAccel)
+				.splineToSplineHeading(placeCone,calculateTangent(goNearScoring1,placeCone),slowConstraint,slowConstraintAccel)
 				.build();
 
 		Trajectory pickupConeFIRST = robot.drivetrain.getBuilder().trajectoryBuilder(placeCone,true)
-				.splineTo(pickupPartial.vec(),Math.toRadians(180),slowConstraint,slowConstraintAccel)
-				.splineToSplineHeading(pickupFull,Math.toRadians(180))
+				.splineTo(pickupPartial.vec(),calculateTangent(placeCone,pickupPartial),slowConstraint,slowConstraintAccel)
+				.splineToSplineHeading(pickupFull,calculateTangent(pickupPartial,pickupFull))
 				.build();
 		Trajectory pickupCone = robot.drivetrain.getBuilder().trajectoryBuilder(placeCone2,true)
-				.splineTo(pickupPartial.vec(),Math.toRadians(180),slowConstraint,slowConstraintAccel)
-				.splineToSplineHeading(pickupFull,Math.toRadians(180))
+				.splineTo(pickupPartial.vec(),calculateTangent(placeCone2,pickupPartial),slowConstraint,slowConstraintAccel)
+				.splineToSplineHeading(pickupFull,calculateTangent(pickupPartial,pickupFull))
 				.build();
 
 		Trajectory placeConeTrajectory = robot.drivetrain.getBuilder().trajectoryBuilder(pickupFull)
-				.splineTo(pickupPartial.vec(),Math.toRadians(0),slowConstraint,slowConstraintAccel)
-				.splineToSplineHeading(placeCone2, Math.toRadians(330),slowConstraint,slowConstraintAccel)
+				.splineTo(pickupPartial.vec(),calculateTangent(pickupFull,pickupPartial),slowConstraint,slowConstraintAccel)
+				.splineToSplineHeading(placeCone2, calculateTangent(pickupPartial,placeCone2),slowConstraint,slowConstraintAccel)
 				.build();
 
 		Trajectory goToPark1 = robot.drivetrain.getBuilder().trajectoryBuilder(placeConeTrajectory.end())

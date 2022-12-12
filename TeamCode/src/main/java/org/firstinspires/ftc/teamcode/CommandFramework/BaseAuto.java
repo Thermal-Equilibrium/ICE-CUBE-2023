@@ -109,5 +109,11 @@ public abstract class BaseAuto extends LinearOpMode {
 
 	}
 
+	public static double calculateTangent(Pose2d initialPosition, Pose2d finalPosition) {
+		double xd = initialPosition.getX() - finalPosition.getX();
+		double yd = initialPosition.getY() - finalPosition.getY();
+		return Math.atan2(yd,xd) - Math.PI;
+	}
+
 
 }
