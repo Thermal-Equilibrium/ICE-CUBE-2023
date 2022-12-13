@@ -25,7 +25,7 @@ public class MeepMeepTesting {
 		Pose2d goNearScoring1 = new Pose2d( -32, 24, Math.toRadians(0));
 
 		//Pose2d placeCone2 = new Pose2d(-29.60741466514628, 10, placeCone.getHeading());
-		Pose2d placeCone2 = shiftRobotRelative(placeCone, 1.5,-3);
+		Pose2d placeCone2 = new Pose2d(-32, 5, Math.toRadians(330));
 		Pose2d pickupFull = new Pose2d(-61.5,12,Math.toRadians(0));
 		Pose2d pickupPartial = new Pose2d(-48, pickupFull.getY(),Math.toRadians(0));
 
@@ -56,7 +56,7 @@ public class MeepMeepTesting {
 //								.lineToLinearHeading(placeCone)
 								.setReversed(true)
 								.splineTo(pickupPartial.vec(),Math.toRadians(180))
-								.splineToSplineHeading(pickupFull,Math.toRadians(180))
+								.splineToSplineHeading(pickupFull, Math.PI)
 								.setReversed(false)
 								.splineTo(pickupPartial.vec(),calculateTangent(pickupFull,pickupPartial),slowConstraint,slowConstraintAccel)
 								.splineToSplineHeading(placeCone2, calculateTangent(pickupPartial,placeCone2),slowConstraint,slowConstraintAccel)
@@ -73,10 +73,9 @@ public class MeepMeepTesting {
 	}
 
 	public static Pose2d shiftRobotRelative(Pose2d poseGlobal, double robotRelativeX, double robotRelativeY) {
-		robotRelativeX *= -1;
 		// unit vector of the global Pose
 		Vector2d globalVec = poseGlobal.vec();
-		Vector2d globalVecUnit = globalVec.div(globalVec.norm());  // vec / mag = unit vector
+		Vector2d globalVecUnit = poseGlobal.headingVec();//globalVec.div(globalVec.norm());  // vec / mag = unit vector
 		// orthogonal vec
 		Vector2d orthogonalVec = new Vector2d(-globalVecUnit.getY(),globalVecUnit.getX());
 

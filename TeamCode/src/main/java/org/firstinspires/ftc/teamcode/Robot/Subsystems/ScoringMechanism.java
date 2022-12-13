@@ -48,7 +48,7 @@ public class ScoringMechanism extends Subsystem {
     public static double OUT_TAKE = -INTAKE_SPEED;
 
     public static double SLIDES_IN = 0;
-    public static double SLIDES_HIGH = 16.2;
+    public static double SLIDES_HIGH = 15.5;
     public static double SLIDES_MID = 7;
     public static double SLIDES_LOW = 7;
     public static double SLIDES_SAFE_FOR_STACK = 5;

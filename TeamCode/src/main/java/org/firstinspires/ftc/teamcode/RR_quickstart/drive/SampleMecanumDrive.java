@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.RR_quickstart.drive;
 
 import static com.ThermalEquilibrium.homeostasis.Utils.MathUtils.AngleWrap;
+import static com.ThermalEquilibrium.homeostasis.Utils.MathUtils.normalizeAngle;
 
 import androidx.annotation.NonNull;
 
@@ -29,6 +30,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 import org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants;
@@ -58,9 +60,12 @@ import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
     static double translation_kp = 12;
-    static double rotation_Kp = 5.5;
+    static double rotation_Kp = 4;
     public static PIDCoefficients TRANSLATIONAL_PID;
     AnalogInput gyro;
+    protected double previousGyroAngle = 0;
+    protected double gyroVelocity = 0;
+    ElapsedTime derivativeTimer = new ElapsedTime();
 
     static {
         try {
@@ -76,7 +81,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     static {
         try {
-            HEADING_PID = new PIDCoefficients(rotation_Kp,0.0005,solveKD(translation_kp, DriveConstants.kV / TRACK_WIDTH,DriveConstants.kA / TRACK_WIDTH));
+            HEADING_PID = new PIDCoefficients(rotation_Kp,0,solveKD(translation_kp, DriveConstants.kV / TRACK_WIDTH,DriveConstants.kA / TRACK_WIDTH));
         } catch (Exception e) {
             HEADING_PID = new PIDCoefficients(rotation_Kp,0,0);
             System.out.println("heading controller synthesis failed, reverting to safe coefficients");
@@ -107,7 +112,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         super(DriveConstants.kV, DriveConstants.kA, DriveConstants.kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
 
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
-                new Pose2d(0.5, 0.5, Math.toRadians(2.0)), 0.5);
+                new Pose2d(0.5, 0.5, Math.toRadians(1.2)), 0.5);
 
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
 
@@ -336,12 +341,18 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     @Override
     public Double getExternalHeadingVelocity() {
+        double gyroHeading = getExternalHeading();
         // To work around an SDK bug, use -zRotationRate in place of xRotationRate
         // and -xRotationRate in place of zRotationRate (yRotationRate behaves as 
         // expected). This bug does NOT affect orientation. 
         //
         // See https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/251 for details.
-        return 0.0;// (double) -imu.getAngularVelocity().xRotationRate;
+        gyroVelocity = normalizeAngle(gyroHeading - previousGyroAngle) / derivativeTimer.seconds();
+        previousGyroAngle = gyroHeading;
+        derivativeTimer.reset();
+        return gyroVelocity;// (double) -imu.getAngularVelocity().xRotationRate;
+
+
     }
 
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {

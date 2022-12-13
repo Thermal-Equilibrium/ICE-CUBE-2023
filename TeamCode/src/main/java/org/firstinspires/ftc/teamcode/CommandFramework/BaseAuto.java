@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.drive.Drive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
+import com.outoftheboxrobotics.photoncore.PhotonCore;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.RoadrunnerTrajectoryFollower;
@@ -33,6 +34,7 @@ public abstract class BaseAuto extends LinearOpMode {
 
 	@Override
 	public void runOpMode() {
+		PhotonCore.enable();
 		robot = new Robot(hardwareMap, Robot.OpMode.Auto, gamepad1, gamepad2);
 		setRobotPosition();
 
