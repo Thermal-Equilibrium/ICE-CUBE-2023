@@ -42,7 +42,7 @@ public class TwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
 	public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
 	public static double PARALLEL_X = 1; // X is the up and down direction
-	public static double PARALLEL_Y = 10.509951133427611 / 2; // Y is the strafe direction
+	public static double PARALLEL_Y = 10.509951133427611 / 2.0; // Y is the strafe direction
 
 	public static double PERPENDICULAR_X = 1.6;
 	public static double PERPENDICULAR_Y = -2;
@@ -86,9 +86,11 @@ public class TwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
 	@NonNull
 	@Override
 	public List<Double> getWheelPositions() {
+		double parallel = parallelEncoder.getCurrentPosition();
+		double perpendicular = perpendicularEncoder.getCurrentPosition();
 		return Arrays.asList(
-				encoderTicksToInches(parallelEncoder.getCurrentPosition()),
-				encoderTicksToInches(perpendicularEncoder.getCurrentPosition())
+				encoderTicksToInches(parallel),
+				encoderTicksToInches(perpendicular)
 		);
 	}
 

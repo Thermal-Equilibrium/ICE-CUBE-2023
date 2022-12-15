@@ -76,7 +76,9 @@ public class ScoringMechanism extends Subsystem {
     ElapsedTime slide_profile_timer = new ElapsedTime();
 
     public MotionConstraint slide_constraints_up = new MotionConstraint(75,30,80);
-    public MotionConstraint slide_constraints_down = new MotionConstraint(50,30,40);
+    public MotionConstraint slide_constraints_down_original = new MotionConstraint(75,30,40);
+
+    public MotionConstraint slide_constraints_down = slide_constraints_down_original;
 
     //protected AsymmetricMotionProfile profile_slides = new AsymmetricMotionProfile(0,0,slide_constraints);
     MotionProfile profile_slides = MotionProfileGenerator.generateSimpleMotionProfile(
@@ -145,6 +147,7 @@ public class ScoringMechanism extends Subsystem {
         slideRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         slideLeft.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         slideRight.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        SLIDES_HIGH -= 0.0;
     }
 
     /**
@@ -233,6 +236,7 @@ public class ScoringMechanism extends Subsystem {
                 }
                 break;
             case AUTO_INTAKE_SAFE: // at safe height to approach stack and then begin intaking
+                slide_constraints_down = new MotionConstraint(80,30,80);
                 commandActuatorSetpoints(WRIST_COLLECT_SHORT, ARM_IN_COLLECT, SLIDES_SAFE_FOR_STACK, INTAKE_SPEED_HOLD);
                 if (should_traverse) {
                     should_traverse = false;
@@ -252,6 +256,7 @@ public class ScoringMechanism extends Subsystem {
                 }
                 break;
             case AUTO_STOP_IN_TAKING:
+                slide_constraints_down = slide_constraints_down_original;
                 commandActuatorSetpoints(WRIST_COLLECT_SHORT, ARM_IN_COLLECT, SLIDES_SAFE_FOR_STACK,INTAKE_SPEED_HOLD);
                 if (getSlideHeightIN() > SLIDES_SAFE_FOR_STACK - 0.5) {
                     state = States.READY_TO_SCORE_AUTO;

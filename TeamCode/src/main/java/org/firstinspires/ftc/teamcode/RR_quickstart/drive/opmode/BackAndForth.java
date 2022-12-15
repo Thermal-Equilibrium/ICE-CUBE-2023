@@ -6,6 +6,9 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.CommandFramework.BaseAuto;
+import org.firstinspires.ftc.teamcode.CommandFramework.Command;
+import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
 import org.firstinspires.ftc.teamcode.RR_quickstart.drive.SampleMecanumDrive;
 
 /*
@@ -26,27 +29,22 @@ import org.firstinspires.ftc.teamcode.RR_quickstart.drive.SampleMecanumDrive;
  */
 @Config
 @Autonomous(group = "drive")
-public class BackAndForth extends LinearOpMode {
+public class BackAndForth extends BaseAuto {
 
     public static double DISTANCE = 50;
 
     @Override
-    public void runOpMode() throws InterruptedException {
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+    public Command setupAuto(CommandScheduler scheduler) {
 
-        Trajectory trajectoryForward = drive.trajectoryBuilder(new Pose2d())
+        Trajectory trajectoryForward = robot.drivetrain.getBuilder().trajectoryBuilder(new Pose2d())
                 .forward(DISTANCE)
                 .build();
 
-        Trajectory trajectoryBackward = drive.trajectoryBuilder(trajectoryForward.end())
+        Trajectory trajectoryBackward = robot.drivetrain.getBuilder().trajectoryBuilder(trajectoryForward.end())
                 .back(DISTANCE)
                 .build();
 
-        waitForStart();
-
-        while (opModeIsActive() && !isStopRequested()) {
-            drive.followTrajectory(trajectoryForward);
-            drive.followTrajectory(trajectoryBackward);
-        }
+        return followRR(trajectoryForward)
+                .addNext(followRR(trajectoryBackward));
     }
 }

@@ -16,6 +16,7 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryMarker;
 import com.acmerobotics.roadrunner.util.NanoClock;
 
+import org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.RR_quickstart.trajectorysequence.sequencesegment.SequenceSegment;
 import org.firstinspires.ftc.teamcode.RR_quickstart.trajectorysequence.sequencesegment.TrajectorySegment;
 import org.firstinspires.ftc.teamcode.RR_quickstart.trajectorysequence.sequencesegment.TurnSegment;
@@ -192,7 +193,9 @@ public class TrajectorySequenceRunner {
 
         draw(Dashboard.packet.fieldOverlay(), currentTrajectorySequence, currentSegment, targetPose, poseEstimate);
 //
-
+        if (driveSignal != null) {
+            driveSignal = new DriveSignal(driveSignal.getVel(), new Pose2d(driveSignal.getAccel().vec(),driveSignal.getAccel().getHeading() * DriveConstants.gyrationConstant));
+        }
         return driveSignal;
     }
 

@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.RR_quickstart.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 
+import java.util.List;
+
 public class Drivetrain extends Subsystem {
 	protected HardwareMap hwMap;
 
@@ -27,6 +29,12 @@ public class Drivetrain extends Subsystem {
 	@Override
 	public void periodic() {
 		drive.update();
+		List<Double> encoders = drive.getWheelPos();
+		double imu = drive.getRawExternalHeading();
+		double x = getPose().getX();
+		double y = getPose().getY();
+		double heading = getPose().getHeading();
+		System.out.println("Data For Heno3: " + encoders.get(0) + "," + encoders.get(1) + "," + imu + "," + x + "," + y + "," + heading);
 	}
 
 

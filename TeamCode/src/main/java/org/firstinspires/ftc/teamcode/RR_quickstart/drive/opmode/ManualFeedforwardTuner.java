@@ -9,12 +9,15 @@ import com.acmerobotics.roadrunner.profile.MotionProfile;
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
 import com.acmerobotics.roadrunner.util.NanoClock;
+import com.qualcomm.hardware.lynx.LynxVoltageSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.RR_quickstart.drive.SampleMecanumDrive;
 
+import java.util.Iterator;
 import java.util.Objects;
 
 import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.MAX_ACCEL;
@@ -43,6 +46,7 @@ import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.
 @Autonomous(group = "drive")
 public class ManualFeedforwardTuner extends LinearOpMode {
     public static double DISTANCE = 30; // in
+    public VoltageSensor batterVoltageSensor;
 
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
@@ -76,6 +80,8 @@ public class ManualFeedforwardTuner extends LinearOpMode {
 
         NanoClock clock = NanoClock.system();
 
+        batterVoltageSensor = hardwareMap.voltageSensor.iterator().next();
+
         telemetry.addLine("Ready!");
         telemetry.update();
         telemetry.clearAll();
@@ -87,6 +93,7 @@ public class ManualFeedforwardTuner extends LinearOpMode {
         boolean movingForwards = true;
         MotionProfile activeProfile = generateProfile(true);
         double profileStart = clock.seconds();
+
 
 
         while (!isStopRequested()) {
@@ -108,14 +115,21 @@ public class ManualFeedforwardTuner extends LinearOpMode {
                         profileStart = clock.seconds();
                     }
 
+                    double scaleFactor = 12 / batterVoltageSensor.getVoltage();
+
                     MotionState motionState = activeProfile.get(profileTime);
-                    double targetPower = Kinematics.calculateMotorFeedforward(motionState.getV(), motionState.getA(), kV, kA, kStatic);
+                    double targetPower = Kinematics.calculateMotorFeedforward(motionState.getV() , motionState.getA(), kV * scaleFactor, kA * scaleFactor, kStatic * scaleFactor);
 
                     drive.setDrivePower(new Pose2d(targetPower, 0, 0));
                     drive.updatePoseEstimate();
 
                     Pose2d poseVelo = Objects.requireNonNull(drive.getPoseVelocity(), "poseVelocity() must not be null. Ensure that the getWheelVelocities() method has been overridden in your localizer.");
                     double currentVelo = poseVelo.getX();
+
+                    int n = 0;
+                    for (VoltageSensor voltageSensor : hardwareMap.voltageSensor) {
+                        telemetry.addData("voltage" + (n++), voltageSensor.getVoltage() * 10);
+                    }
 
                     // update telemetry
                     telemetry.addData("targetVelocity", motionState.getV());
