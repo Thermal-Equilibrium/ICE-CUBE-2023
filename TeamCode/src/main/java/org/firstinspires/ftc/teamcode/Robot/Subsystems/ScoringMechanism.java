@@ -51,7 +51,7 @@ public class ScoringMechanism extends Subsystem {
     public static double SLIDES_HIGH = 15.5;
     public static double SLIDES_MID = 7;
     public static double SLIDES_LOW = 7;
-    public static double SLIDES_SAFE_FOR_STACK = 5;
+    public static double SLIDES_SAFE_FOR_STACK = 6;
 
     protected double currentWristPos = WRIST_STOW;
     protected double currentArmPos = ARM_CARRY;

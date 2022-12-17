@@ -68,7 +68,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     LowPassFilter filter = new LowPassFilter(0.1);
     MedianFilter3 filter2 = new MedianFilter3();
 
-    public static final boolean useExternIMU = false;
+    public static final boolean useExternIMU = true;
     private BNO055IMU imu;
 
     static {

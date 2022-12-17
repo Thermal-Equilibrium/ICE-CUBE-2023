@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.CommandFramework;
 
 
-import com.acmerobotics.roadrunner.drive.Drive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
@@ -20,7 +19,6 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.ActivateIn
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.DepositAuto;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.GoToSafeHeight;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.GoToScore;
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism;
 import org.firstinspires.ftc.teamcode.visionPipelines.SleeveDetection;
@@ -52,7 +50,7 @@ public abstract class BaseAuto extends LinearOpMode {
 		while (opModeIsActive() && !isStopRequested()) {
 			robot.update();
 		}
-		robot.scoringMechanism.setWristToStow();
+//		robot.scoringMechanism.setWristToStow();
 
 	}
 
@@ -82,6 +80,7 @@ public abstract class BaseAuto extends LinearOpMode {
 	public ActivateIntakeAuto intake() {
 		return new ActivateIntakeAuto(robot.scoringMechanism);
 	}
+
 
 	public GoToScore goToScore() {
 		return new GoToScore(robot.scoringMechanism, ScoringMechanism.States.HIGH);

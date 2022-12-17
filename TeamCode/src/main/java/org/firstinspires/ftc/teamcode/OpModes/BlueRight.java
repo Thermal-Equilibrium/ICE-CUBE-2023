@@ -28,19 +28,18 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism;
 public class BlueRight extends BaseAuto {
 
 	public final Pose2d initialPose = new Pose2d( -35.5, 63.5, Math.toRadians(-90));
-	Pose2d driftVector = new Pose2d(0,0,0);
 
 	@Override
 	public Command setupAuto(CommandScheduler scheduler) {
 
 		Pose2d placeCone = new Pose2d(-32, 10.5, Math.toRadians(308.06138282915236));
-		placeCone = shiftRobotRelative(placeCone, 2.5,0.5);
+		placeCone = shiftRobotRelative(placeCone, 1.5,0.5);
 		Pose2d goNearScoring1 = new Pose2d( -38, 24, Math.toRadians(0));
 
 		//Pose2d placeCone2 = new Pose2d(-29.60741466514628, 10, placeCone.getHeading());
 		Pose2d placeCone2 = new Pose2d(-32, 5, Math.toRadians(330));
-		placeCone2 = shiftRobotRelative(placeCone2, 0,3);
-		Pose2d pickupFull = new Pose2d(-61.2,12,Math.toRadians(0));
+		placeCone2 = shiftRobotRelative(placeCone2, -0.3,2.5);
+		Pose2d pickupFull = new Pose2d(-61.2,13,Math.toRadians(0));
 		Pose2d pickupPartial = new Pose2d(-48, pickupFull.getY(),Math.toRadians(0));
 
 		Pose2d park_safe = new Pose2d(-36.60741466514628, 15, Math.toRadians(0));
@@ -120,13 +119,12 @@ public class BlueRight extends BaseAuto {
 				.addNext(wait(depositDelayS))
 
 				// go pickup and place fourth cone
-				.addNext(followRR(pickupCone))
-				.addNext(intake())
-				.addNext(multiCommand(followRR(placeConeTrajectory), delayCommand(depositUpDelayS, goToScore())))
-				//.addNext(relocalizeRobot())
-				.addNext(deposit())
-
-				.addNext(wait(depositDelayS))
+//				.addNext(followRR(pickupCone))
+//				.addNext(intake())
+//				.addNext(multiCommand(followRR(placeConeTrajectory), delayCommand(depositUpDelayS, goToScore())))
+//				.addNext(deposit())
+//
+//				.addNext(wait(depositDelayS))
 
 				// park
 				.addNext(followRR(goToPark1))

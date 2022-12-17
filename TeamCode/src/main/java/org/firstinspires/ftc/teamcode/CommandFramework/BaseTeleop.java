@@ -1,5 +1,4 @@
 package org.firstinspires.ftc.teamcode.CommandFramework;
-
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.outoftheboxrobotics.photoncore.PhotonCore;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -9,7 +8,7 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
 public abstract class BaseTeleop extends LinearOpMode {
 
     protected Robot robot;
-    public final Pose2d initialPose = new Pose2d( -36, 63.5, Math.toRadians(-90));
+    public final Pose2d initialPose = new Pose2d(); // new Pose2d( -36, 63.5, Math.toRadians(-90));
 
 
     @Override
