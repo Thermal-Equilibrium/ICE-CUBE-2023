@@ -37,6 +37,7 @@ import org.firstinspires.ftc.teamcode.RR_quickstart.trajectorysequence.Trajector
 import org.firstinspires.ftc.teamcode.RR_quickstart.trajectorysequence.TrajectorySequenceRunner;
 import org.firstinspires.ftc.teamcode.RR_quickstart.util.LynxModuleUtil;
 import org.firstinspires.ftc.teamcode.RR_quickstart.util.MedianFilter3;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,6 +68,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     ElapsedTime derivativeTimer = new ElapsedTime();
     LowPassFilter filter = new LowPassFilter(0.1);
     MedianFilter3 filter2 = new MedianFilter3();
+    MedianFilter3 voltageFilter = new MedianFilter3();
 
     public static final boolean useExternIMU = true;
     private BNO055IMU imu;
@@ -337,7 +339,9 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
-        double scaleFactor = 12 / batteryVoltageSensor.getVoltage();
+        double voltage = batteryVoltageSensor.getVoltage();
+        Dashboard.packet.put("voltage",voltageFilter.estimate(voltage));
+        double scaleFactor = 12 / voltage;
         leftFront.setPower(v * scaleFactor);
         leftRear.setPower(v1 * scaleFactor);
         rightRear.setPower(v2 * scaleFactor);

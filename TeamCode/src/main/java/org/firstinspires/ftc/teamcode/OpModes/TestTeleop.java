@@ -7,11 +7,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.CommandFramework.BaseTeleop;
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
-import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.AutoAlignWithVision2;
-import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.PoleApproach2;
+import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.AlignWithDistanceSensor;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.RobotRelative;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.RelocalizeRobotFromPole;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.SetPoleContext;
+import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.ActivateIntakeByTime;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.ActivateIntakeToggle;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.Deposit;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.GoToScore;
@@ -35,7 +35,8 @@ public class TestTeleop extends BaseTeleop {
 			autoAlignSupplier = () -> gamepad1.left_stick_button;
 		}
 
-		robot.gamepad1.whenLeftBumperPressed(new ActivateIntakeToggle(robot.scoringMechanism, gamepad1, intakeSupplier));
+		//robot.gamepad1.whenLeftBumperPressed(new ActivateIntakeToggle(robot.scoringMechanism, gamepad1, intakeSupplier));
+		robot.gamepad1.whenLeftBumperPressed(new ActivateIntakeByTime(robot.scoringMechanism, 10));
 		robot.gamepad1.whenTrianglePressed(new GoToScore(robot.scoringMechanism, ScoringMechanism.States.HIGH));
 		robot.gamepad1.whenSquarePressed(new GoToScore(robot.scoringMechanism, ScoringMechanism.States.MID));
 		robot.gamepad1.whenCirclePressed(new GoToScore(robot.scoringMechanism, ScoringMechanism.States.LOW));
@@ -46,7 +47,7 @@ public class TestTeleop extends BaseTeleop {
 //		robot.gamepad1.whenLeftStickButtonPressed(new AutoAlignWithVision2(robot.drivetrain, robot.distanceSensor, autoAlignSupplier)
 //				.addNext(new RobotRelative(robot,robot.gamepad1)));
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-			robot.gamepad1.whenLeftStickButtonPressed(new PoleApproach2(robot.drivetrain, robot.distanceSensor, autoAlignSupplier)
+			robot.gamepad1.whenLeftStickButtonPressed(new AlignWithDistanceSensor(robot.drivetrain, robot.distanceSensor, autoAlignSupplier)
 					.addNext(new RobotRelative(robot,robot.gamepad1)));
 		}
 

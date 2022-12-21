@@ -8,6 +8,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.profile.MotionProfile;
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -15,9 +16,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 import org.firstinspires.ftc.teamcode.Math.AsymmetricProfile.MotionConstraint;
+import org.firstinspires.ftc.teamcode.RR_quickstart.util.MedianFilter3;
 import org.firstinspires.ftc.teamcode.Utils.ProfiledServo;
+
+import java.util.List;
+import java.util.Objects;
 
 
 @Config
@@ -57,6 +63,8 @@ public class ScoringMechanism extends Subsystem {
     protected double currentArmPos = ARM_CARRY;
     protected double currentMotorTarget = 0;
     protected double intakePower = INTAKE_SPEED_HOLD;
+
+    protected MedianFilter3 voltageFilter = new MedianFilter3();
 
     protected boolean should_traverse = false;  // should traverse to the next state in the state machine
 
@@ -103,6 +111,10 @@ public class ScoringMechanism extends Subsystem {
 
     protected States desiredIntakingType = States.CARRY;
 
+    public static final double CUTOFF_AMPS = 0.45; // above this cutoff indicates that we are done intaking...
+    protected double intakeCurrent = 0;
+    LynxModule hubWithIntake;
+
     ElapsedTime TraverseTimer = new ElapsedTime();  // timer used to help assist some servo position specific maneuvers such as putting down the arm.
 
     double GO_TO_INTAKE_TIME = 0.4; // time between fully out-taking and moving arm before slides go back down to prevent bad things
@@ -134,6 +146,13 @@ public class ScoringMechanism extends Subsystem {
         intake.setDirection(DcMotorSimple.Direction.REVERSE);
         setServoPositions(false);
         state = States.CARRY;
+
+        List<LynxModule> modules = hwMap.getAll(LynxModule.class); // the second hub should have the intake servo.
+        if (Objects.equals(modules.get(0).getDeviceName(), "Control Hub")) {
+            hubWithIntake = modules.get(1);
+        } else {
+            hubWithIntake = modules.get(0);
+        }
     }
 
     /**
@@ -330,6 +349,9 @@ public class ScoringMechanism extends Subsystem {
         regenerate_slide_profile();
         double slide_profile_position = profile_slides.get(slide_profile_timer.seconds()).getX();
         slideControl(slide_profile_position);
+        // measure intake current
+        intakeCurrent = voltageFilter.estimate(hubWithIntake.getCurrent(CurrentUnit.AMPS));
+        Dashboard.packet.put("intake current",intakeCurrent);
     }
 
     /**
@@ -593,5 +615,9 @@ public class ScoringMechanism extends Subsystem {
     public void setWristToStow() {
         currentWristPos = WRIST_STOW;
         wrist.setPosition(WRIST_STOW);
+    }
+
+    public boolean isIntakeCurrentHIGHenough() {
+        return intakeCurrent > CUTOFF_AMPS;
     }
 }

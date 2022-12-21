@@ -6,17 +6,15 @@ import static org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.A
 import android.os.Build;
 
 import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
-import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.DistanceSensor;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Drivetrain;
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.Input;
 
 import java.util.function.BooleanSupplier;
 
-public class AutoAlignWithVision2 extends Command {
+public class AlignWithDistanceSensor extends Command {
 
 	Drivetrain drivetrain;
 	DistanceSensor distanceSensor;
@@ -25,7 +23,7 @@ public class AutoAlignWithVision2 extends Command {
 	BooleanSupplier keepRunning;
 
 
-	public AutoAlignWithVision2(Drivetrain drivetrain, DistanceSensor distanceSensor, BooleanSupplier keepRunning) {
+	public AlignWithDistanceSensor(Drivetrain drivetrain, DistanceSensor distanceSensor, BooleanSupplier keepRunning) {
 		this.drivetrain = drivetrain;
 		this.distanceSensor = distanceSensor;
 		this.keepRunning = keepRunning;

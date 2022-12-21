@@ -39,7 +39,7 @@ public class BlueRight extends BaseAuto {
 		//Pose2d placeCone2 = new Pose2d(-29.60741466514628, 10, placeCone.getHeading());
 		Pose2d placeCone2 = new Pose2d(-32, 5, Math.toRadians(330));
 		placeCone2 = shiftRobotRelative(placeCone2, -0.3,2.5);
-		Pose2d pickupFull = new Pose2d(-61.2,13,Math.toRadians(0));
+		Pose2d pickupFull = new Pose2d(-61.2,15,Math.toRadians(0));
 		Pose2d pickupPartial = new Pose2d(-48, pickupFull.getY(),Math.toRadians(0));
 
 		Pose2d park_safe = new Pose2d(-36.60741466514628, 15, Math.toRadians(0));

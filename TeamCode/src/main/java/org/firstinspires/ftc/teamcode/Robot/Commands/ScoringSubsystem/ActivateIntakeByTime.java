@@ -31,7 +31,7 @@ public class ActivateIntakeByTime extends Command {
 
 	@Override
 	public boolean completed() {
-		return timer.seconds() > durationS;
+		return timer.seconds() > durationS || mechanism.isIntakeCurrentHIGHenough();
 	}
 
 	@Override
