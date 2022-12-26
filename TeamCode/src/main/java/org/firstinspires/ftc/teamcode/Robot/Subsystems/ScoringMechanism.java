@@ -9,7 +9,6 @@ import com.acmerobotics.roadrunner.profile.MotionProfile;
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -49,9 +48,9 @@ public class ScoringMechanism extends Subsystem {
     public static double ARM_DEPOSIT_SHORT_MID = 0.6;
     public static double ARM_DEPOSIT_SHORT_LOW = 0.6;
 
-    public static double INTAKE_SPEED_HOLD = 0.15;
-    public static double INTAKE_SPEED = 1;
-    public static double OUT_TAKE = -INTAKE_SPEED;
+    public static double CLAW_HOLD = 0.15;
+    public static double CLAW_OPEN = 1;
+    public static double OUT_TAKE = CLAW_OPEN;
 
     public static double SLIDES_IN = 0;
     public static double SLIDES_HIGH = 15.5;
@@ -62,7 +61,7 @@ public class ScoringMechanism extends Subsystem {
     protected double currentWristPos = WRIST_STOW;
     protected double currentArmPos = ARM_CARRY;
     protected double currentMotorTarget = 0;
-    protected double intakePower = INTAKE_SPEED_HOLD;
+    protected double clawPosition = CLAW_HOLD;
 
     protected MedianFilter3 voltageFilter = new MedianFilter3();
 
@@ -104,7 +103,7 @@ public class ScoringMechanism extends Subsystem {
 
     protected Servo wrist;
     protected ProfiledServo arm;
-    protected CRServo intake;
+    protected Servo claw;
 
     protected States desiredEnd = States.HIGH;
     protected States desiredEndTransition = States.GO_TO_HIGH;
@@ -142,8 +141,8 @@ public class ScoringMechanism extends Subsystem {
 
         wrist = hwMap.get(Servo.class, "wrist");
 
-        intake = hwMap.get(CRServo.class, "intake");
-        intake.setDirection(DcMotorSimple.Direction.REVERSE);
+        claw = hwMap.get(Servo.class, "intake");
+        claw.setDirection(Servo.Direction.REVERSE);
         setServoPositions(false);
         state = States.CARRY;
 
@@ -203,21 +202,21 @@ public class ScoringMechanism extends Subsystem {
     public void transitionLogic() {
         switch (state) {
             case STOW:
-                commandActuatorSetpoints(WRIST_STOW,ARM_IN_COLLECT,SLIDES_IN,INTAKE_SPEED_HOLD);
+                commandActuatorSetpoints(WRIST_STOW,ARM_IN_COLLECT,SLIDES_IN, CLAW_HOLD);
                 if (should_traverse) {
                     state = States.CARRY;
                     should_traverse = false;
                 }
                 break;
             case INTAKE_ON:
-                commandActuatorSetpoints(WRIST_COLLECT_SHORT,ARM_IN_COLLECT,SLIDES_IN,INTAKE_SPEED);
+                commandActuatorSetpoints(WRIST_COLLECT_SHORT,ARM_IN_COLLECT,SLIDES_IN, CLAW_OPEN);
                 if (should_traverse) {
                     should_traverse = false;
                     state = States.CARRY;
                 }
                 break;
             case CARRY:
-                commandActuatorSetpoints(WRIST_CARRY_SHORT,ARM_CARRY,SLIDES_IN,INTAKE_SPEED_HOLD);
+                commandActuatorSetpoints(WRIST_CARRY_SHORT,ARM_CARRY,SLIDES_IN, CLAW_HOLD);
                 if (should_traverse) {
                     state = desiredEndTransition;
                 }
@@ -225,7 +224,7 @@ public class ScoringMechanism extends Subsystem {
             case GO_TO_HIGH:
             case GO_TO_MID:
             case GO_TO_LOW:
-                commandActuatorSetpoints(WRIST_DEPOSIT_LONG,ARM_IN_COLLECT,getDesiredHeight(desiredEnd),INTAKE_SPEED_HOLD);
+                commandActuatorSetpoints(WRIST_DEPOSIT_LONG,ARM_IN_COLLECT,getDesiredHeight(desiredEnd), CLAW_HOLD);
                 if (getSlideHeightIN() > 1) {
                     state = desiredEnd;
                     should_traverse = false;
@@ -234,7 +233,7 @@ public class ScoringMechanism extends Subsystem {
             case HIGH:
             case MID:
             case LOW:
-                commandActuatorSetpoints(WRIST_DEPOSIT_LONG,getDesiredArmPos(desiredEnd),getDesiredHeight(desiredEnd),INTAKE_SPEED_HOLD);
+                commandActuatorSetpoints(WRIST_DEPOSIT_LONG,getDesiredArmPos(desiredEnd),getDesiredHeight(desiredEnd), CLAW_HOLD);
                 if (should_traverse) {
                     state = States.DEPOSIT;
                     should_traverse = false;
@@ -256,7 +255,7 @@ public class ScoringMechanism extends Subsystem {
                 break;
             case AUTO_INTAKE_SAFE: // at safe height to approach stack and then begin intaking
                 slide_constraints_down = new MotionConstraint(80,30,80);
-                commandActuatorSetpoints(WRIST_COLLECT_SHORT, ARM_IN_COLLECT, SLIDES_SAFE_FOR_STACK, INTAKE_SPEED_HOLD);
+                commandActuatorSetpoints(WRIST_COLLECT_SHORT, ARM_IN_COLLECT, SLIDES_SAFE_FOR_STACK, CLAW_HOLD);
                 if (should_traverse) {
                     should_traverse = false;
                     state = currentStackProgress;
@@ -268,7 +267,7 @@ public class ScoringMechanism extends Subsystem {
             case AUTO_INTAKE_3:
             case AUTO_INTAKE_2:
             case AUTO_INTAKE_1:
-                commandActuatorSetpoints(WRIST_COLLECT_SHORT, ARM_IN_COLLECT, getSlideHeightForAutoIntaking(),INTAKE_SPEED);
+                commandActuatorSetpoints(WRIST_COLLECT_SHORT, ARM_IN_COLLECT, getSlideHeightForAutoIntaking(), CLAW_OPEN);
                 if (getSlideHeightIN() <= getSlideHeightForAutoIntaking() + 0.25) {//if (TraverseTimer.seconds() > 1.5) {
                     currentStackProgress = getNextAutoIntake();
                     state = States.AUTO_STOP_IN_TAKING;
@@ -276,13 +275,13 @@ public class ScoringMechanism extends Subsystem {
                 break;
             case AUTO_STOP_IN_TAKING:
                 slide_constraints_down = slide_constraints_down_original;
-                commandActuatorSetpoints(WRIST_COLLECT_SHORT, ARM_IN_COLLECT, SLIDES_SAFE_FOR_STACK,INTAKE_SPEED_HOLD);
+                commandActuatorSetpoints(WRIST_COLLECT_SHORT, ARM_IN_COLLECT, SLIDES_SAFE_FOR_STACK, CLAW_HOLD);
                 if (getSlideHeightIN() > SLIDES_SAFE_FOR_STACK - 0.5) {
                     state = States.READY_TO_SCORE_AUTO;
                 }
                 break;
             case READY_TO_SCORE_AUTO:
-                commandActuatorSetpoints(WRIST_CARRY_SHORT,ARM_CARRY,SLIDES_SAFE_FOR_STACK,INTAKE_SPEED_HOLD);
+                commandActuatorSetpoints(WRIST_CARRY_SHORT,ARM_CARRY,SLIDES_SAFE_FOR_STACK, CLAW_HOLD);
                 if (should_traverse) {
                     state = desiredEndTransition;
                 }
@@ -324,7 +323,7 @@ public class ScoringMechanism extends Subsystem {
      */
     public void setServoPositions() {
         setArmPosition(currentArmPos);
-        intake.setPower(intake_power_filter.estimate(intakePower));
+        claw.setPosition(clawPosition);
 
         wrist.setPosition(currentWristPos);
     }
@@ -337,7 +336,7 @@ public class ScoringMechanism extends Subsystem {
         setArmPosition(currentArmPos);
         wrist.setPosition(currentWristPos);
         if (!isInit){
-            intake.setPower(intakePower);
+            claw.setPosition(clawPosition);
         }
     }
 
@@ -434,7 +433,7 @@ public class ScoringMechanism extends Subsystem {
         this.currentWristPos = wrist;
         this.currentArmPos = arm;
         this.currentMotorTarget = slides;
-        this.intakePower = intake;
+        this.clawPosition = intake;
     }
 
 
