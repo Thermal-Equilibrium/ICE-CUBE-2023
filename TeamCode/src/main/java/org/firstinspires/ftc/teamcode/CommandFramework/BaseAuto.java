@@ -51,6 +51,7 @@ public abstract class BaseAuto extends LinearOpMode {
 			robot.update();
 		}
 //		robot.scoringMechanism.setWristToStow();
+		robot.shutdown();
 
 	}
 

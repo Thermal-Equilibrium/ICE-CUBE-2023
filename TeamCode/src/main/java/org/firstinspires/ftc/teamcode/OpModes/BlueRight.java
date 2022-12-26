@@ -40,9 +40,9 @@ public class BlueRight extends BaseAuto {
 		Pose2d placeCone2 = new Pose2d(-32, 5, Math.toRadians(330));
 		placeCone2 = shiftRobotRelative(placeCone2, -0.3,2.5);
 		Pose2d pickupFull = new Pose2d(-61.2,15,Math.toRadians(0));
-		Pose2d pickupPartial = new Pose2d(-48, pickupFull.getY(),Math.toRadians(0));
+		Pose2d pickupPartial = new Pose2d(-48, 12,Math.toRadians(0));
 
-		Pose2d park_safe = new Pose2d(-36.60741466514628, 15, Math.toRadians(0));
+		Pose2d park_safe = new Pose2d(-36.60741466514628, 12, Math.toRadians(0));
 
 		Pose2d parkLeft = new Pose2d(-9,14,Math.toRadians(0));
 		Pose2d parkMid = new Pose2d(-33,14,Math.toRadians(0));
@@ -69,11 +69,11 @@ public class BlueRight extends BaseAuto {
 
 		Trajectory pickupConeFIRST = robot.drivetrain.getBuilder().trajectoryBuilder(placeCone,true)
 				.splineTo(pickupPartial.vec(),Math.toRadians(180))
-				.splineToSplineHeading(pickupFull,Math.toRadians(180))
+				.splineToSplineHeading(pickupFull,calculateTangent(pickupPartial,pickupFull))
 				.build();
 		Trajectory pickupCone = robot.drivetrain.getBuilder().trajectoryBuilder(placeCone2,true)
 				.splineTo(pickupPartial.vec(),Math.toRadians(180))
-				.splineToSplineHeading(pickupFull,Math.toRadians(180))
+				.splineToSplineHeading(pickupFull,calculateTangent(pickupPartial,pickupFull))
 				.build();
 
 		Trajectory placeConeTrajectory = robot.drivetrain.getBuilder().trajectoryBuilder(pickupFull)

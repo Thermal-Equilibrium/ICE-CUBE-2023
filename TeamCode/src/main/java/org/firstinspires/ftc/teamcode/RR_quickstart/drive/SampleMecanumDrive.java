@@ -70,7 +70,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     MedianFilter3 filter2 = new MedianFilter3();
     MedianFilter3 voltageFilter = new MedianFilter3();
 
-    public static final boolean useExternIMU = true;
+    public static final boolean useExternIMU = false;
     private BNO055IMU imu;
 
     static {

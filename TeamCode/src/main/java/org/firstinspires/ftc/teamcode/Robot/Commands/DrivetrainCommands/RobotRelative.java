@@ -7,11 +7,13 @@ import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Input;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism;
 
 public class RobotRelative extends Command {
 
 
     Drivetrain drivetrain;
+    ScoringMechanism mechanism;
     Input game_pad1;
 
     double strafe_dead_band = 0.1;
@@ -19,6 +21,7 @@ public class RobotRelative extends Command {
     public RobotRelative(Robot robot, Input game_pad1) {
         super(robot.drivetrain, game_pad1);
         this.drivetrain = robot.drivetrain;
+        this.mechanism = robot.scoringMechanism;;
         this.game_pad1 = game_pad1;
 
     }
@@ -30,6 +33,20 @@ public class RobotRelative extends Command {
 
     @Override
     public void periodic() {
+
+
+        double scalar = 1;
+        ScoringMechanism.States state = mechanism.getState();
+        if (state.equals(ScoringMechanism.States.HIGH)
+        || state.equals(ScoringMechanism.States.GO_TO_HIGH) ||
+        state.equals(ScoringMechanism.States.MID) ||
+        state.equals(ScoringMechanism.States.GO_TO_MID) ||
+        state.equals(ScoringMechanism.States.LOW) ||
+        state.equals(ScoringMechanism.States.GO_TO_LOW) ||
+        state.equals(ScoringMechanism.States.GO_TO_INTAKE)) {
+            scalar = 0.5;
+        }
+
         double x;
         double y;
         double turn;
@@ -41,7 +58,7 @@ public class RobotRelative extends Command {
             y = 0;
         }
 
-        Pose2d powers = new Pose2d(x,y,turn);
+        Pose2d powers = new Pose2d(x * scalar,y * scalar,turn * scalar);
         drivetrain.robotRelative(powers);
 
 
