@@ -48,8 +48,8 @@ public class ScoringMechanism extends Subsystem {
     public static double ARM_DEPOSIT_SHORT_MID = 0.6;
     public static double ARM_DEPOSIT_SHORT_LOW = 0.6;
 
-    public static double CLAW_HOLD = 0.15;
-    public static double CLAW_OPEN = 1;
+    public static double CLAW_HOLD = 0.03;
+    public static double CLAW_OPEN = 0.63;
     public static double OUT_TAKE = CLAW_OPEN;
 
     public static double SLIDES_IN = 0;
@@ -142,7 +142,6 @@ public class ScoringMechanism extends Subsystem {
         wrist = hwMap.get(Servo.class, "wrist");
 
         claw = hwMap.get(Servo.class, "intake");
-        claw.setDirection(Servo.Direction.REVERSE);
         setServoPositions(false);
         state = States.CARRY;
 
@@ -216,7 +215,7 @@ public class ScoringMechanism extends Subsystem {
                 }
                 break;
             case CARRY:
-                commandActuatorSetpoints(WRIST_CARRY_SHORT,ARM_CARRY,SLIDES_IN, CLAW_HOLD);
+                commandActuatorSetpoints(WRIST_CARRY_SHORT,ARM_CARRY,SLIDES_IN, CLAW_OPEN);
                 if (should_traverse) {
                     state = desiredEndTransition;
                 }
