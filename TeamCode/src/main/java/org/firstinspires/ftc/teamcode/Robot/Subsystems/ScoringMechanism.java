@@ -41,7 +41,7 @@ public class ScoringMechanism extends Subsystem {
 
     public static double ARM_IN_COLLECT = 0;
     public static double ARM_CARRY = 0.1;
-    public static double ARM_DEPOSIT_LONG_HIGH = 0.37;
+    public static double ARM_DEPOSIT_LONG_HIGH = 0.36;
     public static double ARM_DEPOSIT_LONG_MID = 0.37;
     public static double ARM_DEPOSIT_LONG_LOW = 0.53;
     public static double ARM_DEPOSIT_SHORT_HIGH = 0.6;
@@ -53,7 +53,7 @@ public class ScoringMechanism extends Subsystem {
     public static double OUT_TAKE = CLAW_OPEN;
 
     public static double SLIDES_IN = 0;
-    public static double SLIDES_HIGH = 15.5;
+    public static double SLIDES_HIGH = 16.5;
     public static double SLIDES_MID = 7;
     public static double SLIDES_LOW = 7;
     public static double SLIDES_SAFE_FOR_STACK = 6;
@@ -62,6 +62,8 @@ public class ScoringMechanism extends Subsystem {
     protected double currentArmPos = ARM_CARRY;
     protected double currentMotorTarget = 0;
     protected double clawPosition = CLAW_HOLD;
+
+    boolean inPossession = false;
 
     protected MedianFilter3 voltageFilter = new MedianFilter3();
 
@@ -208,14 +210,19 @@ public class ScoringMechanism extends Subsystem {
                 }
                 break;
             case INTAKE_ON:
-                commandActuatorSetpoints(WRIST_COLLECT_SHORT,ARM_IN_COLLECT,SLIDES_IN, CLAW_OPEN);
+                commandActuatorSetpoints(WRIST_COLLECT_SHORT,ARM_IN_COLLECT,SLIDES_IN, CLAW_HOLD);
                 if (should_traverse) {
                     should_traverse = false;
                     state = States.CARRY;
+                    inPossession = true;
                 }
                 break;
             case CARRY:
-                commandActuatorSetpoints(WRIST_CARRY_SHORT,ARM_CARRY,SLIDES_IN, CLAW_OPEN);
+                if (inPossession) {
+                    commandActuatorSetpoints(WRIST_CARRY_SHORT,ARM_IN_COLLECT,SLIDES_IN, CLAW_HOLD);
+                } else {
+                    commandActuatorSetpoints(WRIST_CARRY_SHORT,ARM_IN_COLLECT,SLIDES_IN, CLAW_OPEN);
+                }
                 if (should_traverse) {
                     state = desiredEndTransition;
                 }
@@ -241,6 +248,7 @@ public class ScoringMechanism extends Subsystem {
                 break;
             case DEPOSIT:
                 commandActuatorSetpoints(WRIST_DEPOSIT_LONG,getDesiredArmPos(desiredEnd),getDesiredHeight(desiredEnd),OUT_TAKE);
+                inPossession = false;
                 if (TraverseTimer.seconds() > OUTTAKE_DURATION) {
                     state = States.GO_TO_INTAKE;
                     TraverseTimer.reset();
@@ -286,6 +294,7 @@ public class ScoringMechanism extends Subsystem {
                 }
                 break;
         }
+
     }
 
     /**
