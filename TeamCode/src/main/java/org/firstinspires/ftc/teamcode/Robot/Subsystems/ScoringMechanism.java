@@ -35,7 +35,7 @@ public class ScoringMechanism extends Subsystem {
 
     private static final double CUTOFF_POINT = 4; // min height of slides for arm to move over the robot.
     public static double WRIST_COLLECT_SHORT = 0;
-    public static double WRIST_STOW = 1;
+    public static double WRIST_STOW = 0;
     public static double WRIST_CARRY_SHORT = 0;
     public static double WRIST_DEPOSIT_LONG = 1;
 
@@ -53,7 +53,7 @@ public class ScoringMechanism extends Subsystem {
     public static double OUT_TAKE = CLAW_OPEN;
 
     public static double SLIDES_IN = 0;
-    public static double SLIDES_HIGH = 16.5;
+    public static double SLIDES_HIGH = 15.5;
     public static double SLIDES_MID = 7;
     public static double SLIDES_LOW = 7;
     public static double SLIDES_SAFE_FOR_STACK = 6;
@@ -84,7 +84,7 @@ public class ScoringMechanism extends Subsystem {
 
     ElapsedTime slide_profile_timer = new ElapsedTime();
 
-    public MotionConstraint slide_constraints_up = new MotionConstraint(75,30,80);
+    public MotionConstraint slide_constraints_up = new MotionConstraint(75,30,100);
     public MotionConstraint slide_constraints_down_original = new MotionConstraint(75,30,40);
 
     public MotionConstraint slide_constraints_down = slide_constraints_down_original;
@@ -230,7 +230,7 @@ public class ScoringMechanism extends Subsystem {
             case GO_TO_HIGH:
             case GO_TO_MID:
             case GO_TO_LOW:
-                commandActuatorSetpoints(WRIST_DEPOSIT_LONG,ARM_IN_COLLECT,getDesiredHeight(desiredEnd), CLAW_HOLD);
+                commandActuatorSetpoints(WRIST_CARRY_SHORT,ARM_IN_COLLECT,getDesiredHeight(desiredEnd), CLAW_HOLD);
                 if (getSlideHeightIN() > 1) {
                     state = desiredEnd;
                     should_traverse = false;
@@ -262,7 +262,7 @@ public class ScoringMechanism extends Subsystem {
                 break;
             case AUTO_INTAKE_SAFE: // at safe height to approach stack and then begin intaking
                 slide_constraints_down = new MotionConstraint(80,30,80);
-                commandActuatorSetpoints(WRIST_COLLECT_SHORT, ARM_IN_COLLECT, SLIDES_SAFE_FOR_STACK, CLAW_HOLD);
+                commandActuatorSetpoints(WRIST_COLLECT_SHORT, ARM_IN_COLLECT, getSlideHeightForAutoIntaking(), CLAW_OPEN);
                 if (should_traverse) {
                     should_traverse = false;
                     state = currentStackProgress;
@@ -275,7 +275,7 @@ public class ScoringMechanism extends Subsystem {
             case AUTO_INTAKE_2:
             case AUTO_INTAKE_1:
                 commandActuatorSetpoints(WRIST_COLLECT_SHORT, ARM_IN_COLLECT, getSlideHeightForAutoIntaking(), CLAW_OPEN);
-                if (getSlideHeightIN() <= getSlideHeightForAutoIntaking() + 0.25) {//if (TraverseTimer.seconds() > 1.5) {
+                if (TraverseTimer.seconds() > 1.5) {
                     currentStackProgress = getNextAutoIntake();
                     state = States.AUTO_STOP_IN_TAKING;
                 }
@@ -622,6 +622,10 @@ public class ScoringMechanism extends Subsystem {
     public void setWristToStow() {
         currentWristPos = WRIST_STOW;
         wrist.setPosition(WRIST_STOW);
+    }
+
+    public void setInPossession(boolean inPossession) {
+        this.inPossession = inPossession;
     }
 
     public boolean isIntakeCurrentHIGHenough() {

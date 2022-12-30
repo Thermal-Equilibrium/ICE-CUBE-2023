@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.OpModes;
 import static org.firstinspires.ftc.teamcode.RR_quickstart.util.BasedMath.shiftRobotRelative;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
@@ -14,18 +13,10 @@ import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
 import org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.RR_quickstart.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.AlignWithVision2Auto;
-import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.UltimateGoalMoment.FollowPath;
-import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
-import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
-import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.ActivateIntakeAuto;
-import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.DepositAuto;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.GoToSafeHeight;
-import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.GoToScore;
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism;
 
 @Autonomous
-public class BlueRight extends BaseAuto {
+public class RightSide extends BaseAuto {
 
 	public final Pose2d initialPose = new Pose2d( -35.5, 63.5, Math.toRadians(-90));
 
@@ -33,7 +24,7 @@ public class BlueRight extends BaseAuto {
 	public Command setupAuto(CommandScheduler scheduler) {
 
 		Pose2d placeCone = new Pose2d(-32, 10.5, Math.toRadians(308.06138282915236));
-		placeCone = shiftRobotRelative(placeCone, 1.5,0.5);
+		placeCone = shiftRobotRelative(placeCone, 2.5,0.5);
 		Pose2d goNearScoring1 = new Pose2d( -38, 24, Math.toRadians(0));
 
 		//Pose2d placeCone2 = new Pose2d(-29.60741466514628, 10, placeCone.getHeading());
@@ -96,8 +87,7 @@ public class BlueRight extends BaseAuto {
 		double depositUpDelayS = 0.4;
 
 
-		return multiCommand(new GoToSafeHeight(robot.scoringMechanism),followRR(goToConePlacingFirst))
-				.addNext(goToScore())
+		return multiCommand(goToScore(),followRR(goToConePlacingFirst))
 				.addNext(getPoleContextualPosition()) // yeah
 				.addNext(deposit())
 				.addNext(wait(depositDelayS))
