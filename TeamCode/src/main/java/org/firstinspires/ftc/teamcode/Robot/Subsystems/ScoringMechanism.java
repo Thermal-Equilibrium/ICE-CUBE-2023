@@ -33,7 +33,6 @@ public class ScoringMechanism extends Subsystem {
     // SHORT = vice versa
 
 
-    private static final double CUTOFF_POINT = 4; // min height of slides for arm to move over the robot.
     public static double WRIST_COLLECT_SHORT = 0;
     public static double WRIST_STOW = 0;
     public static double WRIST_CARRY_SHORT = 0;
@@ -49,19 +48,21 @@ public class ScoringMechanism extends Subsystem {
     public static double ARM_DEPOSIT_SHORT_LOW = 0.6;
 
     public static double CLAW_HOLD = 0.03;
-    public static double CLAW_OPEN = 0.63;
+    public static double CLAW_OPEN = 0.55;
     public static double OUT_TAKE = CLAW_OPEN;
 
     public static double SLIDES_IN = 0;
     public static double SLIDES_HIGH = 15.5;
     public static double SLIDES_MID = 7;
     public static double SLIDES_LOW = 7;
-    public static double SLIDES_SAFE_FOR_STACK = 6;
+    public static double SLIDES_SAFE_FOR_STACK = 7.5;
 
     protected double currentWristPos = WRIST_STOW;
     protected double currentArmPos = ARM_CARRY;
     protected double currentMotorTarget = 0;
     protected double clawPosition = CLAW_HOLD;
+
+    public boolean isShutDown = false;
 
     boolean inPossession = false;
 
@@ -162,11 +163,12 @@ public class ScoringMechanism extends Subsystem {
     @Override
     public void initAuto(HardwareMap hwMap) {
         commonInit(hwMap);
+        inPossession = true;
         slideLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         slideRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         slideLeft.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         slideRight.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        SLIDES_HIGH -= 0.0;
+        //SLIDES_HIGH -= 0.33;
     }
 
     /**
@@ -275,7 +277,7 @@ public class ScoringMechanism extends Subsystem {
             case AUTO_INTAKE_2:
             case AUTO_INTAKE_1:
                 commandActuatorSetpoints(WRIST_COLLECT_SHORT, ARM_IN_COLLECT, getSlideHeightForAutoIntaking(), CLAW_OPEN);
-                if (TraverseTimer.seconds() > 1.5) {
+                if (TraverseTimer.seconds() > 0.3) {
                     currentStackProgress = getNextAutoIntake();
                     state = States.AUTO_STOP_IN_TAKING;
                 }
@@ -368,6 +370,7 @@ public class ScoringMechanism extends Subsystem {
     public void shutdown() {
         slideLeft.setPower(0);
         slideRight.setPower(0);
+        isShutDown = false;
     }
 
     /**
@@ -410,6 +413,10 @@ public class ScoringMechanism extends Subsystem {
     }
 
     public void setSlidePower(double leftPower,double rightPower) {
+        if (isShutDown) {
+            leftPower = 0;
+            rightPower = 0;
+        }
         slideLeft.setPower(leftPower);
         slideRight.setPower(rightPower);
     }
@@ -606,13 +613,13 @@ public class ScoringMechanism extends Subsystem {
     public double getSlideHeightForAutoIntaking() {
         switch (currentStackProgress) {
             case AUTO_INTAKE_5:
-                return 4;
+                return 4.5;
             case AUTO_INTAKE_4:
-                return 3;
+                return 3.5;
             case AUTO_INTAKE_3:
-                return 2;
+                return 2.5;
             case AUTO_INTAKE_2:
-                return 1;
+                return 1.5;
             default:
                 return 0;
         }
@@ -622,6 +629,10 @@ public class ScoringMechanism extends Subsystem {
     public void setWristToStow() {
         currentWristPos = WRIST_STOW;
         wrist.setPosition(WRIST_STOW);
+    }
+
+    public void endAuto() {
+        state = States.CARRY;
     }
 
     public void setInPossession(boolean inPossession) {

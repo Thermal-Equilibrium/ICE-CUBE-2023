@@ -13,7 +13,9 @@ import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
 import org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.RR_quickstart.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.EndAction;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.GoToSafeHeight;
+import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.StowForEndAuto;
 
 @Autonomous
 public class RightSide extends BaseAuto {
@@ -24,14 +26,14 @@ public class RightSide extends BaseAuto {
 	public Command setupAuto(CommandScheduler scheduler) {
 
 		Pose2d placeCone = new Pose2d(-32, 10.5, Math.toRadians(308.06138282915236));
-		placeCone = shiftRobotRelative(placeCone, 2.5,0.5);
-		Pose2d goNearScoring1 = new Pose2d( -38, 24, Math.toRadians(0));
+		placeCone = shiftRobotRelative(placeCone, 4.2,-0.5);
+		Pose2d goNearScoring1 = new Pose2d( -36, 24, Math.toRadians(0));
 
 		//Pose2d placeCone2 = new Pose2d(-29.60741466514628, 10, placeCone.getHeading());
 		Pose2d placeCone2 = new Pose2d(-32, 5, Math.toRadians(330));
-		placeCone2 = shiftRobotRelative(placeCone2, -0.3,2.5);
-		Pose2d pickupFull = new Pose2d(-61.2,15,Math.toRadians(0));
-		Pose2d pickupPartial = new Pose2d(-48, 12,Math.toRadians(0));
+		placeCone2 = shiftRobotRelative(placeCone2, 2.6,4);
+		Pose2d pickupFull = new Pose2d(-64.5,12.5,Math.toRadians(0));
+		Pose2d pickupPartial = new Pose2d(-40, 11.5,Math.toRadians(0));
 
 		Pose2d park_safe = new Pose2d(-36.60741466514628, 12, Math.toRadians(0));
 
@@ -88,14 +90,12 @@ public class RightSide extends BaseAuto {
 
 
 		return multiCommand(goToScore(),followRR(goToConePlacingFirst))
-				.addNext(getPoleContextualPosition()) // yeah
 				.addNext(deposit())
 				.addNext(wait(depositDelayS))
 				// go pickup and place second cone (first of stack)
 				.addNext(followRR(pickupConeFIRST))
 				.addNext(intake())
 				.addNext(multiCommand(followRR(placeConeTrajectory), delayCommand(depositUpDelayS, goToScore())))
-				//.addNext(relocalizeRobot())
 				.addNext(deposit())
 
 				.addNext(wait(depositDelayS))
@@ -103,23 +103,15 @@ public class RightSide extends BaseAuto {
 				.addNext(followRR(pickupCone))
 				.addNext(intake())
 				.addNext(multiCommand(followRR(placeConeTrajectory), delayCommand(depositUpDelayS, goToScore())))
-				//.addNext(relocalizeRobot())
 				.addNext(deposit())
-
 				.addNext(wait(depositDelayS))
 
-				// go pickup and place fourth cone
-//				.addNext(followRR(pickupCone))
-//				.addNext(intake())
-//				.addNext(multiCommand(followRR(placeConeTrajectory), delayCommand(depositUpDelayS, goToScore())))
-//				.addNext(deposit())
-//
-//				.addNext(wait(depositDelayS))
-
 				// park
+				.addNext(new StowForEndAuto(robot.scoringMechanism)) // put slides down
 				.addNext(followRR(goToPark1))
-				.addNext(followRR(goToPark2));
-		
+				.addNext(followRR(goToPark2))
+				.addNext(new EndAction(robot.scoringMechanism)); // shut down slides
+
 	}
 
 	@Override

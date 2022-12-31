@@ -15,6 +15,7 @@ public class RobotRelative extends Command {
     Drivetrain drivetrain;
     ScoringMechanism mechanism;
     Input game_pad1;
+    protected boolean isBoostAppropriate = false;
 
     double strafe_dead_band = 0.1;
 
@@ -44,7 +45,15 @@ public class RobotRelative extends Command {
         state.equals(ScoringMechanism.States.LOW) ||
         state.equals(ScoringMechanism.States.GO_TO_LOW) ||
         state.equals(ScoringMechanism.States.GO_TO_INTAKE)) {
-            scalar = 0.5;
+            scalar = 0.7;
+        }
+
+
+        if (state.equals(ScoringMechanism.States.HIGH) || state.equals(ScoringMechanism.States.MID)) {
+            isBoostAppropriate = true;
+        }
+        if (state.equals(ScoringMechanism.States.LOW)) {
+            isBoostAppropriate = false;
         }
 
         double x;
@@ -59,6 +68,11 @@ public class RobotRelative extends Command {
         }
 
         Pose2d powers = new Pose2d(x * scalar,y * scalar,turn * scalar);
+
+        if (state.equals(ScoringMechanism.States.DEPOSIT) && isBoostAppropriate) {
+            powers = new Pose2d(0.7,0,turn * scalar);
+        }
+
         drivetrain.robotRelative(powers);
 
 
