@@ -119,8 +119,8 @@ public class ScoringMechanism extends Subsystem {
 
     ElapsedTime TraverseTimer = new ElapsedTime();  // timer used to help assist some servo position specific maneuvers such as putting down the arm.
 
-    double GO_TO_INTAKE_TIME = 0.4; // time between fully out-taking and moving arm before slides go back down to prevent bad things
-    double OUTTAKE_DURATION = 0.4;  // time the out take occurs for before putting slides back in.
+    double GO_TO_INTAKE_TIME = 0.15; // time between fully out-taking and moving arm before slides go back down to prevent bad things
+    double OUTTAKE_DURATION = 0.15;  // time the out take occurs for before putting slides back in.
     private double previousMotorTarget = 10000000;
 
     /**
@@ -277,7 +277,7 @@ public class ScoringMechanism extends Subsystem {
             case AUTO_INTAKE_2:
             case AUTO_INTAKE_1:
                 commandActuatorSetpoints(WRIST_COLLECT_SHORT, ARM_IN_COLLECT, getSlideHeightForAutoIntaking(), CLAW_OPEN);
-                if (TraverseTimer.seconds() > 0.3) {
+                if (TraverseTimer.seconds() > 0.15) {
                     currentStackProgress = getNextAutoIntake();
                     state = States.AUTO_STOP_IN_TAKING;
                 }

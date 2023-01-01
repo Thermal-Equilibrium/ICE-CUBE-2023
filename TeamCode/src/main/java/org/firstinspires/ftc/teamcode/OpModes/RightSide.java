@@ -32,14 +32,14 @@ public class RightSide extends BaseAuto {
 		//Pose2d placeCone2 = new Pose2d(-29.60741466514628, 10, placeCone.getHeading());
 		Pose2d placeCone2 = new Pose2d(-32, 5, Math.toRadians(330));
 		placeCone2 = shiftRobotRelative(placeCone2, 2.6,4);
-		Pose2d pickupFull = new Pose2d(-64.5,12.5,Math.toRadians(0));
-		Pose2d pickupPartial = new Pose2d(-40, 11.5,Math.toRadians(0));
+		Pose2d pickupFull = new Pose2d(-62,14,Math.toRadians(0));
+		Pose2d pickupPartial = new Pose2d(-40, 14,Math.toRadians(0));
 
 		Pose2d park_safe = new Pose2d(-36.60741466514628, 12, Math.toRadians(0));
 
-		Pose2d parkLeft = new Pose2d(-9,14,Math.toRadians(0));
+		Pose2d parkLeft = new Pose2d(-9,15,Math.toRadians(0));
 		Pose2d parkMid = new Pose2d(-33,14,Math.toRadians(0));
-		Pose2d parkRight = new Pose2d(-57,10,Math.toRadians(0));
+		Pose2d parkRight = new Pose2d(-57,14,Math.toRadians(0));
 
 		Pose2d park = parkRight;
 		switch (parkingPosition) {
@@ -84,7 +84,7 @@ public class RightSide extends BaseAuto {
 				.build();
 
 
-		double depositDelayS = 1;
+		double depositDelayS = 0.3;
 
 		double depositUpDelayS = 0.4;
 
@@ -105,7 +105,12 @@ public class RightSide extends BaseAuto {
 				.addNext(multiCommand(followRR(placeConeTrajectory), delayCommand(depositUpDelayS, goToScore())))
 				.addNext(deposit())
 				.addNext(wait(depositDelayS))
-
+				// pickup cone four
+				.addNext(followRR(pickupCone))
+				.addNext(intake())
+				.addNext(multiCommand(followRR(placeConeTrajectory), delayCommand(depositUpDelayS, goToScore())))
+				.addNext(deposit())
+				.addNext(wait(depositDelayS))
 				// park
 				.addNext(new StowForEndAuto(robot.scoringMechanism)) // put slides down
 				.addNext(followRR(goToPark1))
