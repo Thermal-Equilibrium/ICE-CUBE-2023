@@ -55,6 +55,7 @@ public class VerticalExtension extends Subsystem {
 
 	public void setState(MainScoringMechanism.MechanismStates state) {
 		this.state = state;
+		updateTargetPosition();
 	}
 
 	protected void updatePID() {
@@ -74,5 +75,33 @@ public class VerticalExtension extends Subsystem {
 
 	public double getSlideTargetPosition() {
 		return slideTargetPosition;
+	}
+
+	public void updateTargetPosition() {
+		switch (this.state) {
+			case BEGIN:
+				slideTargetPosition = 0.0;
+				break;
+			case LOW:
+				// TODO: Find the correct position for this
+				slideTargetPosition = 0.0;
+				break;
+			case MID:
+				// TODO: Find the correct position for this
+				slideTargetPosition = 0.0;
+				break;
+			case HIGH:
+				// TODO: Find the correct position for this
+				slideTargetPosition = 0.0;
+				break;
+			case GO_TO_LOW:
+				// TODO: Find the correct position for this
+				slideTargetPosition = 0.0;
+				break;
+			case TransferCone:
+				// TODO: Find the correct position for this
+				slideTargetPosition = 0.0;
+				break;
+		}
 	}
 }
