@@ -11,6 +11,7 @@ public class MainScoringMechanism extends Subsystem {
 	Turret turret = new Turret();
 
 
+	MechanismStates state = MechanismStates.BEGIN;
 
 	@Override
 	public void initAuto(HardwareMap hwMap) {
@@ -41,6 +42,9 @@ public class MainScoringMechanism extends Subsystem {
 		horizontalExtension.periodic();
 		verticalExtension.periodic();
 		turret.periodic();
+		horizontalExtension.setState(state);
+		verticalExtension.setState(state);
+		turret.setState(state);
 	}
 
 	private void updateLogic() {
@@ -48,6 +52,7 @@ public class MainScoringMechanism extends Subsystem {
 	}
 
 	public enum MechanismStates {
+		BEGIN,// everything in 18 inches, for match start
 		CollectingTeleop,
 		Collecting5,
 		Collecting4,
@@ -62,7 +67,11 @@ public class MainScoringMechanism extends Subsystem {
 		MID, // slide MID
 		GO_TO_LOW, // pickup cone from platform since our slides cannot on low or ground, we must just use the claw
 		LOW, // in position on
-
 	}
+
+	public MechanismStates getState() {
+		return state;
+	}
+
 
 }
