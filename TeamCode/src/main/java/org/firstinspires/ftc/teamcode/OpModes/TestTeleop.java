@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import android.os.Build;
-
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.BaseTeleop;
@@ -9,14 +7,6 @@ import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.AlignWithDistanceSensor;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.RobotRelative;
-import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.RelocalizeRobotFromPole;
-import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.SetPoleContext;
-import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.ActivateIntakeByTime;
-import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.ActivateIntakeToggle;
-import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.Deposit;
-import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.GoToScore;
-import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringSubsystem.openClaw;
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism;
 
 import java.util.function.BooleanSupplier;
 
@@ -30,15 +20,6 @@ public class TestTeleop extends BaseTeleop {
 	public Command setupTeleop(CommandScheduler scheduler) {
 
 		BooleanSupplier autoAlignSupplier = () -> gamepad1.left_stick_button;
-
-		robot.gamepad1.whenLeftBumperPressed(new ActivateIntakeByTime(robot.scoringMechanism, 10));
-		robot.gamepad1.whenTrianglePressed(new GoToScore(robot.scoringMechanism, ScoringMechanism.States.HIGH));
-		robot.gamepad1.whenSquarePressed(new GoToScore(robot.scoringMechanism, ScoringMechanism.States.MID));
-		robot.gamepad1.whenCirclePressed(new GoToScore(robot.scoringMechanism, ScoringMechanism.States.LOW));
-		robot.gamepad1.whenRightBumperPressed(new Deposit(robot.scoringMechanism));
-		robot.gamepad1.whenDPadDownPressed(new RelocalizeRobotFromPole(robot.distanceSensor));
-		robot.gamepad1.whenDPadUpPressed(new SetPoleContext(robot.distanceSensor));
-		robot.gamepad1.whenLeftTriggerPressed(new openClaw(robot.scoringMechanism));
 		robot.gamepad1.whenLeftStickButtonPressed(new AlignWithDistanceSensor(robot.drivetrain,
 				robot.distanceSensor,
 				autoAlignSupplier).addNext(new RobotRelative(robot,robot.gamepad1)));

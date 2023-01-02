@@ -62,15 +62,9 @@ public class SampleMecanumDrive extends MecanumDrive {
     static double translation_kp = 12;
     static double rotation_Kp = 4;
     public static PIDCoefficients TRANSLATIONAL_PID;
-    AnalogInput gyro;
-    protected double previousGyroAngle = 0;
-    protected double gyroVelocity = 0;
-    ElapsedTime derivativeTimer = new ElapsedTime();
-    LowPassFilter filter = new LowPassFilter(0.1);
-    MedianFilter3 filter2 = new MedianFilter3();
+
     MedianFilter3 voltageFilter = new MedianFilter3();
 
-    public static final boolean useExternIMU = false;
     private BNO055IMU imu;
 
     static {
@@ -131,15 +125,10 @@ public class SampleMecanumDrive extends MecanumDrive {
 
 
         // TODO: adjust the names of the following hardware devices to match your configuration
-        if (!useExternIMU) {
-            imu = hardwareMap.get(BNO055IMU.class, "imu");
-            BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-            parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
-            imu.initialize(parameters);
-        }
-
-
-        gyro = hardwareMap.get(com.qualcomm.robotcore.hardware.AnalogInput.class, "LRGYRO");
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
+        imu.initialize(parameters);
 
 
         // TODO: If the hub containing the IMU you are using is mounted so that the "REV" logo does
@@ -193,10 +182,6 @@ public class SampleMecanumDrive extends MecanumDrive {
         // TODO: reverse any motors using DcMotor.setDirection()
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
-        // TODO: if desired, use setLocalizer() to change the localization method
-        // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
-        localizer2Wheel = new TwoWheelTrackingLocalizer(hardwareMap,this);
-        setLocalizer(localizer2Wheel);
 
         trajectorySequenceRunner = new TrajectorySequenceRunner(follower, HEADING_PID);
     }
@@ -350,26 +335,12 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     @Override
     public double getRawExternalHeading() {
-        if (useExternIMU) {
-            return voltageToAngle(gyro.getVoltage()); //imu.getAngularOrientation().firstAngle;
-        }
         return imu.getAngularOrientation().firstAngle;
     }
 
     @Override
     public Double getExternalHeadingVelocity() {
-        if (useExternIMU) {
-            double gyroHeading = getExternalHeading();
-            // To work around an SDK bug, use -zRotationRate in place of xRotationRate
-            // and -xRotationRate in place of zRotationRate (yRotationRate behaves as
-            // expected). This bug does NOT affect orientation.
-            //
-            // See https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/251 for details.
-            gyroVelocity = normalizeAngle(gyroHeading - previousGyroAngle) / derivativeTimer.seconds();
-            previousGyroAngle = gyroHeading;
-            derivativeTimer.reset();
-            return filter.estimate(filter2.estimate(-gyroVelocity));// (double) -imu.getAngularVelocity().xRotationRate;
-        }
+
         return (double)imu.getAngularVelocity().xRotationRate;
 
     }

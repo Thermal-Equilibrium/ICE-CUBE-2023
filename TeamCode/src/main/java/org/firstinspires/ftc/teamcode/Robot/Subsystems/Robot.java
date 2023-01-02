@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
+import org.firstinspires.ftc.teamcode.Purepursuit.AStar.Main;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.MainScoringMechanism;
 import org.firstinspires.ftc.teamcode.Simulation.TestCommandsSubsystems.PrintSubsystem1;
 
 import java.util.ArrayList;
@@ -23,7 +25,7 @@ public class Robot {
 	public Input gamepad2;
 	public Drivetrain drivetrain = new Drivetrain();
 	//public PoleDetectionSubsystem detectionSubsystem = new PoleDetectionSubsystem(dashboard);
-	public ScoringMechanism scoringMechanism = new ScoringMechanism();
+	public MainScoringMechanism scoringMechanism = new MainScoringMechanism();
 	public DistanceSensor distanceSensor = new DistanceSensor(drivetrain);
 	public FieldMap field = new FieldMap();
 	public Vision vision = new Vision(drivetrain);
