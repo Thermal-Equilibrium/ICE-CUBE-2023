@@ -31,7 +31,7 @@ import org.firstinspires.ftc.teamcode.RR_quickstart.drive.SampleMecanumDrive;
 @Autonomous(group = "drive")
 public class BackAndForth extends BaseAuto {
 
-    public static double DISTANCE = 50;
+    public static double DISTANCE = 60;
 
     @Override
     public Command setupAuto(CommandScheduler scheduler) {
@@ -40,11 +40,7 @@ public class BackAndForth extends BaseAuto {
                 .forward(DISTANCE)
                 .build();
 
-        Trajectory trajectoryBackward = robot.drivetrain.getBuilder().trajectoryBuilder(trajectoryForward.end())
-                .back(DISTANCE)
-                .build();
 
-        return followRR(trajectoryForward)
-                .addNext(followRR(trajectoryBackward));
+        return followRR(trajectoryForward);
     }
 }

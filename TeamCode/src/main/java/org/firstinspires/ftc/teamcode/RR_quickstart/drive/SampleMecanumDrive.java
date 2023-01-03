@@ -72,10 +72,13 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     public static final boolean useExternIMU = false;
     private BNO055IMU imu;
+    static final double Ku = 45;
+    static final double Tu = 2.409;
 
     static {
         try {
             TRANSLATIONAL_PID = new PIDCoefficients(translation_kp, 0, solveKD(translation_kp, DriveConstants.kV,DriveConstants.kA));
+//            TRANSLATIONAL_PID = new PIDCoefficients(Ku * 0.2,0.4 * Ku / Tu ,0.06666 * Ku * Tu);
         } catch (Exception e) {
             TRANSLATIONAL_PID = new PIDCoefficients(11, 0, 3);
             System.out.println("controller synthesis failed, reverting to safe coefficients");
@@ -119,7 +122,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         super(DriveConstants.kV, DriveConstants.kA, DriveConstants.kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
 
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
-                new Pose2d(0.5, 0.5, Math.toRadians(1.2)), 0.5);
+                new Pose2d(0.5, 0.5, Math.toRadians(1.2)), 30); // 0.5 normally
 
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
 

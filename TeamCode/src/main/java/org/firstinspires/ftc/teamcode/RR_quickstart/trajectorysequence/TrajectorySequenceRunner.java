@@ -17,6 +17,7 @@ import com.acmerobotics.roadrunner.trajectory.TrajectoryMarker;
 import com.acmerobotics.roadrunner.util.NanoClock;
 
 import org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants;
+import org.firstinspires.ftc.teamcode.RR_quickstart.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.RR_quickstart.trajectorysequence.sequencesegment.SequenceSegment;
 import org.firstinspires.ftc.teamcode.RR_quickstart.trajectorysequence.sequencesegment.TrajectorySegment;
 import org.firstinspires.ftc.teamcode.RR_quickstart.trajectorysequence.sequencesegment.TurnSegment;
@@ -180,8 +181,8 @@ public class TrajectorySequenceRunner {
         while (POSE_HISTORY_LIMIT > -1 && poseHistory.size() > POSE_HISTORY_LIMIT) {
             poseHistory.removeFirst();
         }
-//
         Dashboard.packet.put("x", poseEstimate.getX());
+
         Dashboard.packet.put("y", poseEstimate.getY());
         Dashboard.packet.put("heading (deg)", Math.toDegrees(poseEstimate.getHeading()));
 
@@ -190,6 +191,7 @@ public class TrajectorySequenceRunner {
         Dashboard.packet.put("xError", getLastPoseError().getX());
         Dashboard.packet.put("yError", getLastPoseError().getY());
         Dashboard.packet.put("headingError (deg)", Math.toDegrees(getLastPoseError().getHeading()));
+
 
         draw(Dashboard.packet.fieldOverlay(), currentTrajectorySequence, currentSegment, targetPose, poseEstimate);
 //
