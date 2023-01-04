@@ -28,8 +28,6 @@ public class ProfiledPID implements FeedbackController {
 
 	ElapsedTime timer = new ElapsedTime();
 
-	boolean hasRun = false;
-
 	MotionProfile m_profile;
 
 	double previousMotorTarget = 0;

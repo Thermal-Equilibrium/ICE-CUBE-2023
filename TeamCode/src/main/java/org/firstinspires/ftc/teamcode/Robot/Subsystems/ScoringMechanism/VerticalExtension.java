@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
+import org.firstinspires.ftc.teamcode.Math.AsymmetricProfile.MotionConstraint;
+import org.firstinspires.ftc.teamcode.Utils.ProfiledPID;
 
 public class VerticalExtension extends Subsystem {
 
@@ -17,7 +19,10 @@ public class VerticalExtension extends Subsystem {
 	DcMotorEx rightMotor;
 
 	PIDCoefficients slideCoefficients = new PIDCoefficients(0.1,0,0);
-	BasicPID controller = new BasicPID(slideCoefficients);
+	MotionConstraint upConstraint = new MotionConstraint(10,10,10);
+	MotionConstraint downConstraint = new MotionConstraint(10,10,10);
+
+	ProfiledPID controller = new ProfiledPID(upConstraint,downConstraint,slideCoefficients);
 
 	protected double slideTargetPosition = 0;
 
