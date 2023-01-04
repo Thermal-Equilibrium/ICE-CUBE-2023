@@ -48,15 +48,28 @@ public class Turret extends Subsystem {
 			claw.setPosition(1); // set to value that best drops cone, should be as small as possible so that it fits between the outtake slides
 	}
 
-	protected void setTurretServoSync(double position) {
+	public void setTurretPositionSync(double position) {
 		position = Range.clip(position,-1,1);
 		turret.setPosition(position);
 	}
 
-	protected void setArmPositionSync(double position) {
+	public double getTurretPosition() {
+		return turret.getPosition();
+	}
+
+	public void setArmPositionSync(double position) {
+		// TODO: Adjust the min and max here to appropriate soft stops
 		position = Range.clip(position,-1,1);
 		arm1.setPosition(position);
 		arm2.setPosition(1 - position);
+	}
+
+	// TODO: Maybe don't average? if we only use 1 servo lol
+	public double getArmPosition() {
+		double arm1Position = arm1.getPosition();
+		double arm2Position = 1 - arm2.getPosition();
+
+		return (arm1Position + arm2Position) / 2;
 	}
 
 }
