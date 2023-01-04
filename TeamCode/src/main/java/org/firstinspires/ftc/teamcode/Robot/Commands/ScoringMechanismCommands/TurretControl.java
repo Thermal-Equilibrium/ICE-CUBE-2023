@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Robot.Commands.ScoringMechanismCommands;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Input;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils;
 
 // Turret control for teleop
 // TODO: Add motion profiling
@@ -30,17 +31,13 @@ public class TurretControl extends Command {
     @Override
     public void periodic() {
         // turret rotation
-        double turretRotationCommand = game_pad2.getStrafeJoystick();
-        if (Math.abs(turretRotationCommand) < turretRotationDeadBand)
-            turretRotationCommand = 0;
+        double turretRotationCommand = MathUtils.applyDeadBand(game_pad2.getStrafeJoystick(), turretRotationDeadBand);
 
         double deltaTurretPosition = turretRotationCommand * turretRotationScalingFactor;
         turret.setTurretPositionSync(turret.getTurretPosition() + deltaTurretPosition);
 
         // turret arm control
-        double armRotationCommand = -game_pad2.getForwardJoystick();
-        if (Math.abs(armRotationCommand) < armRotationDeadBand)
-            armRotationCommand = 0;
+        double armRotationCommand = MathUtils.applyDeadBand(-game_pad2.getForwardJoystick(), armRotationDeadBand);
 
         double deltaArmPosition = armRotationCommand * armRotationScalingFactor;
         turret.setArmPositionSync(turret.getArmPosition() + deltaArmPosition);

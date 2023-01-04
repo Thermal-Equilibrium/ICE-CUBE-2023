@@ -7,6 +7,7 @@ import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Input;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
+import org.firstinspires.ftc.teamcode.Utils.MathUtils;
 
 public class RobotRelative extends Command {
 
@@ -42,9 +43,7 @@ public class RobotRelative extends Command {
         x = game_pad1.getForwardJoystick();
         turn = game_pad1.getTurnJoystick();
 
-        if (Math.abs(y) < strafe_dead_band) {
-            y = 0;
-        }
+        y = MathUtils.applyDeadBand(y, strafe_dead_band);
 
         Pose2d powers = new Pose2d(x * scalar,y * scalar,turn * scalar);
 
