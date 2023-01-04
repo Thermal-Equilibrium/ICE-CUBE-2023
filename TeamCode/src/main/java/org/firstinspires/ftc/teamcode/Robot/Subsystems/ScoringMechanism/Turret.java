@@ -17,6 +17,12 @@ public class Turret extends Subsystem {
 	Servo arm2;
 	Servo claw;
 
+	public enum ClawStates {
+		Open,
+		Transfer,
+		Closed
+	}
+
 	@Override
 	public void initAuto(HardwareMap hwMap) {
 
@@ -40,12 +46,21 @@ public class Turret extends Subsystem {
 		this.state = state;
 	}
 
-	public void setClawGrabbing(boolean grabbing) {
+	public void setClawGrabbing(ClawStates clawState) {
 		// TODO: Maybe add a different state for normally dropping cone from claw and dropping the cone in the outtake?
-		if (grabbing)
-			claw.setPosition(0); // set to value that best grabs cone
-		else
-			claw.setPosition(1); // set to value that best drops cone, should be as small as possible so that it fits between the outtake slides
+		switch (clawState) {
+			case Open:
+				// TODO: tune this values
+				claw.setPosition(1);
+				break;
+			case Transfer:
+				// TODO: tune this values
+				claw.setPosition(0.5);
+				break;
+			case Closed:
+				// TODO: tune this values
+				claw.setPosition(0);
+		}
 	}
 
 	public void setTurretPositionSync(double position) {

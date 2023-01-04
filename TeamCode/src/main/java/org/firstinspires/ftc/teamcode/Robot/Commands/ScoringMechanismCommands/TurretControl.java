@@ -45,9 +45,11 @@ public class TurretControl extends Command {
         // TODO: Oh God someone help please I forgot how to do buttons correctly skull x3
         // also I don't know how ps4 controllers are laid out so adjust the specific button types to the drivers liking
         if (game_pad2.isTrianglePressed())
-            turret.setClawGrabbing(true);
+            turret.setClawGrabbing(Turret.ClawStates.Closed);
         else if (game_pad2.isCirclePressed())
-            turret.setClawGrabbing(false);
+            turret.setClawGrabbing(Turret.ClawStates.Open);
+        else if (game_pad2.isSquarePressed())
+            turret.setClawGrabbing(Turret.ClawStates.Transfer);
     }
 
     @Override
