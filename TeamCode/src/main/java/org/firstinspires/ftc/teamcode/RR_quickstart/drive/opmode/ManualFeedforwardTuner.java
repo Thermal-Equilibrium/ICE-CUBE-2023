@@ -134,6 +134,7 @@ public class ManualFeedforwardTuner extends LinearOpMode {
                     // update telemetry
                     telemetry.addData("targetVelocity", motionState.getV());
                     telemetry.addData("measuredVelocity", currentVelo);
+                    System.out.println("velocities: " + currentVelo + ", " + motionState.getV());
                     telemetry.addData("error", motionState.getV() - currentVelo);
                     break;
                 case DRIVER_MODE:

@@ -31,7 +31,7 @@ public class RightSide extends BaseAuto {
 
 		//Pose2d placeCone2 = new Pose2d(-29.60741466514628, 10, placeCone.getHeading());
 		Pose2d placeCone2 = new Pose2d(-32, 5, Math.toRadians(330));
-		placeCone2 = shiftRobotRelative(placeCone2, 2.6,4);
+		placeCone2 = shiftRobotRelative(placeCone2, 3.2,5);
 		Pose2d pickupFull = new Pose2d(-62,14,Math.toRadians(0));
 		Pose2d pickupPartial = new Pose2d(-40, 14,Math.toRadians(0));
 
@@ -106,11 +106,11 @@ public class RightSide extends BaseAuto {
 				.addNext(deposit())
 				.addNext(wait(depositDelayS))
 				// pickup cone four
-				.addNext(followRR(pickupCone))
-				.addNext(intake())
-				.addNext(multiCommand(followRR(placeConeTrajectory), delayCommand(depositUpDelayS, goToScore())))
-				.addNext(deposit())
-				.addNext(wait(depositDelayS))
+//				.addNext(followRR(pickupCone))
+//				.addNext(intake())
+//				.addNext(multiCommand(followRR(placeConeTrajectory), delayCommand(depositUpDelayS, goToScore())))
+//				.addNext(deposit())
+//				.addNext(wait(depositDelayS))
 				// park
 				.addNext(new StowForEndAuto(robot.scoringMechanism)) // put slides down
 				.addNext(followRR(goToPark1))

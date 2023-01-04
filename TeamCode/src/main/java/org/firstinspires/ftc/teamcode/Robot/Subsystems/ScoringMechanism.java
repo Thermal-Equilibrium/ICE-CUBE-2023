@@ -52,7 +52,7 @@ public class ScoringMechanism extends Subsystem {
     public static double OUT_TAKE = CLAW_OPEN;
 
     public static double SLIDES_IN = 0;
-    public static double SLIDES_HIGH = 15.5;
+    public static double SLIDES_HIGH = 15.8;
     public static double SLIDES_MID = 7;
     public static double SLIDES_LOW = 7;
     public static double SLIDES_SAFE_FOR_STACK = 7.5;
@@ -168,7 +168,7 @@ public class ScoringMechanism extends Subsystem {
         slideRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         slideLeft.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         slideRight.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        //SLIDES_HIGH -= 0.33;
+        SLIDES_HIGH -= 0.33;
     }
 
     /**
@@ -613,13 +613,13 @@ public class ScoringMechanism extends Subsystem {
     public double getSlideHeightForAutoIntaking() {
         switch (currentStackProgress) {
             case AUTO_INTAKE_5:
-                return 4.5;
+                return 5;
             case AUTO_INTAKE_4:
-                return 3.5;
+                return 4;
             case AUTO_INTAKE_3:
-                return 2.5;
+                return 3;
             case AUTO_INTAKE_2:
-                return 1.5;
+                return 2;
             default:
                 return 0;
         }
