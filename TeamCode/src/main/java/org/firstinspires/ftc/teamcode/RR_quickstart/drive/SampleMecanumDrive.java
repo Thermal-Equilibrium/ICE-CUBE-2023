@@ -68,31 +68,33 @@ public class SampleMecanumDrive extends MecanumDrive {
     private BNO055IMU imu;
 
     static {
-        try {
-            TRANSLATIONAL_PID = new PIDCoefficients(translation_kp, 0, solveKD(translation_kp, DriveConstants.kV,DriveConstants.kA));
-        } catch (Exception e) {
-            TRANSLATIONAL_PID = new PIDCoefficients(11, 0, 3);
-            System.out.println("controller synthesis failed, reverting to safe coefficients");
-            e.printStackTrace();
-        }
+//        try {
+//            TRANSLATIONAL_PID = new PIDCoefficients(translation_kp, 0, solveKD(translation_kp, DriveConstants.kV,DriveConstants.kA));
+//        } catch (Exception e) {
+//            TRANSLATIONAL_PID = new PIDCoefficients(11, 0, 3);
+//            System.out.println("controller synthesis failed, reverting to safe coefficients");
+//            e.printStackTrace();
+//        }
+        TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
+
     }
 
     public static PIDCoefficients HEADING_PID; // new PIDCoefficients(5, 0, 0.3);
 
     static {
-        try {
-            HEADING_PID = new PIDCoefficients(rotation_Kp,0,solveKD(translation_kp, DriveConstants.kV / TRACK_WIDTH,DriveConstants.gyrationConstant * DriveConstants.kA / TRACK_WIDTH));
-        } catch (Exception e) {
-            HEADING_PID = new PIDCoefficients(rotation_Kp,0,0);
-            System.out.println("heading controller synthesis failed, reverting to safe coefficients");
-
-        }
+//        try {
+//            HEADING_PID = new PIDCoefficients(rotation_Kp,0,solveKD(translation_kp, DriveConstants.kV / TRACK_WIDTH,DriveConstants.gyrationConstant * DriveConstants.kA / TRACK_WIDTH));
+//        } catch (Exception e) {
+//            HEADING_PID = new PIDCoefficients(rotation_Kp,0,0);
+//            System.out.println("heading controller synthesis failed, reverting to safe coefficients");
+//        }
+        HEADING_PID = new PIDCoefficients(0,0,0);
     }
 
     public static double LATERAL_MULTIPLIER = 1;
 
     public static double VX_WEIGHT = 1;
-    public static double VY_WEIGHT = 1.031236327;
+    public static double VY_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 1;
 
     private TrajectorySequenceRunner trajectorySequenceRunner;

@@ -22,10 +22,11 @@ public class VerticalExtension extends Subsystem {
 	MotionConstraint downConstraint = new MotionConstraint(5000,5000,2000);
 
 	ProfiledPID controller = new ProfiledPID(upConstraint,downConstraint,coefficients);
-	double highPosition = 833;
+	public final static double HIGH_POSITION = 833;
 
 
 	protected double slideTargetPosition = 0;
+
 
 	public void commonInit(HardwareMap hwMap) {
 		vertical1 = hwMap.get(DcMotorEx.class, "vertical1");
@@ -100,7 +101,7 @@ public class VerticalExtension extends Subsystem {
 				break;
 			case HIGH:
 				// TODO: Find the correct position for this
-				slideTargetPosition = highPosition;
+				slideTargetPosition = HIGH_POSITION;
 				break;
 			case GO_TO_LOW:
 				// TODO: Find the correct position for this

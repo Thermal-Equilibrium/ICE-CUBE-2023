@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism;
 
-import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
 import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -25,7 +24,11 @@ public class HorizontalExtension extends Subsystem {
 
 	ProfiledPID controller = new ProfiledPID(upConstraint,downConstraint,coefficients);
 
-	protected double slideTargetPosition = 300;
+
+	public final static double IN_POSITION = 0;
+	public final static double SAFE_POSITION = 300;
+	public final static double EXTENSION1 = 500;
+	public final static double EXTENSION2 = 501; // todo figure out our max safe extension
 
 	public void commonInit(HardwareMap hwMap) {
 		leftMotor = hwMap.get(DcMotorEx.class, "leftHorizontal");
@@ -65,7 +68,7 @@ public class HorizontalExtension extends Subsystem {
 
 	protected void updatePID() {
 		double measuredPosition = getSlidePosition();
-		double power = controller.calculate(slideTargetPosition,measuredPosition);
+		double power = controller.calculate(SAFE_POSITION,measuredPosition);
 		leftMotor.setPower(power);
 		rightMotor.setPower(power);
 	}
@@ -79,6 +82,6 @@ public class HorizontalExtension extends Subsystem {
 	}
 
 	public double getSlideTargetPosition() {
-		return slideTargetPosition;
+		return SAFE_POSITION;
 	}
 }
