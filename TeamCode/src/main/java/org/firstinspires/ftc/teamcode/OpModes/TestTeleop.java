@@ -7,6 +7,8 @@ import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.AlignWithDistanceSensor;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.RobotRelative;
+import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
+import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringMechanismCommands.TurretControl;
 
 import java.util.function.BooleanSupplier;
 
@@ -18,13 +20,7 @@ public class TestTeleop extends BaseTeleop {
 
 	@Override
 	public Command setupTeleop(CommandScheduler scheduler) {
-
-		BooleanSupplier autoAlignSupplier = () -> gamepad1.left_stick_button;
-		robot.gamepad1.whenLeftStickButtonPressed(new AlignWithDistanceSensor(robot.drivetrain,
-				robot.distanceSensor,
-				autoAlignSupplier).addNext(new RobotRelative(robot,robot.gamepad1)));
-
-		//return new ClosedLoopTeleop(robot.drivetrain,robot.odometry,robot.gamepad1);
-		return new RobotRelative(robot, robot.gamepad1);
+		return new MultipleCommand(new RobotRelative(robot, robot.gamepad1),
+									new TurretControl(robot.scoringMechanism.turret, robot.gamepad2));
 	}
 }

@@ -28,13 +28,13 @@ public abstract class BaseAuto extends LinearOpMode {
 		robot = new Robot(hardwareMap, Robot.OpMode.Auto, gamepad1, gamepad2);
 		setRobotPosition();
 
-		while (!isStopRequested() && !opModeIsActive() && opModeInInit()) {
-			parkingPosition = robot.detectionSubsystem.getPosition();
-			telemetry.addData("current parking position is: ", parkingPosition);
-			telemetry.update();
-		}
+//		while (!isStopRequested() && !opModeIsActive() && opModeInInit()) {
+//			parkingPosition = robot.detectionSubsystem.getPosition();
+//			telemetry.addData("current parking position is: ", parkingPosition);
+//			telemetry.update();
+//		}
 
-		robot.detectionSubsystem.destroy(); // TODO, Dear Worth this may cause issues...
+		//robot.detectionSubsystem.destroy(); // TODO, Dear Worth this may cause issues...
 
 
 		robot.getScheduler().forceCommand(setupAuto(robot.getScheduler()));
@@ -69,9 +69,7 @@ public abstract class BaseAuto extends LinearOpMode {
 
 
 
-	public SetPoleContext getPoleContextualPosition() {
-		return new SetPoleContext(robot.distanceSensor);
-	}
+
 
 	public void setRobotPosition() {
 

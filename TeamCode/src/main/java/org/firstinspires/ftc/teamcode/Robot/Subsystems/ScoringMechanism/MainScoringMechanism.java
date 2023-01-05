@@ -6,9 +6,9 @@ import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 
 public class MainScoringMechanism extends Subsystem {
 
-	HorizontalExtension horizontalExtension = new HorizontalExtension();
-	VerticalExtension verticalExtension = new VerticalExtension();
-	Turret turret = new Turret();
+	public HorizontalExtension horizontalExtension = new HorizontalExtension();
+	public VerticalExtension verticalExtension = new VerticalExtension();
+	public Turret turret = new Turret();
 
 
 	MechanismStates state = MechanismStates.BEGIN;

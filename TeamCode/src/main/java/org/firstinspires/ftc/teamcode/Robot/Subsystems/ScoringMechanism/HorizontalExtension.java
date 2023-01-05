@@ -19,13 +19,13 @@ public class HorizontalExtension extends Subsystem {
 	DcMotorEx leftMotor;
 	DcMotorEx rightMotor;
 
-	PIDCoefficients slideCoefficients = new PIDCoefficients(0.1,0,0);
-	MotionConstraint upConstraint = new MotionConstraint(10,10,10);
-	MotionConstraint downConstraint = new MotionConstraint(10,10,10);
+	PIDCoefficients coefficients = new PIDCoefficients(0.01,0,0);
+	MotionConstraint upConstraint = new MotionConstraint(5000,5000,2000);
+	MotionConstraint downConstraint = new MotionConstraint(5000,5000,2000);
 
-	ProfiledPID controller = new ProfiledPID(upConstraint,downConstraint,slideCoefficients);
+	ProfiledPID controller = new ProfiledPID(upConstraint,downConstraint,coefficients);
 
-	protected double slideTargetPosition = 0;
+	protected double slideTargetPosition = 300;
 
 	public void commonInit(HardwareMap hwMap) {
 		leftMotor = hwMap.get(DcMotorEx.class, "leftHorizontal");
