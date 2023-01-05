@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.profile.MotionProfile;
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Math.AsymmetricProfile.MotionConstraint;
 
@@ -34,9 +35,12 @@ public class ProfiledPID implements FeedbackController {
 
 	@Override
 	public double calculate(double reference, double state) {
-		generateMotionProfile(reference,state);
-		double immediateReference = m_profile.get(timer.seconds()).getX();
-		return controller.calculate(immediateReference,state);
+		generateMotionProfile(reference, state);
+		double power = controller.calculate(getTargetPosition(), state);
+		if (power < 0) {
+			power = Range.clip(power, -0.5, 0.5);
+		}
+		return power;
 	}
 
 	protected void generateMotionProfile(double reference, double state) {
@@ -48,21 +52,28 @@ public class ProfiledPID implements FeedbackController {
 						new MotionState(state,0, 0),
 						new MotionState(reference, 0, 0),
 						verticalConstraint.max_velocity,
-						verticalConstraint.max_acceleration,
-						75
+						verticalConstraint.max_acceleration
 				);
 			} else {
 				m_profile = MotionProfileGenerator.generateSimpleMotionProfile(
 						new MotionState(state, 0, 0),
 						new MotionState(reference, 0, 0),
 						downConstraint.max_velocity,
-						downConstraint.max_acceleration,
-						75
+						downConstraint.max_acceleration
 				);
 			}
 
 		}
 		previousMotorTarget = reference;
+
+	}
+
+	public double getTargetPosition() {
+		return m_profile.get(timer.seconds()).getX();
+	}
+
+	public double getVelocity() {
+		return m_profile.get(timer.seconds()).getV();
 
 	}
 }

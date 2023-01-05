@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
+import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -7,8 +8,19 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.Math.AsymmetricProfile.MotionConstraint;
+import org.firstinspires.ftc.teamcode.Utils.ProfiledPID;
+
 @TeleOp
 public class MotorFinder extends LinearOpMode {
+
+	double highPosition = 833;
+	double setpoint = 0;
+	PIDCoefficients coefficients = new PIDCoefficients(0.01,0,0);
+	MotionConstraint upConstraint = new MotionConstraint(5000,5000,2000);
+	MotionConstraint downConstraint = new MotionConstraint(5000,5000,2000);
+
+	ProfiledPID pid = new ProfiledPID(upConstraint,downConstraint,coefficients);
 	@Override
 	public void runOpMode() throws InterruptedException {
 		Servo aBreak = hardwareMap.get(Servo.class, "break");
@@ -36,10 +48,32 @@ public class MotorFinder extends LinearOpMode {
 		DcMotorEx BackRight = hardwareMap.get(DcMotorEx.class, "BackRight");
 		BackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 		BackRight.setDirection(DcMotorSimple.Direction.FORWARD);
+		Servo s0 = hardwareMap.get(Servo.class,"ch0");
+		Servo s1 = hardwareMap.get(Servo.class,"ch1");
+		Servo s2 = hardwareMap.get(Servo.class, "ch2");
+		Servo s3 = hardwareMap.get(Servo.class, "ch3");
 		waitForStart();
+		double clawAngle = 0;
 		while (opModeIsActive()) {
-			BackLeft.setPower(-gamepad1.left_stick_y);
-			BackRight.setPower(-gamepad1.right_stick_y);
+			clawAngle += -gamepad1.left_stick_y * 0.01;
+			s0.setPosition(clawAngle);
+
+
+			double slidePosition = (vertical1.getCurrentPosition() + vertical2.getCurrentPosition()) / 2.0;
+			double power = 0; //= pid.calculate(setpoint,slidePosition);
+			if (gamepad1.dpad_up) {
+				setpoint = highPosition;
+			}
+			if (gamepad1.dpad_down) {
+				setpoint = 0;
+			}
+			vertical1.setPower(power);
+			vertical2.setPower(power);
+			telemetry.addData("average position",slidePosition);
+//			telemetry.addData("target position",pid.getTargetPosition());
+//			telemetry.addData("target velo",pid.getVelocity());
+			telemetry.addData("servo angle",clawAngle);
+			telemetry.update();
 			if (gamepad1.triangle) {
 				aBreak.setPosition(0.7);
 			}
