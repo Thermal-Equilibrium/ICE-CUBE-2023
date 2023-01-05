@@ -42,9 +42,6 @@ public class MainScoringMechanism extends Subsystem {
 		horizontalExtension.periodic();
 		verticalExtension.periodic();
 		turret.periodic();
-		horizontalExtension.setState(state);
-		verticalExtension.setState(state);
-		turret.setState(state);
 	}
 
 	private void updateLogic() {

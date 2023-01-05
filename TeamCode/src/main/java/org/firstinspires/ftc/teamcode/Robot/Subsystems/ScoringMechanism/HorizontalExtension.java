@@ -29,6 +29,7 @@ public class HorizontalExtension extends Subsystem {
 	public final static double SAFE_POSITION = 300;
 	public final static double EXTENSION1 = 500;
 	public final static double EXTENSION2 = 501; // todo figure out our max safe extension
+	protected double targetPosition = IN_POSITION;
 
 	public void commonInit(HardwareMap hwMap) {
 		leftMotor = hwMap.get(DcMotorEx.class, "leftHorizontal");
@@ -62,15 +63,16 @@ public class HorizontalExtension extends Subsystem {
 
 	}
 
-	public void setState(MainScoringMechanism.MechanismStates state) {
-		this.state = state;
-	}
 
 	protected void updatePID() {
 		double measuredPosition = getSlidePosition();
-		double power = controller.calculate(SAFE_POSITION,measuredPosition);
+		double power = controller.calculate(targetPosition,measuredPosition);
 		leftMotor.setPower(power);
 		rightMotor.setPower(power);
+	}
+
+	public void setTargetPosition(double targetPosition) {
+		this.targetPosition = targetPosition;
 	}
 
 	/**
@@ -82,6 +84,9 @@ public class HorizontalExtension extends Subsystem {
 	}
 
 	public double getSlideTargetPosition() {
-		return SAFE_POSITION;
+		return targetPosition;
+	}
+	public boolean isMovementFinished() {
+		return controller.isDone();
 	}
 }

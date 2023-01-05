@@ -33,10 +33,15 @@ public class ProfiledPID implements FeedbackController {
 
 	double previousMotorTarget = 0;
 
+	double m_targetPosition = 0;
+	double m_state = 0;
+
 	@Override
 	public double calculate(double reference, double state) {
 		generateMotionProfile(reference, state);
-		double power = controller.calculate(getTargetPosition(), state);
+		m_targetPosition = getTargetPosition();
+		m_state = state;
+		double power = controller.calculate(m_targetPosition,m_state);
 		if (power < 0) {
 			power = Range.clip(power, -0.5, 0.5);
 		}
@@ -74,6 +79,9 @@ public class ProfiledPID implements FeedbackController {
 
 	public double getVelocity() {
 		return m_profile.get(timer.seconds()).getV();
+	}
 
+	public boolean isDone() {
+		return timer.seconds() > m_profile.duration() && Math.abs(m_targetPosition - m_state) < 50;
 	}
 }

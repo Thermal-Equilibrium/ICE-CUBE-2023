@@ -23,6 +23,7 @@ public class VerticalExtension extends Subsystem {
 
 	ProfiledPID controller = new ProfiledPID(upConstraint,downConstraint,coefficients);
 	public final static double HIGH_POSITION = 833;
+	public final static double IN_POSITION = 0;
 
 
 	protected double slideTargetPosition = 0;
@@ -62,11 +63,6 @@ public class VerticalExtension extends Subsystem {
 
 	}
 
-	public void setState(MainScoringMechanism.MechanismStates state) {
-		this.state = state;
-		updateTargetPosition();
-	}
-
 	protected void updatePID() {
 		double measuredPosition = getSlidePosition();
 		double power = controller.calculate(slideTargetPosition,measuredPosition);
@@ -86,31 +82,11 @@ public class VerticalExtension extends Subsystem {
 		return slideTargetPosition;
 	}
 
-	public void updateTargetPosition() {
-		switch (this.state) {
-			case BEGIN:
-				slideTargetPosition = 0.0;
-				break;
-			case LOW:
-				// TODO: Find the correct position for this
-				slideTargetPosition = 0.0;
-				break;
-			case MID:
-				// TODO: Find the correct position for this
-				slideTargetPosition = 0.0;
-				break;
-			case HIGH:
-				// TODO: Find the correct position for this
-				slideTargetPosition = HIGH_POSITION;
-				break;
-			case GO_TO_LOW:
-				// TODO: Find the correct position for this
-				slideTargetPosition = 0.0;
-				break;
-			case TransferCone:
-				// TODO: Find the correct position for this
-				slideTargetPosition = 0.0;
-				break;
-		}
+	public void updateTargetPosition(double targetpos) {
+		this.slideTargetPosition = targetpos;
+	}
+
+	public boolean isMovementFinished() {
+		return controller.isDone();
 	}
 }

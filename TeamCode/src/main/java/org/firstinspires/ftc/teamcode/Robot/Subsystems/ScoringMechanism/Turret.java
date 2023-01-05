@@ -16,11 +16,6 @@ public class Turret extends Subsystem {
 	Servo arm1;
 	Servo claw;
 
-	public enum ClawStates {
-		Open,
-		Transfer,
-		Closed
-	}
 
 	@Override
 	public void initAuto(HardwareMap hwMap) {
@@ -40,9 +35,6 @@ public class Turret extends Subsystem {
 	public void shutdown() {
 
 	}
-	public void setState(MainScoringMechanism.MechanismStates state) {
-		this.state = state;
-	}
 
 	public void setClawGrabbing(ClawStates clawState) {
 		// TODO: Maybe add a different state for normally dropping cone from claw and dropping the cone in the outtake?
@@ -60,6 +52,35 @@ public class Turret extends Subsystem {
 				claw.setPosition(0);
 		}
 	}
+
+	public void setArm(ArmStates armStates) {
+		switch (armStates) {
+			case TRANSFER:
+				arm1.setPosition(0.2);
+				break;
+			case TRANSFER_SAFE:
+				arm1.setPosition(0.3);
+				break;
+			case DOWN:
+				arm1.setPosition(0.05);
+				break;
+		}
+	}
+
+	public void setTurret(TurretStates turretStates) {
+		switch (turretStates) {
+			case TRANSFER:
+				setTurretPositionSync(0.5);
+				break;
+			case LEFT:
+				setTurretPositionSync(1);
+				break;
+			case RIGHT:
+				setTurretPositionSync(0);
+				break;
+		}
+	}
+
 
 	public void setTurretPositionSync(double position) {
 		position = Range.clip(position,-1,1);
@@ -82,10 +103,23 @@ public class Turret extends Subsystem {
 		double arm1Position = arm1.getPosition();
 
 		return arm1Position;
+	}
+	public enum ClawStates {
+		Open,
+		Transfer,
+		Closed
+	}
 
-//		double arm2Position = 1 - arm2.getPosition();
-//														uncomment once second servo is connected
-//		return (arm1Position + arm2Position) / 2;
+	public enum TurretStates {
+		TRANSFER,
+		LEFT,
+		RIGHT
+	}
+
+	public enum ArmStates {
+		TRANSFER,
+		TRANSFER_SAFE,
+		DOWN
 	}
 
 }
