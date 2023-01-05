@@ -76,15 +76,18 @@ public class Turret extends Subsystem {
 		// TODO: Adjust the min and max here to appropriate soft stops
 		position = Range.clip(position,-1,1);
 		arm1.setPosition(position);
-		arm2.setPosition(1 - position);
+//		arm2.setPosition(1 - position); uncomment once second servo is connected
 	}
 
 	// TODO: Maybe don't average? if we only use 1 servo lol
 	public double getArmPosition() {
 		double arm1Position = arm1.getPosition();
-		double arm2Position = 1 - arm2.getPosition();
 
-		return (arm1Position + arm2Position) / 2;
+		return arm1Position;
+
+//		double arm2Position = 1 - arm2.getPosition();
+//														uncomment once second servo is connected
+//		return (arm1Position + arm2Position) / 2;
 	}
 
 }
