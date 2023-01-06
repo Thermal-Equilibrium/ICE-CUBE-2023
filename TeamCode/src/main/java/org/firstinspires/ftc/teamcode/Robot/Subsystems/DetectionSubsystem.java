@@ -26,7 +26,7 @@ public class DetectionSubsystem extends Subsystem {
 	@Override
 	public void initAuto(HardwareMap hwMap) {
 		int cameraMonitorViewId = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName());
-		webcam1 = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, "Webcam 2"), cameraMonitorViewId);
+		webcam1 = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 		sleeveDetection = new SleeveDetection();
 		webcam1.setPipeline(sleeveDetection);
 		webcam1.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {

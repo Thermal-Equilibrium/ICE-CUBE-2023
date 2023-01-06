@@ -57,7 +57,7 @@ public class MotorFinder extends LinearOpMode {
 		double clawAngle = 0.5;
 		while (opModeIsActive()) {
 			clawAngle += -gamepad1.left_stick_y * 0.01;
-			claw.setPosition(clawAngle);
+			turret.setPosition(clawAngle);
 			//s1.setPosition(clawAngle);
 			// s0.setPosition(0.5);
 			arm.setPosition(0.3);

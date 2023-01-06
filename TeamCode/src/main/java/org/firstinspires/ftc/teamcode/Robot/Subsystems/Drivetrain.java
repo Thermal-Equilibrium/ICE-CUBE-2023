@@ -5,10 +5,10 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
+
 import org.firstinspires.ftc.teamcode.RR_quickstart.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
-
-import java.util.List;
 
 public class Drivetrain extends Subsystem {
 	protected HardwareMap hwMap;
@@ -16,25 +16,29 @@ public class Drivetrain extends Subsystem {
 	protected double leftPower = 0;
 	protected double rightPower = 0;
 	SampleMecanumDrive drive;
-
-
-
+	Servo aBreak;
+	double breakActive = 0.4;
+	double breakReleased = 0.7;
+	BreakStates breakState = BreakStates.FREE;
 
 	@Override
 	public void initAuto(HardwareMap hwMap) {
 		this.hwMap = hwMap;
 		drive = new SampleMecanumDrive(hwMap);
-
+		aBreak = hwMap.get(Servo.class, "break");
+		aBreak.setPosition(breakReleased);
 	}
 	@Override
 	public void periodic() {
 		drive.update();
-//		List<Double> encoders = drive.getWheelPos();
-//		double imu = drive.getRawExternalHeading();
-//		double x = getPose().getX();
-//		double y = getPose().getY();
-//		double heading = getPose().getHeading();
-//		System.out.println("Data For Heno3: " + encoders.get(0) + "," + encoders.get(1) + "," + imu + "," + x + "," + y + "," + heading);
+		switch (breakState) {
+			case FREE:
+				aBreak.setPosition(breakReleased);
+				break;
+			case ACTIVATED:
+				aBreak.setPosition(breakActive);
+				break;
+		}
 	}
 
 
@@ -88,4 +92,24 @@ public class Drivetrain extends Subsystem {
 	}
 
 
+	public void setBreakState(BreakStates breakState) {
+		this.breakState = breakState;
+	}
+
+	public BreakStates getBreakState() {
+		return breakState;
+	}
+
+	public void toggleBreakState() {
+		if (breakState.equals(BreakStates.ACTIVATED)) {
+			breakState = BreakStates.FREE;
+		} else {
+			breakState = BreakStates.ACTIVATED;
+		}
+	}
+
+	public enum BreakStates {
+		FREE,
+		ACTIVATED
+	}
 }

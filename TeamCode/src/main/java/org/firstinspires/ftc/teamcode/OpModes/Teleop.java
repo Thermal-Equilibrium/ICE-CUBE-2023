@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.CommandFramework.BaseTeleop;
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
+import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Break.ToggleBreak;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.RobotRelative;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringCommandGroups;
@@ -24,6 +25,7 @@ public class Teleop extends BaseTeleop {
 		robot.gamepad1.whenDPadDownPressed(commandGroups.moveToIntakingLeft());
 		robot.gamepad1.whenDPadLeftPressed(commandGroups.moveToIntakingLeftClosePole());
 		robot.gamepad1.whenDPadRightPressed(commandGroups.moveToIntakingRightClosePole());
+		robot.gamepad1.whenLeftStickButtonPressed(new ToggleBreak(robot.drivetrain));
 
 		robot.gamepad1.whenRightBumperPressed(commandGroups.collectCone());
 		robot.gamepad1.whenRightTriggerPressed(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION));

@@ -17,7 +17,7 @@ public class Turret extends Subsystem {
 	Servo claw;
 	double clawTransferPosition = 0.34;
 	double armSafe = 0.4;
-	double turretTransfer = 0.53;
+	double turretTransfer = 0.51889;
 
 
 
