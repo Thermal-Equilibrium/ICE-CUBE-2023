@@ -5,17 +5,15 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.CommandFramework.BaseTeleop;
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
-import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.AlignWithDistanceSensor;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.RobotRelative;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringCommandGroups;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringMechanismCommands.TurretControl;
-
-import java.util.function.BooleanSupplier;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
 
 
 @TeleOp
-public class TestTeleop extends BaseTeleop {
+public class Teleop extends BaseTeleop {
 
 
 	@Override
@@ -23,8 +21,13 @@ public class TestTeleop extends BaseTeleop {
 		ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism);
 
 
-		robot.gamepad1.whenLeftBumperPressed(commandGroups.moveToIntakingLeft());
+		robot.gamepad1.whenDPadDownPressed(commandGroups.moveToIntakingLeft());
+		robot.gamepad1.whenDPadLeftPressed(commandGroups.moveToIntakingLeftClosePole());
+		robot.gamepad1.whenDPadRightPressed(commandGroups.moveToIntakingRightClosePole());
+
 		robot.gamepad1.whenRightBumperPressed(commandGroups.collectCone());
+		robot.gamepad1.whenRightTriggerPressed(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION));
+		robot.gamepad1.whenTrianglePressed(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION));
 
 		return new MultipleCommand(new RobotRelative(robot, robot.gamepad1),
 									new TurretControl(robot.scoringMechanism.turret, robot.gamepad2));

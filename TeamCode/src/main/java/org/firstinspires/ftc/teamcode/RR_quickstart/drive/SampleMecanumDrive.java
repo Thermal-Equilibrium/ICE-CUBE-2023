@@ -68,27 +68,24 @@ public class SampleMecanumDrive extends MecanumDrive {
     private BNO055IMU imu;
 
     static {
-//        try {
-//            TRANSLATIONAL_PID = new PIDCoefficients(translation_kp, 0, solveKD(translation_kp, DriveConstants.kV,DriveConstants.kA));
-//        } catch (Exception e) {
-//            TRANSLATIONAL_PID = new PIDCoefficients(11, 0, 3);
-//            System.out.println("controller synthesis failed, reverting to safe coefficients");
-//            e.printStackTrace();
-//        }
-        TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
-
+        try {
+            TRANSLATIONAL_PID = new PIDCoefficients(translation_kp, 0, solveKD(translation_kp, DriveConstants.kV,DriveConstants.kA));
+        } catch (Exception e) {
+            TRANSLATIONAL_PID = new PIDCoefficients(11, 0, 3);
+            System.out.println("controller synthesis failed, reverting to safe coefficients");
+            e.printStackTrace();
+        }
     }
 
     public static PIDCoefficients HEADING_PID; // new PIDCoefficients(5, 0, 0.3);
 
     static {
-//        try {
-//            HEADING_PID = new PIDCoefficients(rotation_Kp,0,solveKD(translation_kp, DriveConstants.kV / TRACK_WIDTH,DriveConstants.gyrationConstant * DriveConstants.kA / TRACK_WIDTH));
-//        } catch (Exception e) {
-//            HEADING_PID = new PIDCoefficients(rotation_Kp,0,0);
-//            System.out.println("heading controller synthesis failed, reverting to safe coefficients");
-//        }
-        HEADING_PID = new PIDCoefficients(0,0,0);
+        try {
+            HEADING_PID = new PIDCoefficients(rotation_Kp,0,solveKD(translation_kp, DriveConstants.kV / TRACK_WIDTH,DriveConstants.gyrationConstant * DriveConstants.kA / TRACK_WIDTH));
+        } catch (Exception e) {
+            HEADING_PID = new PIDCoefficients(rotation_Kp,0,0);
+            System.out.println("heading controller synthesis failed, reverting to safe coefficients");
+        }
     }
 
     public static double LATERAL_MULTIPLIER = 1;
@@ -343,7 +340,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     @Override
     public Double getExternalHeadingVelocity() {
 
-        return (double)imu.getAngularVelocity().xRotationRate;
+        return (double)imu.getAngularVelocity().zRotationRate;
 
     }
 

@@ -54,9 +54,10 @@ public class MotorFinder extends LinearOpMode {
 		Servo s2 = hardwareMap.get(Servo.class, "ch2");
 		Servo turret = hardwareMap.get(Servo.class, "turret");
 		waitForStart();
-		double clawAngle = 1.0;
+		double clawAngle = 0.5;
 		while (opModeIsActive()) {
 			clawAngle += -gamepad1.left_stick_y * 0.01;
+			claw.setPosition(clawAngle);
 			//s1.setPosition(clawAngle);
 			// s0.setPosition(0.5);
 			arm.setPosition(0.3);

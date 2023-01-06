@@ -18,11 +18,11 @@ public class VerticalExtension extends Subsystem {
 	DcMotorEx vertical2;
 
 	PIDCoefficients coefficients = new PIDCoefficients(0.01,0,0);
-	MotionConstraint upConstraint = new MotionConstraint(5000,5000,2000);
+	MotionConstraint upConstraint = new MotionConstraint(3500,3500,2000);
 	MotionConstraint downConstraint = new MotionConstraint(5000,5000,2000);
 
 	ProfiledPID controller = new ProfiledPID(upConstraint,downConstraint,coefficients);
-	public final static double HIGH_POSITION = 833;
+	public final static double HIGH_POSITION = 880;
 	public final static double IN_POSITION = 0;
 
 

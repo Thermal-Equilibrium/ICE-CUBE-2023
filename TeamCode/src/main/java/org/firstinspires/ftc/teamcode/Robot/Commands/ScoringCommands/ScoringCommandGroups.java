@@ -24,12 +24,29 @@ public class ScoringCommandGroups {
 		this.turret = mechanism.turret;
 	}
 
+	// near straight but tilted to the left
 	public Command moveToIntakingLeft() {
 		return moveHorizontalExtension(HorizontalExtension.EXTENSION1)
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
-				.addNext(moveTurret(Turret.TurretStates.LEFT))
+				.addNext(moveTurret(Turret.TurretStates.Slight_LEFT))
 				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
 	}
+
+	// very far to the left, in order to place near by
+	public Command moveToIntakingLeftClosePole() {
+		return moveHorizontalExtension(HorizontalExtension.EXTENSION2)
+				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
+				.addNext(moveTurret(Turret.TurretStates.FAR_LEFT))
+				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
+	}
+
+	public Command moveToIntakingRightClosePole() {
+		return moveHorizontalExtension(HorizontalExtension.EXTENSION2)
+				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
+				.addNext(moveTurret(Turret.TurretStates.FAR_RIGHT))
+				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
+	}
+
 
 	public Command collectCone() {
 		return grabCone()
@@ -37,7 +54,7 @@ public class ScoringCommandGroups {
 				.addNext(moveTurret(Turret.TurretStates.TRANSFER))
 				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION))
 				.addNext(moveArm(Turret.ArmStates.TRANSFER))
-				.addNext(openClaw())
+				.addNext(releaseCone())
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
 	}
 

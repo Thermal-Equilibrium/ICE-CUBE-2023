@@ -15,15 +15,24 @@ public class Turret extends Subsystem {
 	Servo turret;
 	Servo arm1;
 	Servo claw;
+	double clawTransferPosition = 0.34;
+	double armSafe = 0.4;
+	double turretTransfer = 0.53;
+
+
 
 
 	@Override
 	public void initAuto(HardwareMap hwMap) {
 
 		turret = hwMap.get(Servo.class, "turret");
+		turret.setPosition(turretTransfer);
+
 		arm1 = hwMap.get(Servo.class,"arm");
 		arm1.setDirection(Servo.Direction.REVERSE);
+		arm1.setPosition(armSafe);
 		claw = hwMap.get(Servo.class, "claw");
+		claw.setPosition(clawTransferPosition);
 	}
 
 	@Override
@@ -41,11 +50,11 @@ public class Turret extends Subsystem {
 		switch (clawState) {
 			case Open:
 				// TODO: tune this values
-				claw.setPosition(1);
+				claw.setPosition(0.5);
 				break;
 			case Transfer:
 				// TODO: tune this values
-				claw.setPosition(0.5);
+				claw.setPosition(clawTransferPosition);
 				break;
 			case Closed:
 				// TODO: tune this values
@@ -56,13 +65,13 @@ public class Turret extends Subsystem {
 	public void setArm(ArmStates armStates) {
 		switch (armStates) {
 			case TRANSFER:
-				arm1.setPosition(0.2);
+				arm1.setPosition(0.24);
 				break;
 			case TRANSFER_SAFE:
-				arm1.setPosition(0.3);
+				arm1.setPosition(armSafe);
 				break;
 			case DOWN:
-				arm1.setPosition(0.05);
+				arm1.setPosition(0.1);
 				break;
 		}
 	}
@@ -70,13 +79,19 @@ public class Turret extends Subsystem {
 	public void setTurret(TurretStates turretStates) {
 		switch (turretStates) {
 			case TRANSFER:
-				setTurretPositionSync(0.5);
+				setTurretPositionSync(turretTransfer);
 				break;
-			case LEFT:
+			case Slight_LEFT:
 				setTurretPositionSync(1);
 				break;
-			case RIGHT:
+			case Slight_RIGHT:
 				setTurretPositionSync(0);
+				break;
+			case FAR_LEFT:
+				setTurretPositionSync(0.9);
+				break;
+			case FAR_RIGHT:
+				setTurretPositionSync(0.1);
 				break;
 		}
 	}
@@ -112,8 +127,10 @@ public class Turret extends Subsystem {
 
 	public enum TurretStates {
 		TRANSFER,
-		LEFT,
-		RIGHT
+		Slight_LEFT,
+		Slight_RIGHT,
+		FAR_LEFT, // me
+		FAR_RIGHT
 	}
 
 	public enum ArmStates {
