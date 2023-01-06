@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
+import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.NullCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveArm;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveClaw;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveHorizontalExtension;
@@ -49,6 +50,11 @@ public class ScoringCommandGroups {
 
 
 	public Command collectCone() {
+
+		if (verticalExtension.getSlidePosition() > 50) {
+			return new NullCommand();
+		}
+
 		return grabCone()
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
 				.addNext(moveTurret(Turret.TurretStates.TRANSFER))
