@@ -8,12 +8,11 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.Exposur
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 import org.firstinspires.ftc.teamcode.visionPipelines.Cam;
-import org.firstinspires.ftc.teamcode.visionPipelines.OdometryPipe;
+import org.firstinspires.ftc.teamcode.visionPipelines.VisionPipe;
 import org.firstinspires.ftc.teamcode.visionPipelines.MonocularPole;
 import org.opencv.core.Size;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.ArrayList;
@@ -21,9 +20,9 @@ import java.util.concurrent.TimeUnit;
 
 public class Vision extends Subsystem {
 
-    public static OpenCvWebcam webcam;
+    public OpenCvWebcam webcam;
 
-    public static FtcDashboard dashboard = FtcDashboard.getInstance();
+    public FtcDashboard dashboard = FtcDashboard.getInstance();
 
     static final Size low = new Size(320,240); // bad aspect ratio don't use
     static final Size medium = new Size(960,540);
@@ -32,17 +31,21 @@ public class Vision extends Subsystem {
 
     static Size resolution = medium;
 
-    public Cam cam1 = new Cam(0, resolution, new Size(0,4),Math.toRadians(70.428), new Size(1920,1080),1);// for 78 dfov
+    public Cam cam = new Cam(0, resolution, new Size(0,4),Math.toRadians(70.428), new Size(1920,1080),1);// for 78 dfov
 
-    OpenCvPipeline pipeline = new OdometryPipe(cam1);
+//    OpenCvPipeline pipeline = new VisionPipe(cam);
+    private VisionPipe pipe = new VisionPipe(cam);
 
     static ArrayList<MonocularPole> rawPoles;
-    Drivetrain drivetrain;
+    private Drivetrain drivetrain;
 
-    public static void pauseView(){
+    private boolean hasInitialized = false;
+    private boolean isDestroyed = false;
+
+    public void pauseView(){
         webcam.pauseViewport();
     }
-    public static void resumeView(){
+    public void resumeView(){
         webcam.resumeViewport();
     }
 
@@ -60,7 +63,7 @@ public class Vision extends Subsystem {
         int cameraMonitorViewId = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
-        webcam.setPipeline(pipeline);
+        webcam.setPipeline(pipe);
         webcam.openCameraDeviceAsync(new OpenCvWebcam.AsyncCameraOpenListener() {
             @Override public void onOpened() { webcam.startStreaming( (int) resolution.width, (int) resolution.height,OpenCvCameraRotation.UPRIGHT); }
             @Override public void onError(int errorCode) { }
@@ -79,16 +82,28 @@ public class Vision extends Subsystem {
 
     @Override
     public void periodic() {
-        cam1.currentFrame= webcam.getFrameCount();
-        if (cam1.currentFrame>cam1.lastFrame) { run(); }
-        cam1.lastFrame=cam1.currentFrame;
-        Dashboard.packet.put("Cam1 FPS", webcam.getFps());
-        Dashboard.packet.put("Cam1 Frame", webcam.getFrameCount());
+        cam.currentFrame= webcam.getFrameCount();
+        if (cam.currentFrame> cam.lastFrame) { run(); }
+        cam.lastFrame= cam.currentFrame;
+        Dashboard.packet.put("Cam FPS", webcam.getFps());
+        Dashboard.packet.put("Cam Frame", webcam.getFrameCount());
 
     }
 
     @Override
     public void shutdown() {
+        webcam.closeCameraDevice();
+    }
+
+    public VisionPipe.ParkingPosition getPosition() {
+        if (!hasInitialized || isDestroyed) {
+            return VisionPipe.ParkingPosition.CENTER;
+        }
+        return pipe.getPosition();
+    }
+
+    public void destroy() {
+        isDestroyed = true;
         webcam.closeCameraDevice();
     }
 }

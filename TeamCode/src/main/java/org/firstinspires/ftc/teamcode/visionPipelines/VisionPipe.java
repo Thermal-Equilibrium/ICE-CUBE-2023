@@ -11,7 +11,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import java.util.ArrayList;
 
 
-public class OdometryPipe extends OpenCvPipeline {
+public class VisionPipe extends OpenCvPipeline {
     // MAIN CAM: c922 Pro
 
     @Config
@@ -88,7 +88,37 @@ public class OdometryPipe extends OpenCvPipeline {
     double dxMult;
     double pixPerRad;
 
-    public OdometryPipe(Cam cam) {
+    public enum ParkingPosition {
+        LEFT,
+        CENTER,
+        RIGHT
+    }
+
+    // TOPLEFT anchor point for the bounding box
+    public static Point SLEEVE_TOPLEFT_ANCHOR_POINT = new Point((int) Math.round(15 * 2.25), (int) Math.round(75 * 2.25));
+
+    // Width and height for the bounding box
+    public static int REGION_WIDTH =(int) Math.round(60 * 2.25);
+    public static int REGION_HEIGHT = (int) Math.round(50 * 2.25);
+
+    // Color definitions
+    private final Scalar
+            YELLOW  = new Scalar(255, 255, 0),
+            CYAN    = new Scalar(0, 255, 255),
+            MAGENTA = new Scalar(255, 0, 255);
+
+    // Anchor point definitions
+    Point sleeve_pointA = new Point(
+            SLEEVE_TOPLEFT_ANCHOR_POINT.x,
+            SLEEVE_TOPLEFT_ANCHOR_POINT.y);
+    Point sleeve_pointB = new Point(
+            SLEEVE_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
+            SLEEVE_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
+
+    // Running variable storing the parking position
+    private volatile ParkingPosition position = ParkingPosition.LEFT;
+
+    public VisionPipe(Cam cam) {
         this.cam = cam;
         this.frame=new Mat();
         this.undistorted=new Mat();
@@ -102,7 +132,6 @@ public class OdometryPipe extends OpenCvPipeline {
         this.upper1 = new Scalar(cv.uHSV1, cv.uHSV2, cv.uHSV3);
         this.upper2 = new Scalar(cv.uLAB1, cv.uLAB2, cv.uLAB3);
         this.upper3 = new Scalar(cv.uYCrCb1, cv.uYCrCb2, cv.uYCrCb3);
-//        this.updateFilters();
 
         this.contours = new ArrayList<MatOfPoint>();
         this.rawPoles = new ArrayList<MonocularPole>();
@@ -190,23 +219,69 @@ public class OdometryPipe extends OpenCvPipeline {
         Imgproc.line(this.frame, new Point(this.cam.res.width/2 - this.pixPerRad * Math.toRadians(30), this.cam.res.height/2 + 5), new Point(this.cam.res.width/2 - this.pixPerRad * Math.toRadians(30), this.cam.res.height/2 -5), new Scalar(0, 255, 100), 2);
         Imgproc.line(this.frame, new Point(this.cam.res.width/2, this.cam.res.height/2 + 15), new Point(this.cam.res.width/2, this.cam.res.height/2 -15), new Scalar(0, 255, 100), 2);
     }
+    private void checkSignal(Mat input) {
+        Mat areaMat = input.submat(new Rect(sleeve_pointA, sleeve_pointB));
+        Scalar sumColors = Core.sumElems(areaMat);
+
+        // Get the minimum RGB value from every single channel
+        double minColor = Math.min(sumColors.val[0], Math.min(sumColors.val[1], sumColors.val[2]));
+
+        // Change the bounding box color based on the sleeve color
+        if (sumColors.val[0] == minColor) {
+            this.position = ParkingPosition.CENTER;
+            Imgproc.rectangle(
+                    input,
+                    sleeve_pointA,
+                    sleeve_pointB,
+                    CYAN,
+                    2
+            );
+        } else if (sumColors.val[1] == minColor) {
+            this.position = ParkingPosition.RIGHT;
+            Imgproc.rectangle(
+                    input,
+                    sleeve_pointA,
+                    sleeve_pointB,
+                    MAGENTA,
+                    2
+            );
+        } else {
+            this.position = ParkingPosition.LEFT;
+            Imgproc.rectangle(
+                    input,
+                    sleeve_pointA,
+                    sleeve_pointB,
+                    YELLOW,
+                    2
+            );
+        }
+
+        // Release
+        areaMat.release();
+        input.release();
+    }
     @Override
     public Mat processFrame(Mat input) {
         this.updateFilters();
         this.pixPerRad= (this.cam.res.width - this.rho*2) / Math.toRadians(this.cam.FOV);
         this.frame=input;
+        this.checkSignal(input);
         input.release();
         Calib3d.undistort(input, this.undistorted,this.cam.newCamMat, this.cam.dists);
         Imgproc.cvtColor(this.undistorted,this.undistorted,Imgproc.COLOR_BGRA2BGR);
-        Imgproc.bilateralFilter(this.undistorted, this.frame, 10, 250, 50,Core.BORDER_DEFAULT);
+        Imgproc.bilateralFilter(this.undistorted, this.frame, 2, 50, 50,Core.BORDER_DEFAULT);
         this.upContrast();
         this.mask();
         this.markings();
         Imgproc.findContours(this.masked, this.contours, this.hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
-        Imgproc.drawContours(this.frame,this.contours,-1, new Scalar(255, 0, 0), -1,1,hierarchy,0,new Point(0,this.cam.res.height * this.region));
+        Imgproc.drawContours(this.frame,this.contours,-1, new Scalar(255, 0, 0), -1,1,this.hierarchy,0,new Point(0,this.cam.res.height * this.region));
         this.filterPoles();
         this.frame.copyTo(out);
         return out;
+    }
+    // Returns an enum being the current position where the robot will park
+    public ParkingPosition getPosition() {
+        return this.position;
     }
 
 }
