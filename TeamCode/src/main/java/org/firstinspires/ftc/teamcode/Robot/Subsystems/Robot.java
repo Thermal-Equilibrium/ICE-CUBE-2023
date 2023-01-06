@@ -26,9 +26,7 @@ public class Robot {
 	public Drivetrain drivetrain = new Drivetrain();
 	//public PoleDetectionSubsystem detectionSubsystem = new PoleDetectionSubsystem(dashboard);
 	public MainScoringMechanism scoringMechanism = new MainScoringMechanism();
-	public DistanceSensor distanceSensor = new DistanceSensor(drivetrain);
 	public FieldMap field = new FieldMap();
-	public Vision vision = new Vision(drivetrain);
 	public DetectionSubsystem detectionSubsystem = new DetectionSubsystem(dashboard.dashboard);
 
 	// print subsystem for testing
@@ -38,7 +36,7 @@ public class Robot {
 
 	ArrayList<LynxModule> modules = new ArrayList<>() ;
 	public Robot(HardwareMap hwMap, OpMode opMode, Gamepad gamepad1, Gamepad gamepad2) {
-		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard, scoringMechanism, distanceSensor, field, detectionSubsystem);//detectionSubsystem,visualOdometry
+		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard, scoringMechanism, field,detectionSubsystem);//detectionSubsystem,visualOdometry
 		this.gamepad1 = new Input(gamepad1, scheduler);
 		this.gamepad2 = new Input(gamepad2, scheduler);
 

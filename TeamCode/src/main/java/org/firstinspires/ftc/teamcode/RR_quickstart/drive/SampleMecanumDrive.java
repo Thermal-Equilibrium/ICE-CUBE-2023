@@ -85,14 +85,13 @@ public class SampleMecanumDrive extends MecanumDrive {
         } catch (Exception e) {
             HEADING_PID = new PIDCoefficients(rotation_Kp,0,0);
             System.out.println("heading controller synthesis failed, reverting to safe coefficients");
-
         }
     }
 
     public static double LATERAL_MULTIPLIER = 1;
 
     public static double VX_WEIGHT = 1;
-    public static double VY_WEIGHT = 1.031236327;
+    public static double VY_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 1;
 
     private TrajectorySequenceRunner trajectorySequenceRunner;
@@ -341,7 +340,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     @Override
     public Double getExternalHeadingVelocity() {
 
-        return (double)imu.getAngularVelocity().xRotationRate;
+        return (double)imu.getAngularVelocity().zRotationRate;
 
     }
 

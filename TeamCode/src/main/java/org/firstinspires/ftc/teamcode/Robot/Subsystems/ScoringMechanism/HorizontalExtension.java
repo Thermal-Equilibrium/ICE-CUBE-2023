@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism;
 
-import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
 import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -19,13 +18,18 @@ public class HorizontalExtension extends Subsystem {
 	DcMotorEx leftMotor;
 	DcMotorEx rightMotor;
 
-	PIDCoefficients slideCoefficients = new PIDCoefficients(0.1,0,0);
-	MotionConstraint upConstraint = new MotionConstraint(10,10,10);
-	MotionConstraint downConstraint = new MotionConstraint(10,10,10);
+	PIDCoefficients coefficients = new PIDCoefficients(0.01,0,0);
+	MotionConstraint upConstraint = new MotionConstraint(5000,5000,2000);
+	MotionConstraint downConstraint = new MotionConstraint(5000,5000,2000);
 
-	ProfiledPID controller = new ProfiledPID(upConstraint,downConstraint,slideCoefficients);
+	ProfiledPID controller = new ProfiledPID(upConstraint,downConstraint,coefficients);
 
-	protected double slideTargetPosition = 0;
+
+	public final static double IN_POSITION = 0;
+	public final static double SAFE_POSITION = 300;
+	public final static double EXTENSION1 = 500;
+	public final static double EXTENSION2 = 300; // todo figure out our max safe extension
+	protected double targetPosition = IN_POSITION;
 
 	public void commonInit(HardwareMap hwMap) {
 		leftMotor = hwMap.get(DcMotorEx.class, "leftHorizontal");
@@ -59,15 +63,16 @@ public class HorizontalExtension extends Subsystem {
 
 	}
 
-	public void setState(MainScoringMechanism.MechanismStates state) {
-		this.state = state;
-	}
 
 	protected void updatePID() {
 		double measuredPosition = getSlidePosition();
-		double power = controller.calculate(slideTargetPosition,measuredPosition);
+		double power = controller.calculate(targetPosition,measuredPosition);
 		leftMotor.setPower(power);
 		rightMotor.setPower(power);
+	}
+
+	public void setTargetPosition(double targetPosition) {
+		this.targetPosition = targetPosition;
 	}
 
 	/**
@@ -79,6 +84,9 @@ public class HorizontalExtension extends Subsystem {
 	}
 
 	public double getSlideTargetPosition() {
-		return slideTargetPosition;
+		return targetPosition;
+	}
+	public boolean isMovementFinished() {
+		return controller.isDone();
 	}
 }

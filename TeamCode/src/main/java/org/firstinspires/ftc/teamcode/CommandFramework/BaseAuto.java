@@ -69,9 +69,7 @@ public abstract class BaseAuto extends LinearOpMode {
 
 
 
-	public SetPoleContext getPoleContextualPosition() {
-		return new SetPoleContext(robot.distanceSensor);
-	}
+
 
 	public void setRobotPosition() {
 

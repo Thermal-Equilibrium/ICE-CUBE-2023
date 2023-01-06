@@ -25,19 +25,21 @@ public class TurretControl extends Command {
 
     @Override
     public void init() {
+        turret.setTurretPositionSync(0.5);
+        turret.setArmPositionSync(0.3);
         // I think we shouldn't do anything here since the turret is purely actuated by servos and we should probably conserve whatever their previous state was before this command was scheduled?
     }
 
     @Override
     public void periodic() {
         // turret rotation
-        double turretRotationCommand = MathUtils.applyDeadBand(game_pad2.getStrafeJoystick(), turretRotationDeadBand);
+        double turretRotationCommand = MathUtils.applyDeadBand(game_pad2.getStrafeJoystick(), turretRotationDeadBand) * 0.01;
 
         double deltaTurretPosition = turretRotationCommand * turretRotationScalingFactor;
         turret.setTurretPositionSync(turret.getTurretPosition() + deltaTurretPosition);
 
         // turret arm control
-        double armRotationCommand = MathUtils.applyDeadBand(-game_pad2.getForwardJoystick(), armRotationDeadBand);
+        double armRotationCommand = MathUtils.applyDeadBand(-game_pad2.getForwardJoystick(), armRotationDeadBand) * 0.01;
 
         double deltaArmPosition = armRotationCommand * armRotationScalingFactor;
         turret.setArmPositionSync(turret.getArmPosition() + deltaArmPosition);
