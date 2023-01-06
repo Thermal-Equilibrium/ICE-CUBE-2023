@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.visionPipelines;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
@@ -17,7 +19,8 @@ public class Cam {
     double m;
 
     double camID;
-    public Size position;
+//    public Size position;
+    public Pose2d position;
 
     Mat camMat;
     Mat newCamMat;
@@ -31,7 +34,7 @@ public class Cam {
     public double currentFrame;
     public double lastFrame;
 
-    public Cam(double camID, Size res, Size position, double FOV, Size nativeRes, double focalLen) {
+    public Cam(double camID, Size res, Pose2d position, double FOV, Size nativeRes, double focalLen) {
         this.camID = camID;
         this.res = res;
         this.position=position;

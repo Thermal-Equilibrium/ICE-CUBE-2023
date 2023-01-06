@@ -44,6 +44,13 @@ public class VisionPipe extends OpenCvPipeline {
         public static double uYCrCb1 =255;
         public static double uYCrCb2 =175;
         public static double uYCrCb3 =90;
+
+        public static int sleeveX = 0;
+        public static int sleeveY = 0;
+
+        public static int sleeveSizeX = 0;
+        public static int sleeveSizeY = 0;
+
     }
 
     Scalar lower1;// = new Scalar(cv.lHSV1, cv.lHSV2, cv.lHSV3);
@@ -164,11 +171,11 @@ public class VisionPipe extends OpenCvPipeline {
             double tempArea = size.area();
             double tempPerimeter = Imgproc.arcLength(contour2f, true);
             double tempRatio = tempArea / Math.pow(tempPerimeter, 2);
-            Touching touching=new Touching(pos.height + size.height > this.cam.res.height - 5,pos.height - size.height > 5,pos.width - size.width > 5,pos.width + size.width > this.cam.res.width - 5);
-            if (tempArea >= poleAreaMin && Math.abs(tempRatio) <= poleMax && Math.abs(tempRatio) >= poleMin && size.width >= minSize.width && size.height >= minSize.height && size.height > 2 * size.width && !touching.horizontal){
+
+            if (tempArea >= poleAreaMin && Math.abs(tempRatio) <= poleMax && Math.abs(tempRatio) >= poleMin && size.width >= minSize.width && size.height >= minSize.height && size.height > 2 * size.width){
                 Imgproc.drawContours(this.frame, contours,i, new Scalar(0, 0, 255), -1,1,hierarchy,0,new Point(0,this.cam.res.height * this.region));
-                double bearing = Math.toRadians(66) *  pos.width / this.cam.res.width;
-                double occupiedFOV = Math.toRadians(66) * size.width / this.cam.res.width;
+                double bearing = Math.toRadians(66) *  pos.width / (this.cam.res.width - cv.rho);
+                double occupiedFOV = Math.toRadians(66) * size.width / (this.cam.res.width - cv.rho);
                 double dEstimate = .5/Math.tan(occupiedFOV/2);
                 double dxEstimate = Math.copySign(Math.sin(bearing) * dEstimate, pos.width) * this.dxMult;
                 double dyEstimate = Math.cos(bearing) * dEstimate * this.dyMult;
@@ -269,14 +276,16 @@ public class VisionPipe extends OpenCvPipeline {
         input.release();
         Calib3d.undistort(input, this.undistorted,this.cam.newCamMat, this.cam.dists);
         Imgproc.cvtColor(this.undistorted,this.undistorted,Imgproc.COLOR_BGRA2BGR);
-        Imgproc.bilateralFilter(this.undistorted, this.frame, 2, 50, 50,Core.BORDER_DEFAULT);
-        this.upContrast();
+//        Imgproc.bilateralFilter(this.undistorted, this.frame, 2, 50, 50,Core.BORDER_DEFAULT);
+        this.undistorted.copyTo(this.frame);
+//        this.upContrast();
         this.mask();
         this.markings();
         Imgproc.findContours(this.masked, this.contours, this.hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
         Imgproc.drawContours(this.frame,this.contours,-1, new Scalar(255, 0, 0), -1,1,this.hierarchy,0,new Point(0,this.cam.res.height * this.region));
         this.filterPoles();
         this.frame.copyTo(out);
+        out.push_back(this.masked);
         return out;
     }
     // Returns an enum being the current position where the robot will park

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Robot.Subsystems;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -31,7 +32,7 @@ public class Vision extends Subsystem {
 
     static Size resolution = medium;
 
-    public Cam cam = new Cam(0, resolution, new Size(0,4),Math.toRadians(70.428), new Size(1920,1080),1);// for 78 dfov
+    public Cam cam = new Cam(0, resolution, new Pose2d(0,4),Math.toRadians(70.428), new Size(1920,1080),1);// for 78 dfov
 
 //    OpenCvPipeline pipeline = new VisionPipe(cam);
     private VisionPipe pipe = new VisionPipe(cam);
