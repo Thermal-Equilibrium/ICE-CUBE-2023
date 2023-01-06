@@ -6,9 +6,11 @@ import org.opencv.calib3d.Calib3d;
 import org.opencv.core.*;
 
 import org.opencv.imgproc.Imgproc;
+import org.opencv.objdetect.QRCodeDetector;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class VisionPipe extends OpenCvPipeline {
@@ -95,6 +97,9 @@ public class VisionPipe extends OpenCvPipeline {
     double dxMult;
     double pixPerRad;
 
+    QRCodeDetector qr ;
+    ArrayList<String> signals = new ArrayList<String>();
+
     public enum ParkingPosition {
         LEFT,
         CENTER,
@@ -154,6 +159,7 @@ public class VisionPipe extends OpenCvPipeline {
         this.mask2=new Mat();
         this.mask3=new Mat();
         this.masked=new Mat();
+        this.qr = new QRCodeDetector();
     }
 
     private void filterPoles() {
@@ -226,6 +232,15 @@ public class VisionPipe extends OpenCvPipeline {
         Imgproc.line(this.frame, new Point(this.cam.res.width/2 - this.pixPerRad * Math.toRadians(30), this.cam.res.height/2 + 5), new Point(this.cam.res.width/2 - this.pixPerRad * Math.toRadians(30), this.cam.res.height/2 -5), new Scalar(0, 255, 100), 2);
         Imgproc.line(this.frame, new Point(this.cam.res.width/2, this.cam.res.height/2 + 15), new Point(this.cam.res.width/2, this.cam.res.height/2 -15), new Scalar(0, 255, 100), 2);
     }
+    private void checkQR(Mat input){
+        qr.detectAndDecodeMulti(this.frame, this.signals);
+        if (this.signals.size() >= 1) {
+            if (Objects.equals(signals.get(0), "1")) this.position = ParkingPosition.LEFT;
+            if (Objects.equals(signals.get(0), "2")) this.position = ParkingPosition.CENTER;
+            if (Objects.equals(signals.get(0), "3")) this.position = ParkingPosition.RIGHT;
+        }
+
+    }
     private void checkSignal(Mat input) {
         Mat areaMat = input.submat(new Rect(sleeve_pointA, sleeve_pointB));
         Scalar sumColors = Core.sumElems(areaMat);
@@ -272,7 +287,8 @@ public class VisionPipe extends OpenCvPipeline {
         this.updateFilters();
         this.pixPerRad= (this.cam.res.width - this.rho*2) / Math.toRadians(this.cam.FOV);
         this.frame=input;
-        this.checkSignal(input);
+//        this.checkSignal(input);
+        this.checkQR(input);
         input.release();
         Calib3d.undistort(input, this.undistorted,this.cam.newCamMat, this.cam.dists);
         Imgproc.cvtColor(this.undistorted,this.undistorted,Imgproc.COLOR_BGRA2BGR);
