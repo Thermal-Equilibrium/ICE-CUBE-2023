@@ -36,7 +36,7 @@ public class ScoringCommandGroups {
 	public Command moveToIntakingRight() {
 		return moveHorizontalExtension(HorizontalExtension.EXTENSION1)
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
-				.addNext(moveTurret(Turret.TurretStates.Slight_RIGHT))
+				.addNext(moveTurret(Turret.TurretStates.Slight_RIGHT_AUTO))
 				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
 	}
 
@@ -48,8 +48,8 @@ public class ScoringCommandGroups {
 
 		return moveHorizontalExtension(HorizontalExtension.EXTENSION3)
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
-				.addNext(moveTurret(Turret.TurretStates.Slight_RIGHT))
-				.addNext(new MultipleCommand(moveArmDirect(armConeHeights[currentCone]), openClaw()));
+				.addNext(moveTurret(Turret.TurretStates.Slight_RIGHT_AUTO))
+				.addNext(new MultipleCommand(moveArmDirect(-0.03 + armConeHeights[currentCone]), openClaw()));
 	}
 
 	// very far to the left, in order to place near by

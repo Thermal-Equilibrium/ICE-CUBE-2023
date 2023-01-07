@@ -15,6 +15,7 @@ public class MultipleCommand extends Command {
 
 	public MultipleCommand(Command ... commands) {
 		Collections.addAll(this.commands, commands);
+
 	}
 
 	@Override

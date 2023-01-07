@@ -50,17 +50,18 @@ public class MotorFinder extends LinearOpMode {
 		BackRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 		BackRight.setDirection(DcMotorSimple.Direction.FORWARD);
 		Servo arm = hardwareMap.get(Servo.class,"arm");
+		arm.setDirection(Servo.Direction.REVERSE);
 		Servo claw = hardwareMap.get(Servo.class,"claw");
 		Servo s2 = hardwareMap.get(Servo.class, "ch2");
 		Servo turret = hardwareMap.get(Servo.class, "turret");
 		waitForStart();
-		double clawAngle = 0.5;
+		double clawAngle = 0.3;
 		while (opModeIsActive()) {
 			clawAngle += -gamepad1.left_stick_y * 0.01;
-			turret.setPosition(clawAngle);
+			arm.setPosition(clawAngle);
 			//s1.setPosition(clawAngle);
 			// s0.setPosition(0.5);
-			arm.setPosition(0.3);
+//			arm.setPosition(0.3);
 
 			double slidePosition = (vertical1.getCurrentPosition() + vertical2.getCurrentPosition()) / 2.0;
 			double power = 0; //= pid.calculate(setpoint,slidePosition);
