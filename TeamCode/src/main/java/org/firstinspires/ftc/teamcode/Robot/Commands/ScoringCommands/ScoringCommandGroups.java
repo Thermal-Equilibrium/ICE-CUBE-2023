@@ -4,6 +4,7 @@ import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.NullCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveArm;
+import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveArmDirect;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveClaw;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveHorizontalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurret;
@@ -105,6 +106,9 @@ public class ScoringCommandGroups {
 
 	public MoveArm moveArm(Turret.ArmStates armStates) {
 		return new MoveArm(turret,armStates);
+	}
+	public MoveArmDirect moveArmDirect(double position) {
+		return new MoveArmDirect(turret, position);
 	}
 	public MoveClaw moveClaw(Turret.ClawStates clawStates) {
 		return new MoveClaw(turret,clawStates);

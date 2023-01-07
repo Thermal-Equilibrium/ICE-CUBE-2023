@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 
 public class Turret extends Subsystem {
 
-
+	public double armDown = 0.1;
 
 	MainScoringMechanism.MechanismStates state = MainScoringMechanism.MechanismStates.BEGIN;
 
@@ -71,11 +71,15 @@ public class Turret extends Subsystem {
 				arm1.setPosition(armSafe);
 				break;
 			case DOWN:
-				arm1.setPosition(0.1);
+				arm1.setPosition(armDown);
 				break;
 			case LOW_SCORING:
 				arm1.setPosition(0.4);
 		}
+	}
+
+	public void setArmDirect(double position) {
+		arm1.setPosition(position);
 	}
 
 	public void setTurret(TurretStates turretStates) {
