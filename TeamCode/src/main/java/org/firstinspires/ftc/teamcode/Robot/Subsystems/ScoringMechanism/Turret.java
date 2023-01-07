@@ -73,6 +73,8 @@ public class Turret extends Subsystem {
 			case DOWN:
 				arm1.setPosition(0.1);
 				break;
+			case LOW_SCORING:
+				arm1.setPosition(0.4);
 		}
 	}
 
@@ -136,7 +138,8 @@ public class Turret extends Subsystem {
 	public enum ArmStates {
 		TRANSFER,
 		TRANSFER_SAFE,
-		DOWN
+		DOWN,
+		LOW_SCORING
 	}
 
 }

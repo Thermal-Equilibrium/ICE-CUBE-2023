@@ -76,6 +76,14 @@ public class ScoringCommandGroups {
 		return moveClaw(Turret.ClawStates.Open);
 	}
 
+	public Command moveToLowGoalScoring() {
+		// maybe use MultiCommand to move horizontal extension and arm at same time?
+
+		return moveClaw(Turret.ClawStates.Closed)
+				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION))
+				.addNext(moveArm(Turret.ArmStates.LOW_SCORING));
+	}
+
 
 	public MoveArm moveArm(Turret.ArmStates armStates) {
 		return new MoveArm(turret,armStates);
