@@ -32,6 +32,18 @@ public class ScoringCommandGroups {
 				.addNext(moveTurret(Turret.TurretStates.Slight_LEFT))
 				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
 	}
+	public Command moveToIntakingRight() {
+		return moveHorizontalExtension(HorizontalExtension.EXTENSION1)
+				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
+				.addNext(moveTurret(Turret.TurretStates.Slight_RIGHT))
+				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
+	}
+	public Command moveToIntakingRightAuto() {
+		return moveHorizontalExtension(HorizontalExtension.EXTENSION3)
+				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
+				.addNext(moveTurret(Turret.TurretStates.Slight_RIGHT))
+				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
+	}
 
 	// very far to the left, in order to place near by
 	public Command moveToIntakingLeftClosePole() {
@@ -77,11 +89,9 @@ public class ScoringCommandGroups {
 	}
 
 	public Command moveToLowGoalScoring() {
-		// maybe use MultiCommand to move horizontal extension and arm at same time?
-
 		return moveClaw(Turret.ClawStates.Closed)
-				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION))
-				.addNext(moveArm(Turret.ArmStates.LOW_SCORING));
+				.addNext(moveArm(Turret.ArmStates.LOW_SCORING))
+				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION));
 	}
 
 	// Move vertical extension down. If it is already going down, open the claw

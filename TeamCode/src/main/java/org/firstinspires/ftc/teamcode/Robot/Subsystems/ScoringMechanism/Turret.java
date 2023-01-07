@@ -89,6 +89,9 @@ public class Turret extends Subsystem {
 			case Slight_RIGHT:
 				setTurretPositionSync(0);
 				break;
+			case Slight_RIGHT_AUTO:
+				setTurretPositionSync(0.05);
+				break;
 			case FAR_LEFT:
 				setTurretPositionSync(0.9);
 				break;
@@ -131,6 +134,7 @@ public class Turret extends Subsystem {
 		TRANSFER,
 		Slight_LEFT,
 		Slight_RIGHT,
+		Slight_RIGHT_AUTO,
 		FAR_LEFT, // me
 		FAR_RIGHT
 	}

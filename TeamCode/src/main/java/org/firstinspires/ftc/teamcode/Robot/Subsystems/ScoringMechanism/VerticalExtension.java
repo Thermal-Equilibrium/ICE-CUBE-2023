@@ -23,6 +23,8 @@ public class VerticalExtension extends Subsystem {
 
 	ProfiledPID controller = new ProfiledPID(upConstraint,downConstraint,coefficients);
 	public final static double HIGH_POSITION = 880;
+	public final static double MID_POSITION = 550;
+
 	public final static double IN_POSITION = 0;
 
 
