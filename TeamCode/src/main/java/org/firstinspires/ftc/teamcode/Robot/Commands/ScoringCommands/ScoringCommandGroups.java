@@ -84,6 +84,14 @@ public class ScoringCommandGroups {
 				.addNext(moveArm(Turret.ArmStates.LOW_SCORING));
 	}
 
+	// Move vertical extension down. If it is already going down, open the claw
+	public Command moveVerticalExtensionDownOrReleaseClaw() {
+		if (verticalExtension.getSlideTargetPosition() == VerticalExtension.IN_POSITION) {
+			return moveClaw(Turret.ClawStates.Open);
+		} else {
+			return moveVerticalExtension(VerticalExtension.IN_POSITION);
+		}
+	}
 
 	public MoveArm moveArm(Turret.ArmStates armStates) {
 		return new MoveArm(turret,armStates);
