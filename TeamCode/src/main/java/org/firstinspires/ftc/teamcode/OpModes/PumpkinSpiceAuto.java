@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.CommandFramework.BaseAuto;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Break.ToggleBreak;
+import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.RunCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringCommandGroups;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
 
@@ -46,13 +47,20 @@ public class PumpkinSpiceAuto extends BaseAuto {
 //                .addNext(commandGroups.collectCone())
 //                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION))
 //                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION));
+
+        Command cycle = new RunCommand(() -> {
+            return commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION)
+                    .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION))
+                    .addNext(commandGroups.moveToIntakingRightAuto())
+                    .addNext(commandGroups.collectCone())
+                    .addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION))
+                    .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION));
+        });
+
         return followRR(driveToPole)
                 .addNext(new ToggleBreak(robot.drivetrain)) // turn break on
-                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION))
-                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION))
-                .addNext(commandGroups.moveToIntakingRightAuto())
-                .addNext(commandGroups.collectCone())
-                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION))
-                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION));
+                .addNext(cycle)
+                .addNext(cycle)
+                .addNext(cycle);
     }
 }

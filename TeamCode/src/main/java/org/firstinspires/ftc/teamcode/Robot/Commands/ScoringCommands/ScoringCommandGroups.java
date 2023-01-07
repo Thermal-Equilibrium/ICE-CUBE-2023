@@ -39,11 +39,17 @@ public class ScoringCommandGroups {
 				.addNext(moveTurret(Turret.TurretStates.Slight_RIGHT))
 				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
 	}
+
+	public int currentCone = 5;
+	double[] armConeHeights = {0.08, 0.11, 0.1357, 0.1632, 0.1978};
+
 	public Command moveToIntakingRightAuto() {
+		currentCone--;
+
 		return moveHorizontalExtension(HorizontalExtension.EXTENSION3)
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
 				.addNext(moveTurret(Turret.TurretStates.Slight_RIGHT))
-				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
+				.addNext(new MultipleCommand(moveArmDirect(armConeHeights[currentCone]), openClaw()));
 	}
 
 	// very far to the left, in order to place near by
