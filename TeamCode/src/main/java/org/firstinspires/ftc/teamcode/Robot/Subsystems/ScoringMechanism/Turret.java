@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 
 public class Turret extends Subsystem {
 
-
+	public double armDown = 0.1;
 
 	MainScoringMechanism.MechanismStates state = MainScoringMechanism.MechanismStates.BEGIN;
 
@@ -18,7 +18,7 @@ public class Turret extends Subsystem {
 	double clawTransferPosition = 0.34;
 	double armSafe = 0.4;
 	double turretTransfer = 0.51889;
-
+	double currentFreeStateValue = 0;
 
 
 
@@ -71,9 +71,19 @@ public class Turret extends Subsystem {
 				arm1.setPosition(armSafe);
 				break;
 			case DOWN:
-				arm1.setPosition(0.1);
+				arm1.setPosition(armDown);
+				break;
+			case LOW_SCORING:
+				arm1.setPosition(0.4);
+			case FREE_STATE:
+				arm1.setPosition(currentFreeStateValue);
 				break;
 		}
+	}
+
+	public void setArmDirect(double position) {
+		currentFreeStateValue = position;
+		setArm(ArmStates.FREE_STATE);
 	}
 
 	public void setTurret(TurretStates turretStates) {
@@ -86,6 +96,9 @@ public class Turret extends Subsystem {
 				break;
 			case Slight_RIGHT:
 				setTurretPositionSync(0);
+				break;
+			case Slight_RIGHT_AUTO:
+				setTurretPositionSync(0.06);
 				break;
 			case FAR_LEFT:
 				setTurretPositionSync(0.9);
@@ -115,9 +128,8 @@ public class Turret extends Subsystem {
 
 	// TODO: Maybe don't average? if we only use 1 servo lol
 	public double getArmPosition() {
-		double arm1Position = arm1.getPosition();
 
-		return arm1Position;
+		return arm1.getPosition();
 	}
 	public enum ClawStates {
 		Open,
@@ -129,6 +141,7 @@ public class Turret extends Subsystem {
 		TRANSFER,
 		Slight_LEFT,
 		Slight_RIGHT,
+		Slight_RIGHT_AUTO,
 		FAR_LEFT, // me
 		FAR_RIGHT
 	}
@@ -136,7 +149,13 @@ public class Turret extends Subsystem {
 	public enum ArmStates {
 		TRANSFER,
 		TRANSFER_SAFE,
-		DOWN
+		DOWN,
+		LOW_SCORING,
+		FREE_STATE
 	}
 
+
+	public void setCurrentFreeStateValue(double currentFreeStateValue) {
+		this.currentFreeStateValue = currentFreeStateValue;
+	}
 }
