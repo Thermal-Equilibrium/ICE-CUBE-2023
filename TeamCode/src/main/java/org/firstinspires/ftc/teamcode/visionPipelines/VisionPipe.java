@@ -11,7 +11,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
 import java.util.Objects;
-
+//import org.opencv.android.
 
 public class VisionPipe extends OpenCvPipeline {
     // MAIN CAM: c922 Pro
@@ -96,9 +96,10 @@ public class VisionPipe extends OpenCvPipeline {
     double dyMult;
     double dxMult;
     double pixPerRad;
+    boolean foundSignal;
 
     QRCodeDetector qr ;
-    ArrayList<String> signals = new ArrayList<String>();
+    String signal;
 
     public enum ParkingPosition {
         LEFT,
@@ -106,31 +107,11 @@ public class VisionPipe extends OpenCvPipeline {
         RIGHT
     }
 
-    // TOPLEFT anchor point for the bounding box
-    public static Point SLEEVE_TOPLEFT_ANCHOR_POINT = new Point((int) Math.round(15 * 2.25), (int) Math.round(75 * 2.25));
-
-    // Width and height for the bounding box
-    public static int REGION_WIDTH =(int) Math.round(60 * 2.25);
-    public static int REGION_HEIGHT = (int) Math.round(50 * 2.25);
-
-    // Color definitions
-    private final Scalar
-            YELLOW  = new Scalar(255, 255, 0),
-            CYAN    = new Scalar(0, 255, 255),
-            MAGENTA = new Scalar(255, 0, 255);
-
-    // Anchor point definitions
-    Point sleeve_pointA = new Point(
-            SLEEVE_TOPLEFT_ANCHOR_POINT.x,
-            SLEEVE_TOPLEFT_ANCHOR_POINT.y);
-    Point sleeve_pointB = new Point(
-            SLEEVE_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
-            SLEEVE_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
-
     // Running variable storing the parking position
     private volatile ParkingPosition position = ParkingPosition.LEFT;
 
     public VisionPipe(Cam cam) {
+//        CameraActivity.
         this.cam = cam;
         this.frame=new Mat();
         this.undistorted=new Mat();
@@ -160,6 +141,8 @@ public class VisionPipe extends OpenCvPipeline {
         this.mask3=new Mat();
         this.masked=new Mat();
         this.qr = new QRCodeDetector();
+        this.signal = null;
+        this.foundSignal = false;
     }
 
     private void filterPoles() {
@@ -232,77 +215,42 @@ public class VisionPipe extends OpenCvPipeline {
         Imgproc.line(this.frame, new Point(this.cam.res.width/2 - this.pixPerRad * Math.toRadians(30), this.cam.res.height/2 + 5), new Point(this.cam.res.width/2 - this.pixPerRad * Math.toRadians(30), this.cam.res.height/2 -5), new Scalar(0, 255, 100), 2);
         Imgproc.line(this.frame, new Point(this.cam.res.width/2, this.cam.res.height/2 + 15), new Point(this.cam.res.width/2, this.cam.res.height/2 -15), new Scalar(0, 255, 100), 2);
     }
-    private void checkQR(Mat input){
-        qr.detectAndDecodeMulti(this.frame, this.signals);
-        if (this.signals.size() >= 1) {
-            if (Objects.equals(signals.get(0), "1")) this.position = ParkingPosition.LEFT;
-            if (Objects.equals(signals.get(0), "2")) this.position = ParkingPosition.CENTER;
-            if (Objects.equals(signals.get(0), "3")) this.position = ParkingPosition.RIGHT;
-        }
-
+    private ParkingPosition number2park(String num) {
+        if (Objects.equals(num, "1")) return ParkingPosition.LEFT;
+        if (Objects.equals(num, "2")) return ParkingPosition.CENTER;
+        if (Objects.equals(num, "3")) return ParkingPosition.RIGHT;
+        return null;
     }
-    private void checkSignal(Mat input) {
-        Mat areaMat = input.submat(new Rect(sleeve_pointA, sleeve_pointB));
-        Scalar sumColors = Core.sumElems(areaMat);
+    private void checkQR(){
+        this.position = number2park(qr.detectAndDecode(this.frame));
+        if (this.position == null) this.position = number2park(qr.detectAndDecodeCurved(this.frame));
 
-        // Get the minimum RGB value from every single channel
-        double minColor = Math.min(sumColors.val[0], Math.min(sumColors.val[1], sumColors.val[2]));
-
-        // Change the bounding box color based on the sleeve color
-        if (sumColors.val[0] == minColor) {
+        if (this.position == null) {
             this.position = ParkingPosition.CENTER;
-            Imgproc.rectangle(
-                    input,
-                    sleeve_pointA,
-                    sleeve_pointB,
-                    CYAN,
-                    2
-            );
-        } else if (sumColors.val[1] == minColor) {
-            this.position = ParkingPosition.RIGHT;
-            Imgproc.rectangle(
-                    input,
-                    sleeve_pointA,
-                    sleeve_pointB,
-                    MAGENTA,
-                    2
-            );
-        } else {
-            this.position = ParkingPosition.LEFT;
-            Imgproc.rectangle(
-                    input,
-                    sleeve_pointA,
-                    sleeve_pointB,
-                    YELLOW,
-                    2
-            );
+            this.foundSignal = false;
         }
-
-        // Release
-        areaMat.release();
-        input.release();
+        else this.foundSignal = true;
     }
     @Override
     public Mat processFrame(Mat input) {
-        this.updateFilters();
-        this.pixPerRad= (this.cam.res.width - this.rho*2) / Math.toRadians(this.cam.FOV);
-        this.frame=input;
-//        this.checkSignal(input);
-        this.checkQR(input);
-        input.release();
-        Calib3d.undistort(input, this.undistorted,this.cam.newCamMat, this.cam.dists);
-        Imgproc.cvtColor(this.undistorted,this.undistorted,Imgproc.COLOR_BGRA2BGR);
-//        Imgproc.bilateralFilter(this.undistorted, this.frame, 2, 50, 50,Core.BORDER_DEFAULT);
-        this.undistorted.copyTo(this.frame);
-//        this.upContrast();
-        this.mask();
-        this.markings();
-        Imgproc.findContours(this.masked, this.contours, this.hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
-        Imgproc.drawContours(this.frame,this.contours,-1, new Scalar(255, 0, 0), -1,1,this.hierarchy,0,new Point(0,this.cam.res.height * this.region));
-        this.filterPoles();
-        this.frame.copyTo(out);
-        out.push_back(this.masked);
-        return out;
+//        this.updateFilters();
+//        this.pixPerRad= (this.cam.res.width - this.rho*2) / Math.toRadians(this.cam.FOV);
+//        this.frame=input;
+//        input.release();
+////        Calib3d.undistort(this.frame, this.undistorted,this.cam.newCamMat, this.cam.dists);
+////        Imgproc.cvtColor(this.undistorted,this.undistorted,Imgproc.COLOR_BGRA2BGR);
+////        Imgproc.bilateralFilter(this.undistorted, this.frame, 2, 50, 50,Core.BORDER_DEFAULT);
+//        this.undistorted.copyTo(this.frame);
+//        this.checkQR();
+////        this.upContrast();
+//        this.mask();
+//        this.markings();
+//        Imgproc.findContours(this.masked, this.contours, this.hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+//        Imgproc.drawContours(this.frame,this.contours,-1, new Scalar(255, 0, 0), -1,1,this.hierarchy,0,new Point(0,this.cam.res.height * this.region));
+//        this.filterPoles();
+//        this.frame.copyTo(out);
+//        out.push_back(this.masked);
+        return input;
     }
     // Returns an enum being the current position where the robot will park
     public ParkingPosition getPosition() {

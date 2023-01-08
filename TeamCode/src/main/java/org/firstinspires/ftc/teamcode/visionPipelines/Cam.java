@@ -6,6 +6,7 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
+import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.ArrayList;
 
@@ -30,11 +31,12 @@ public class Cam {
 
     Mat theOut = new Mat();
 
+    public OpenCvWebcam webcam;
     public ArrayList<MonocularPole> detectedPoles;
     public double currentFrame;
     public double lastFrame;
 
-    public Cam(double camID, Size res, Pose2d position, double FOV, Size nativeRes, double focalLen) {
+    public Cam(double camID, Size res, Pose2d position, double FOV, Size nativeRes, double focalLen, OpenCvWebcam webcam) {
         this.camID = camID;
         this.res = res;
         this.position=position;
@@ -42,6 +44,8 @@ public class Cam {
 
         this.nativeRes = nativeRes;
         this.focalLen = focalLen;
+
+        this.webcam = webcam;
 
         this.camMat = this.loadCamMatrix();
         this.newCamMat = this.loadNewCamMatrix();
