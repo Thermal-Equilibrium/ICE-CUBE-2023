@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.CommandFramework.BaseAuto;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Break.ToggleBreak;
+import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.RunCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringCommandGroups;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
@@ -18,9 +19,13 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Vertical
 @Autonomous
 public class PumpkinSpiceAuto extends BaseAuto {
 
-    Pose2d startPose = new Pose2d(-36, 66,Math.toRadians(-90));
+    Pose2d startPose = new Pose2d(-36, 66.5,Math.toRadians(-90));
     final Pose2d goToPole1 = new Pose2d(-36, 24,Math.toRadians(-90));
-    final Pose2d goToPole2 = shiftRobotRelative(new Pose2d(-34,6,Math.toRadians(335)),-3.7,2);
+    final Pose2d goToPole2 = shiftRobotRelative(new Pose2d(-34,4.5,Math.toRadians(330)),-6.5,3);
+    final Pose2d parkRight = new Pose2d(-60, 12, Math.toRadians(0));
+    final Pose2d parkMID = new Pose2d(-40, 18, Math.toRadians(-90));
+    final Pose2d parkLeft1 = new Pose2d(-36,24,Math.toRadians(-90));
+    final Pose2d parkLeft = new Pose2d(-12,36,Math.toRadians(180));
 
     @Override
     public void setRobotPosition() {
@@ -35,12 +40,30 @@ public class PumpkinSpiceAuto extends BaseAuto {
                 .splineToSplineHeading(goToPole2,calculateTangent(goToPole1,goToPole2))
                 .build();
 
+        Trajectory parkRightTraj = robot.drivetrain.getBuilder().trajectoryBuilder(goToPole2,true)
+                .splineToSplineHeading(parkRight,calculateTangent(goToPole2, parkRight))
+                .build();
+
+        Trajectory parkMidTraj = robot.drivetrain.getBuilder().trajectoryBuilder(goToPole2,true)
+                .lineToLinearHeading(parkMID)
+                .build();
+
+        Trajectory parkLeftTraj = robot.drivetrain.getBuilder().trajectoryBuilder(goToPole2,true)
+                .splineTo(parkLeft1.vec(),Math.toRadians(75))
+                .splineTo(parkLeft.vec(), Math.toRadians(0))
+                .build();
+
+        Trajectory park = parkLeftTraj;
+
         switch (parkingPosition) {
             case LEFT:
+                park = parkLeftTraj;
                 break;
             case CENTER:
+                park = parkMidTraj;
                 break;
             case RIGHT:
+                park = parkRightTraj;
                 break;
         }
 
@@ -51,15 +74,22 @@ public class PumpkinSpiceAuto extends BaseAuto {
 
         Command auto = followRR(driveToPole)
                .addNext(new ToggleBreak(robot.drivetrain));  // turn break on
-        for (int i = 0; i < 4; i++) {
-            auto.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION), commandGroups.moveHorizontalExtension(HorizontalExtension.EXTENSION3)))
-            .addNext(commandGroups.moveToIntakingRightAuto())
-            .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION))
-            .addNext(commandGroups.collectCone());
-        }
+//        for (int i = 0; i < 3; i++) {
+//            // TODO: debug the weird multicommand
+//            auto.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION), commandGroups.moveHorizontalExtension(HorizontalExtension.EXTENSION3)))
+//            .addNext(commandGroups.moveToIntakingRightAuto())
+//            .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION))
+//            .addNext(commandGroups.collectCone());
+////            auto.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION), multiCommand(commandGroups.moveHorizontalExtension(HorizontalExtension.EXTENSION3), commandGroups.moveToIntakingRightAuto())))
+////                    .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION))
+////                    .addNext(commandGroups.collectCone());
+//        }
         auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION))
+                .addNext(new Delay(0.5))
                 .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION));
-
+        auto.addNext(new ToggleBreak(robot.drivetrain))
+                .addNext(new Delay(0.5))
+                .addNext(followRR(park));
         return auto;
     }
 }

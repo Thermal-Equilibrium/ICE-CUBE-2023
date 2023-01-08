@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
+import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.NullCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveArm;
@@ -54,17 +55,19 @@ public class ScoringCommandGroups {
 
 	// very far to the left, in order to place near by
 	public Command moveToIntakingLeftClosePole() {
-		return moveHorizontalExtension(HorizontalExtension.EXTENSION2)
+		return moveHorizontalExtension(HorizontalExtension.PRE_EMPTIVE_EXTEND)
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
 				.addNext(moveTurret(Turret.TurretStates.FAR_LEFT))
-				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
+				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()))
+				.addNext(moveHorizontalExtension(HorizontalExtension.EXTENSION2));
 	}
 
 	public Command moveToIntakingRightClosePole() {
-		return moveHorizontalExtension(HorizontalExtension.EXTENSION2)
+		return moveHorizontalExtension(HorizontalExtension.PRE_EMPTIVE_EXTEND)
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
 				.addNext(moveTurret(Turret.TurretStates.FAR_RIGHT))
-				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
+				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()))
+				.addNext(moveHorizontalExtension(HorizontalExtension.EXTENSION2));
 	}
 
 
@@ -80,6 +83,7 @@ public class ScoringCommandGroups {
 				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION))
 				.addNext(moveArm(Turret.ArmStates.TRANSFER))
 				.addNext(releaseCone())
+				.addNext(new Delay(0.2))
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
 	}
 

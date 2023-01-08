@@ -7,12 +7,14 @@ import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Input;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils;
 
 public class RobotRelative extends Command {
 
 
     Drivetrain drivetrain;
+    HorizontalExtension extension;
     Input game_pad1;
     protected boolean isBoostAppropriate = false;
 
@@ -22,6 +24,7 @@ public class RobotRelative extends Command {
         super(robot.drivetrain, game_pad1);
         this.drivetrain = robot.drivetrain;
         this.game_pad1 = game_pad1;
+        this.extension = robot.scoringMechanism.horizontalExtension;
 
     }
 
@@ -42,6 +45,10 @@ public class RobotRelative extends Command {
         y = game_pad1.getStrafeJoystick();
         x = game_pad1.getForwardJoystick();
         turn = game_pad1.getTurnJoystick();
+
+        if (this.extension.getSlidePosition() > 200) {
+            turn *= 0.5;
+        }
 
         y = MathUtils.applyDeadBand(y, strafe_dead_band);
 
