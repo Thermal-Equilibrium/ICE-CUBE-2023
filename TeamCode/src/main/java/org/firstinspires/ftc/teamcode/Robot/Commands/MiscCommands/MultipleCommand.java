@@ -32,7 +32,19 @@ public class MultipleCommand extends Command {
 		for (Command command: commands) {
 				command.periodic();
 		}
-		cleanup();
+
+		// move each command to next command if the command has completed
+		for (int i = 0; i < commands.size(); i++) {
+			if (commands.get(i).completed() && commands.get(i).getNext() != null) {
+				commands.get(i).shutdown();
+
+				commands.set(i, commands.get(i).getNext());
+				commands.get(i).init();
+				commands.get(i).periodic(); // maybe just don't
+			}
+		}
+
+//		cleanup();
 		System.out.println("Number of commands in the multiple command: " + commands.size());
 	}
 
@@ -55,7 +67,7 @@ public class MultipleCommand extends Command {
 	@Override
 	public void shutdown() {
 		for (Command command: commands) {
-			command.completed();
+			command.shutdown();
 		}
 	}
 

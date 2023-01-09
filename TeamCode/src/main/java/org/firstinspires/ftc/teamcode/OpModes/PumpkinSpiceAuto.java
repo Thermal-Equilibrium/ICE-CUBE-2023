@@ -72,24 +72,45 @@ public class PumpkinSpiceAuto extends BaseAuto {
 //                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION))
 //                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION));
 
-        Command auto = followRR(driveToPole)
-               .addNext(new ToggleBreak(robot.drivetrain));  // turn break on
+        Command auto = followRR(driveToPole);
+//               .addNext(new ToggleBreak(robot.drivetrain));  // turn break on
+//        Command auto = new ToggleBreak(robot.drivetrain);
+
 //        for (int i = 0; i < 3; i++) {
 //            // TODO: debug the weird multicommand
 //            auto.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION), commandGroups.moveHorizontalExtension(HorizontalExtension.EXTENSION3)))
 //            .addNext(commandGroups.moveToIntakingRightAuto())
 //            .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION))
 //            .addNext(commandGroups.collectCone());
+
+        // this one is broken
 ////            auto.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION), multiCommand(commandGroups.moveHorizontalExtension(HorizontalExtension.EXTENSION3), commandGroups.moveToIntakingRightAuto())))
 ////                    .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION))
 ////                    .addNext(commandGroups.collectCone());
 //        }
+
+        auto.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION), commandGroups.moveHorizontalExtension(HorizontalExtension.EXTENSION3), commandGroups.moveToIntakingRightAuto()))
+                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION))
+                .addNext(commandGroups.collectCone());
+
+        auto.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION), commandGroups.moveHorizontalExtension(HorizontalExtension.EXTENSION3), commandGroups.moveToIntakingRightAuto()))
+                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION))
+                .addNext(commandGroups.collectCone());
+
+        auto.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION), commandGroups.moveHorizontalExtension(HorizontalExtension.EXTENSION3), commandGroups.moveToIntakingRightAuto()))
+                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION))
+                .addNext(commandGroups.collectCone());
+
         auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION))
-                .addNext(new Delay(0.5))
                 .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION));
-        auto.addNext(new ToggleBreak(robot.drivetrain))
-                .addNext(new Delay(0.5))
-                .addNext(followRR(park));
+        ;
+
+//        auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION))
+//                .addNext(new Delay(0.5))
+//                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION));
+//        auto.addNext(new ToggleBreak(robot.drivetrain))
+//                .addNext(new Delay(0.5))
+//                .addNext(followRR(park));
         return auto;
     }
 }

@@ -57,8 +57,12 @@ public class ScoringCommandGroups {
 	public Command moveToIntakingRightAuto() {
 		currentCone--;
 
-		return moveHorizontalExtension(HorizontalExtension.EXTENSION3)
-				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
+//		return moveHorizontalExtension(HorizontalExtension.EXTENSION3)
+//				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
+//				.addNext(moveTurret(Turret.TurretStates.Slight_RIGHT_AUTO))
+//				.addNext(new MultipleCommand(moveArmDirect(-0.03 + armConeHeights[currentCone]), openClaw()));
+
+		return moveArm(Turret.ArmStates.TRANSFER_SAFE)
 				.addNext(moveTurret(Turret.TurretStates.Slight_RIGHT_AUTO))
 				.addNext(new MultipleCommand(moveArmDirect(-0.03 + armConeHeights[currentCone]), openClaw()));
 	}
