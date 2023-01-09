@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 
 import java.util.ArrayList;
@@ -28,8 +30,10 @@ public class MultipleCommand extends Command {
 	@Override
 	public void periodic() {
 		for (Command command: commands) {
-			command.periodic();
+				command.periodic();
 		}
+		cleanup();
+		System.out.println("Number of commands in the multiple command: " + commands.size());
 	}
 
 	/**
@@ -38,11 +42,13 @@ public class MultipleCommand extends Command {
 	 */
 	@Override
 	public boolean completed() {
+
 		for (Command command: commands) {
 			if (!command.completed()) {
 				return false;
 			}
 		}
+
 		return true;
 	}
 
@@ -51,5 +57,28 @@ public class MultipleCommand extends Command {
 		for (Command command: commands) {
 			command.completed();
 		}
+	}
+
+	public void cleanup() {
+		ArrayList<Command> commandsToAdd = new ArrayList<>();
+		ArrayList<Command> commandsToRemove = new ArrayList<>();
+
+		for (Command command: commands) {
+			if (command.completed()) {
+				if (command.getNext() != null) {
+					if (!command.getNext().completed()) {
+						System.out.println("added command " + command.getNext());
+						commandsToAdd.add(command.getNext());
+						commandsToRemove.add(command);
+					}
+				}
+			}
+		}
+
+		for (Command command: commandsToRemove) {
+			commands.remove(command);
+		}
+
+		commands.addAll(commandsToAdd);
 	}
 }

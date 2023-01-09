@@ -19,8 +19,8 @@ public class HorizontalExtension extends Subsystem {
 	DcMotorEx rightMotor;
 
 	PIDCoefficients coefficients = new PIDCoefficients(0.01,0,0);
-	MotionConstraint upConstraint = new MotionConstraint(5000,5000,2000);
-	MotionConstraint downConstraint = new MotionConstraint(5000,5000,2000);
+	MotionConstraint upConstraint = new MotionConstraint(6000,5000,2000);
+	MotionConstraint downConstraint = new MotionConstraint(6000,5000,2000);
 
 	ProfiledPID controller = new ProfiledPID(upConstraint,downConstraint,coefficients);
 

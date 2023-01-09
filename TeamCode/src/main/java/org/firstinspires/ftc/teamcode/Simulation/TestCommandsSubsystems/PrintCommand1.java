@@ -5,6 +5,7 @@ import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 public class PrintCommand1 extends Command {
     PrintSubsystem1 printSubsystem;
     protected String message;
+    boolean isComplete = false;
 
     public PrintCommand1(PrintSubsystem1 printSub, String printMessage) {
         super(printSub);
@@ -19,10 +20,12 @@ public class PrintCommand1 extends Command {
 
     public void periodic() {
         printSubsystem.print("periodic: " + message);
+        isComplete = true;
+
     }
 
     public boolean completed() {
-        return true;
+        return isComplete;
     }
 
     public void shutdown() {
