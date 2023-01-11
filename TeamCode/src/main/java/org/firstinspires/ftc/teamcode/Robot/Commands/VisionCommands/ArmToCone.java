@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands;
 
 import com.ThermalEquilibrium.homeostasis.Filters.FilterAlgorithms.LowPassFilter;
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
@@ -10,11 +11,14 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision;
 import org.firstinspires.ftc.teamcode.visionPipelines.Cone;
 
 public class ArmToCone extends Command {
+    double delayS = 0.35;
+
     Turret turret;
     Vision vision;
     Cone cone;
-    boolean isCompleted;
-    LowPassFilter filter;
+
+
+    ElapsedTime timer = new ElapsedTime();
 
     @Config
     public static class turretTest {
@@ -25,7 +29,6 @@ public class ArmToCone extends Command {
         super(turret, vision);
         this.turret = turret;
         this.vision = vision;
-        this.isCompleted = false;
     }
 
     @Override
@@ -36,24 +39,16 @@ public class ArmToCone extends Command {
         }
         turret.setTurretPositionSync(cone.servoAngle);
         Dashboard.packet.put("SERVO", cone.servoAngle);
-        this.isCompleted=true;
-
+        timer.reset();
     }
 
     @Override
     public void periodic() {
-        cone = vision.pipe.theCone;
-        if (cone == null) {
-            return;
-        }
-        turret.setTurretPositionSync(cone.servoAngle);
-        Dashboard.packet.put("SERVO", cone.servoAngle);
-        this.isCompleted=true;
     }
 
     @Override
     public boolean completed() {
-        return this.isCompleted;
+        return timer.seconds() > delayS;
     }
 
     @Override
