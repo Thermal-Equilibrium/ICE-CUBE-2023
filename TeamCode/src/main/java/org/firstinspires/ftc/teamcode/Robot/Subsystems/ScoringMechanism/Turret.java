@@ -16,7 +16,7 @@ public class Turret extends Subsystem {
 	Servo turret;
 	Servo arm1;
 	Servo claw;
-	double clawTransferPosition = 0.34;
+	double clawTransferPosition = 0.35;
 	double armSafe = 0.4;
 	double turretTransfer = 0.51889;
 	double currentFreeStateValue = 0;
@@ -66,7 +66,7 @@ public class Turret extends Subsystem {
 	public void setArm(ArmStates armStates) {
 		switch (armStates) {
 			case TRANSFER:
-				arm1.setPosition(0.24);
+				arm1.setPosition(0.21);
 				break;
 			case TRANSFER_SAFE:
 				arm1.setPosition(armSafe);
@@ -99,7 +99,7 @@ public class Turret extends Subsystem {
 				setTurretPositionSync(0);
 				break;
 			case Slight_RIGHT_AUTO:
-				setTurretPositionSync(0.06);
+				setTurretPositionSync(0.0605);
 				break;
 			case FAR_LEFT:
 				setTurretPositionSync(0.9);

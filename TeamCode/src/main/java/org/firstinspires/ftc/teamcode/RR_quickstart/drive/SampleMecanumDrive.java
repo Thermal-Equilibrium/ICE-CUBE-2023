@@ -59,8 +59,8 @@ import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    static double translation_kp = 12;
-    static double rotation_Kp = 4;
+    static double translation_kp = 14;
+    static double rotation_Kp = 6;
     public static PIDCoefficients TRANSLATIONAL_PID;
 
     MedianFilter3 voltageFilter = new MedianFilter3();

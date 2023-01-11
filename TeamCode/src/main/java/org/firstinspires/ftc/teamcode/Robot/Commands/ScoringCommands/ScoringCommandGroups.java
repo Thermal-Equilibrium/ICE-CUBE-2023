@@ -1,16 +1,17 @@
 package org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
+import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.NullCommand;
+import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.RunCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveArm;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveArmDirect;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveClaw;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveHorizontalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurret;
-import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurretDirect;
+import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurretAsync;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveVerticalExtension;
-import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.VisionTest;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.MainScoringMechanism;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
@@ -35,6 +36,14 @@ public class ScoringCommandGroups {
 				.addNext(moveTurret(Turret.TurretStates.Slight_LEFT))
 				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
 	}
+
+	public Command moveToIntakingLeftWithDeposit() {
+		return moveTurretAsync(Turret.TurretStates.FAR_LEFT)
+				.addNext(new MultipleCommand(moveHorizontalExtension(HorizontalExtension.EXTENSION3),
+							moveVerticalExtension(VerticalExtension.HIGH_POSITION)))
+				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
+				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
+	}
 	public Command moveToIntakingRight() {
 		return moveHorizontalExtension(HorizontalExtension.EXTENSION1)
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
@@ -48,25 +57,41 @@ public class ScoringCommandGroups {
 	public Command moveToIntakingRightAuto() {
 		currentCone--;
 
-		return moveHorizontalExtension(HorizontalExtension.EXTENSION3)
-				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
+//		return moveHorizontalExtension(HorizontalExtension.EXTENSION3)
+//				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
+//				.addNext(moveTurret(Turret.TurretStates.Slight_RIGHT_AUTO))
+//				.addNext(new MultipleCommand(moveArmDirect(-0.03 + armConeHeights[currentCone]), openClaw()));
+
+		return moveArm(Turret.ArmStates.TRANSFER_SAFE)
 				.addNext(moveTurret(Turret.TurretStates.Slight_RIGHT_AUTO))
 				.addNext(new MultipleCommand(moveArmDirect(-0.03 + armConeHeights[currentCone]), openClaw()));
 	}
 
 	// very far to the left, in order to place near by
 	public Command moveToIntakingLeftClosePole() {
-		return moveHorizontalExtension(HorizontalExtension.EXTENSION2)
-				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
-				.addNext(moveTurret(Turret.TurretStates.FAR_LEFT))
-				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
+		return moveArm(Turret.ArmStates.TRANSFER_SAFE)
+				.addNext(moveHorizontalExtension(HorizontalExtension.PRE_EMPTIVE_EXTEND))
+				.addNext(moveTurret(Turret.TurretStates.FAR_LEFT))//new MultipleCommand(moveArm(Turret.ArmStates.TRANSFER_SAFE),
+				//moveHorizontalExtension(HorizontalExtension.PRE_EMPTIVE_EXTEND),
+				//moveTurret(Turret.TurretStates.FAR_LEFT))
+				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()))
+				.addNext(moveHorizontalExtension(HorizontalExtension.EXTENSION2));
 	}
 
 	public Command moveToIntakingRightClosePole() {
-		return moveHorizontalExtension(HorizontalExtension.EXTENSION2)
-				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
-				.addNext(moveTurret(Turret.TurretStates.FAR_RIGHT))
-				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
+		Command command = new MultipleCommand(moveArm(Turret.ArmStates.TRANSFER_SAFE),
+				moveHorizontalExtension(HorizontalExtension.PRE_EMPTIVE_EXTEND),
+				moveTurret(Turret.TurretStates.FAR_RIGHT))
+				.addNext(new Delay(0.1))
+				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()))
+				.addNext(moveHorizontalExtension(HorizontalExtension.EXTENSION2));
+		return new RunCommand(() -> command);
+	}
+
+	public Command syncedScoringCollecting() {
+		Command depositCommand = moveVerticalExtension(VerticalExtension.HIGH_POSITION);
+		Command intakeCommand = moveToIntakingLeft();
+		return intakeCommand.addNext(depositCommand);
 	}
 
 
@@ -82,6 +107,7 @@ public class ScoringCommandGroups {
 				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION))
 				.addNext(moveArm(Turret.ArmStates.TRANSFER))
 				.addNext(releaseCone())
+				.addNext(new Delay(0.2))
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
 	}
 
@@ -124,16 +150,13 @@ public class ScoringCommandGroups {
 	public MoveTurret moveTurret(Turret.TurretStates turretStates) {
 		return new MoveTurret(turret,turretStates);
 	}
-	public MoveTurretDirect moveTurretDirect(double angle) {
-		return new MoveTurretDirect(turret, angle);
-
+	public MoveTurret moveTurretAsync(Turret.TurretStates turretStates) {
+		return new MoveTurretAsync(turret,turretStates);
 	}
-
 	public MoveHorizontalExtension moveHorizontalExtension(double position) {
 		return new MoveHorizontalExtension(horizontalExtension,position);
 	}
 	public MoveVerticalExtension moveVerticalExtension(double position) {
 		return new MoveVerticalExtension(verticalExtension,position);
 	}
-
 }

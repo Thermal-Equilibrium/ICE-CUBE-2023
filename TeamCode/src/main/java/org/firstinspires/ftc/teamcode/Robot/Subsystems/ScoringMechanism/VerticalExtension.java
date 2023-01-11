@@ -22,7 +22,7 @@ public class VerticalExtension extends Subsystem {
 	MotionConstraint downConstraint = new MotionConstraint(5000,5000,2000);
 
 	ProfiledPID controller = new ProfiledPID(upConstraint,downConstraint,coefficients);
-	public final static double HIGH_POSITION = 880;
+	public final static double HIGH_POSITION = 890;
 	public final static double MID_POSITION = 550;
 
 	public final static double IN_POSITION = 0;

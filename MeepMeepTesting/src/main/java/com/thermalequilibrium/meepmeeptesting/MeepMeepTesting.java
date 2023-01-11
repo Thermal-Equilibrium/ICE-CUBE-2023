@@ -21,7 +21,12 @@ public class MeepMeepTesting {
 		MeepMeep meepMeep = new MeepMeep(800);
 		final Pose2d startPose = new Pose2d(-36, 66,Math.toRadians(-90));
 		final Pose2d goToPole1 = new Pose2d(-36, 24,Math.toRadians(-90));
-		final Pose2d goToPole2 = shiftRobotRelative(new Pose2d(-34,6,Math.toRadians(330)),-7.5,0);
+		final Pose2d goToPole2 = shiftRobotRelative(new Pose2d(-34,6,Math.toRadians(335)),-3.7,2);
+		final Pose2d parkRight = new Pose2d(-58, 12, Math.toRadians(0));
+		final Pose2d parkMID = new Pose2d(-36, 12, Math.toRadians(-90));
+		final Pose2d parkLeft1 = new Pose2d(-36,24,Math.toRadians(-90));
+		final Pose2d parkLeft = new Pose2d(-12,36,Math.toRadians(180));
+
 		RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
 				// Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
 				.setConstraints(MAX_VEL, MAX_ACCEL, MAX_ANG_VEL, MAX_ANG_ACCEL, 12)
@@ -29,6 +34,9 @@ public class MeepMeepTesting {
 						drive.trajectorySequenceBuilder(startPose)
 								.splineTo(goToPole1.vec(), goToPole1.getHeading())
 								.splineToSplineHeading(goToPole2,calculateTangent(goToPole1,goToPole2))
+								.setReversed(true)
+								.splineTo(parkLeft1.vec(),Math.toRadians(75))
+								.splineToLinearHeading(parkLeft, Math.toRadians(0))
 								.build()
 
 				);
