@@ -8,7 +8,9 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMo
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveClaw;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveHorizontalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurret;
+import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurretDirect;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveVerticalExtension;
+import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.VisionTest;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.MainScoringMechanism;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
@@ -122,10 +124,16 @@ public class ScoringCommandGroups {
 	public MoveTurret moveTurret(Turret.TurretStates turretStates) {
 		return new MoveTurret(turret,turretStates);
 	}
+	public MoveTurretDirect moveTurretDirect(double angle) {
+		return new MoveTurretDirect(turret, angle);
+
+	}
+
 	public MoveHorizontalExtension moveHorizontalExtension(double position) {
 		return new MoveHorizontalExtension(horizontalExtension,position);
 	}
 	public MoveVerticalExtension moveVerticalExtension(double position) {
 		return new MoveVerticalExtension(verticalExtension,position);
 	}
+
 }

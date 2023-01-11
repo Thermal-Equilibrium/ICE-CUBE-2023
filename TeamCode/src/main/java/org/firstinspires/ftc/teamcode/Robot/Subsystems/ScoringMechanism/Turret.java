@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 
 public class Turret extends Subsystem {
 
@@ -109,10 +110,10 @@ public class Turret extends Subsystem {
 		}
 	}
 
-
 	public void setTurretPositionSync(double position) {
 		position = Range.clip(position,-1,1);
 		turret.setPosition(position);
+		Dashboard.packet.put("RECIEVES POS", position);
 	}
 
 	public double getTurretPosition() {

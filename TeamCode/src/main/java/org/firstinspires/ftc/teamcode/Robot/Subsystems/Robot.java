@@ -27,7 +27,7 @@ public class Robot {
 	//public PoleDetectionSubsystem detectionSubsystem = new PoleDetectionSubsystem(dashboard);
 	public MainScoringMechanism scoringMechanism = new MainScoringMechanism();
 	public FieldMap field = new FieldMap();
-	public DetectionSubsystem detectionSubsystem = new DetectionSubsystem(dashboard.dashboard);
+//	public DetectionSubsystem detectionSubsystem = new DetectionSubsystem(dashboard.dashboard);
 	public Vision vision = new Vision(drivetrain);
 
 	// print subsystem for testing

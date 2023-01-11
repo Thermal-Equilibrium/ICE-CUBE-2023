@@ -1,9 +1,8 @@
 package org.firstinspires.ftc.teamcode.visionPipelines;
 
-import androidx.annotation.Nullable;
-
 import com.acmerobotics.dashboard.config.Config;
 
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.opencv.core.*;
 import org.opencv.imgproc.CLAHE;
 import org.opencv.imgproc.Imgproc;
@@ -17,13 +16,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
-public class LetsSee extends OpenCvPipeline {
-//    @Config
+public class Optimized extends OpenCvPipeline {
+    @Config
     public static class VisionConfig {
         public static double CAMERA_ANGLE = Math.toRadians(-30);
         public static double distanceCorrection = .8;
-        public static int coneMinArea = 4500;
-        public static int poleMinArea = 5000;
+        public static int coneMinArea = 900;
+        public static int poleMinArea = 1000;
         public static int SL = 180;
         public static int RED_MIN_SATURATION = 100;
         public static int BLUE_MIN_SATURATION = 20;
@@ -57,10 +56,11 @@ public class LetsSee extends OpenCvPipeline {
     private final Mat coneStructure = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_ELLIPSE, new Size(9,9));
     private final ArrayList<Mat> splitChannels = new ArrayList<>();
     private final Mat singleChannel = new Mat();
-    private final Rect sampleRedRect;
-    private final Rect sampleYellowRect;
-    private final Rect sampleBlueRect;
+    private Rect sampleRedRect;
+    private Rect sampleYellowRect;
+    private Rect sampleBlueRect;
     private final Mat hsv = new Mat();
+    private final Mat saturation = new Mat();
 
     private final Mat hierarchy = new Mat();
     private final Mat sample = new Mat();
@@ -75,54 +75,101 @@ public class LetsSee extends OpenCvPipeline {
     ArrayList<MatOfPoint> rawContours = new ArrayList<>();
     ArrayList<MatOfPoint> coneContours = new ArrayList<>();
 
-    public volatile Cone perfect = null;
-    public volatile Cone imperfect = null;
+    public volatile Cone theCone = null;
 
-    public LetsSee(Cam cam) {
+    long start;
+    long end;
+    public Optimized(Cam cam) {
         this.cam = cam;
         this.camCenter = getCenter(this.cam.res);
         this.HUD = new Mat(this.cam.res, CvType.CV_8UC3, new Scalar(0,0,0));
 
-        double sampleSize = this.cam.res.height / 8;
+        double sampleSize = this.cam.res.height / 15;
         this.sampleRedRect = new Rect(new Point(0, this.cam.res.height - sampleSize), new Size(sampleSize, sampleSize));
         this.sampleYellowRect = new Rect(new Point(this.cam.res.width / 2 - sampleSize /2, this.cam.res.height - sampleSize), new Size(sampleSize, sampleSize));
         this.sampleBlueRect = new Rect(new Point(this.cam.res.width - sampleSize,this.cam.res.height - sampleSize), new Size(sampleSize, sampleSize));
     }
-//    @Override
+    //    @Override
 //    public void init(Mat input) { }
     @Override
     public Mat processFrame(Mat input) {
-        Imgproc.medianBlur(input,input,5);
+
+        start = System.nanoTime();
+        long startFilter = System.nanoTime();
+//        Imgproc.blur(input,input,new Size(5,5));
+//        Imgproc.medianBlur(input,input,5);
 //        this.applyClahe(input).copyTo(input);
 //        this.constantYuma(input).copyTo(input);
 //        this.normalizeYuma(input, VisionConfig.MIN_YUMA,VisionConfig.MAX_YUMA).copyTo(input);
 //        this.blurYuma(input,11).copyTo(input);
+        long endFilter = System.nanoTime();
 
+        long startDev = System.nanoTime();
         if (TEAM == Color.RED) {
             Imgproc.cvtColor(input, this.hsv, Imgproc.COLOR_BGR2HSV_FULL);
             Imgproc.cvtColor(input.submat(this.sampleRedRect), this.sample, Imgproc.COLOR_BGR2HSV_FULL);
+            input.submat(this.sampleRedRect).copyTo(this.sample);
+            this.sample.setTo(new Scalar(255,0,0));
+            Imgproc.cvtColor(this.sample, this.sample, Imgproc.COLOR_BGR2HSV_FULL);
+
             Core.extractChannel(this.hsv, this.hue, 0);
             Core.absdiff(this.hue, new Scalar(Core.mean(this.sample).val[0]), this.deviation);
+
+//            Core.extractChannel(this.hsv, this.saturation, 1);
+//            Imgproc.threshold(this.saturation, this.saturation, 25, 255, Imgproc.THRESH_BINARY_INV);
         }
         else if (TEAM == Color.BLUE) {
             Imgproc.cvtColor(input, this.hsv, Imgproc.COLOR_RGB2HSV_FULL);
             Imgproc.cvtColor(input.submat(this.sampleBlueRect), this.sample, Imgproc.COLOR_RGB2HSV_FULL);
+            input.submat(this.sampleBlueRect).copyTo(this.sample);
+            this.sample.setTo(new Scalar(0,0,255));
+            Imgproc.cvtColor(this.sample, this.sample, Imgproc.COLOR_RGB2HSV_FULL);
+
             Core.extractChannel(this.hsv, this.hue, 0);
             Core.absdiff(this.hue, new Scalar(Core.mean(this.sample).val[0]), this.deviation);
+//            Imgproc.cvtColor(input, this.hsv, Imgproc.COLOR_RGB2HSV_FULL);
+//            Imgproc.cvtColor(input.submat(this.sampleBlueRect), this.sample, Imgproc.COLOR_RGB2HSV_FULL);
+//            Core.extractChannel(this.hsv, this.hue, 0);
+//            Core.absdiff(this.hue, new Scalar(Core.mean(this.sample).val[0]), this.deviation);
         }
-
+        long endDev = System.nanoTime();
+        long startThresh = System.nanoTime();
+        Imgproc.threshold(this.deviation, this.color, 25, 255, Imgproc.THRESH_BINARY_INV);
+        long endThresh = System.nanoTime();
+        long startMorph = System.nanoTime();
         Imgproc.morphologyEx(this.color,this.color,Imgproc.MORPH_ERODE, this.coneStructure);
-        Imgproc.morphologyEx(this.color,this.color,Imgproc.MORPH_OPEN, this.coneStructure);
+//        Imgproc.morphologyEx(this.color,this.color,Imgproc.MORPH_OPEN, this.coneStructure);
         Imgproc.morphologyEx(this.color,this.color,Imgproc.MORPH_CLOSE, this.coneStructure);
-        Imgproc.morphologyEx(this.color,this.color,Imgproc.MORPH_DILATE, this.coneStructure);
-
-        Imgproc.threshold(this.deviation, this.color, 15, 255, Imgproc.THRESH_BINARY_INV);
-        //        Core.bitwise_and(this.color,this.gameElement,this.color);
+//        Imgproc.morphologyEx(this.color,this.color,Imgproc.MORPH_DILATE, this.coneStructure);
+        long endMorph = System.nanoTime();
+        long startContour = System.nanoTime();
         this.cones.clear();
         this.detectCones();
+        long endContour = System.nanoTime();
+        long startClass = System.nanoTime();
         this.coneClassification(this.coneContours);
+        long endClass = System.nanoTime();
+        long startHUD = System.nanoTime();
         this.doHUD();
-        this.finalize(input).copyTo(out);
+        long endHUD = System.nanoTime();
+        long startFinal = System.nanoTime();
+        this.finalize(this.deviation).copyTo(out);
+        long startReq = System.nanoTime();
+        this.theCone = this.requestCone(true);
+        long endReq = System.nanoTime();
+        long endFinal = System.nanoTime();
+
+        end = System.nanoTime();
+        Dashboard.packet.put("filter",(endFilter-startFilter) /1000000);
+        Dashboard.packet.put("dev",(endDev-startDev) /1000000);
+        Dashboard.packet.put("thresh",(endThresh-startThresh) /1000000);
+        Dashboard.packet.put("morph",(endMorph-startMorph) /1000000);
+        Dashboard.packet.put("contour",(endContour-startContour) /1000000);
+        Dashboard.packet.put("class",(endClass-startClass) /1000000);
+        Dashboard.packet.put("HUD",(endHUD-startHUD) /1000000);
+        Dashboard.packet.put("final",(endFinal-startFinal) /1000000);
+        Dashboard.packet.put("req",(endReq-startReq) /1000000);
+        Dashboard.packet.put("total",(end-start) /1000000);
         return out;
     }
     private Mat constantYuma(Mat input) {
@@ -250,7 +297,7 @@ public class LetsSee extends OpenCvPipeline {
         this.rawContours.clear();
         Imgproc.findContours(this.color, this.rawContours, this.hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
         for (MatOfPoint contour: this.rawContours) {
-            if (Imgproc.contourArea(contour) >= VisionConfig.coneMinArea && contour.height() > contour.width()) { //&& Imgproc.isContourConvex(contour)
+            if (Imgproc.contourArea(contour) >= VisionConfig.coneMinArea && Imgproc.boundingRect(contour).height > Imgproc.boundingRect(contour).width) { //&& Imgproc.isContourConvex(contour)
                 this.coneContours.add(contour);
             }
         }
@@ -259,7 +306,7 @@ public class LetsSee extends OpenCvPipeline {
         for (MatOfPoint contour: contours) {
             Cone.Classification classification;
 
-            VisionBasedPosition position = new VisionBasedPosition( this.getDistance(contour.width(),CONE_WIDTH), this.getAngle(getTop(contour)));
+            VisionBasedPosition position = new VisionBasedPosition( this.getDistance(Imgproc.boundingRect(contour).width,CONE_WIDTH), this.getAngle(getTop(contour)));
             if (position.angle > Math.toRadians(0) && position.angle < Math.toRadians(30)){
                 classification = Cone.Classification.DEADZONE;
             }
@@ -276,21 +323,21 @@ public class LetsSee extends OpenCvPipeline {
         }
     }
 
-    @Nullable
-    public Cone requestCone(boolean requirePerfect) {
+    private Cone requestCone(boolean requireNonDeadzone) {
         Cone match = null;
         if (this.cones.size() < 1) return null;
 
-        List<Cone> perfect = this.cones.stream().filter(cone -> cone.classification == Cone.Classification.PERFECT).collect(Collectors.toList());
+        List<Cone> perfect = this.cones.stream().filter(cone -> cone.classification != Cone.Classification.DEADZONE).collect(Collectors.toList());
         if (perfect.size() > 0) match = Collections.min(perfect, Comparator.comparing(cone -> Math.abs(cone.position.distance - VisionConfig.perfectDistance)));
-        else if (requirePerfect) return null;
+        else if (requireNonDeadzone) return match;
         else {
             match = Collections.min(this.cones, Comparator.comparing(cone -> Math.abs(cone.position.distance - VisionConfig.perfectDistance)));
         }
         return match;
     }
-    @Nullable
-    public ConeStack requestConeStack(boolean requirePerfect) {
+
+
+    private ConeStack requestConeStack(boolean requirePerfect) {
         Cone match = null;
         if (this.cones.size() < 1) return null;
         List<Cone> perfect = this.cones.stream().filter(cone -> cone.classification == Cone.Classification.PERFECT).collect(Collectors.toList());
