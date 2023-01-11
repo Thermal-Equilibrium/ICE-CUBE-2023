@@ -19,9 +19,10 @@ public class WorthIsBad extends BaseAuto {
         waitForStart();
 //        ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism);
 //        Command auto = commandGroups.moveTurretDirect(1);
-        Command auto = new VisionTest(robot.scoringMechanism.turret, robot.vision);
+//        Command auto = new VisionTest(robot.scoringMechanism.turret, robot.vision);
 //        waitForStart();
-        return auto;
+//        return auto;
+        return null;
     }
 
 

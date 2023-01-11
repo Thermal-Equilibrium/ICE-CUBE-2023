@@ -10,8 +10,7 @@ import org.firstinspires.ftc.teamcode.CommandFramework.BaseAuto;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Break.ToggleBreak;
-import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
-import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.RunCommand;
+import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.NullCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringCommandGroups;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
@@ -21,7 +20,7 @@ public class PumpkinSpiceAuto extends BaseAuto {
 
     Pose2d startPose = new Pose2d(-36, 66.5,Math.toRadians(-90));
     final Pose2d goToPole1 = new Pose2d(-36, 24,Math.toRadians(-90));
-    final Pose2d goToPole2 = shiftRobotRelative(new Pose2d(-34,4.5,Math.toRadians(330)),-6.5,3);
+    final Pose2d goToPole2 = new Pose2d(-35.2273297,10.137647235973153,Math.toRadians(327.48678));
     final Pose2d parkRight = new Pose2d(-60, 12, Math.toRadians(0));
     final Pose2d parkMID = new Pose2d(-40, 18, Math.toRadians(-90));
     final Pose2d parkLeft1 = new Pose2d(-36,24,Math.toRadians(-90));
@@ -67,50 +66,28 @@ public class PumpkinSpiceAuto extends BaseAuto {
                 break;
         }
 
-//        return commandGroups.moveToIntakingLeft()
-//                .addNext(commandGroups.collectCone())
-//                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION))
-//                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION));
+        //Command auto = followRR(driveToPole);
 
-        Command auto = followRR(driveToPole);
-//               .addNext(new ToggleBreak(robot.drivetrain));  // turn break on
-//        Command auto = new ToggleBreak(robot.drivetrain);
 
-//        for (int i = 0; i < 3; i++) {
-//            // TODO: debug the weird multicommand
-//            auto.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION), commandGroups.moveHorizontalExtension(HorizontalExtension.EXTENSION3)))
-//            .addNext(commandGroups.moveToIntakingRightAuto())
-//            .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION))
-//            .addNext(commandGroups.collectCone());
+        Command auto = new NullCommand();
 
-        // this one is broken
-////            auto.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION), multiCommand(commandGroups.moveHorizontalExtension(HorizontalExtension.EXTENSION3), commandGroups.moveToIntakingRightAuto())))
-////                    .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION))
-////                    .addNext(commandGroups.collectCone());
-//        }
-
-        auto.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION), commandGroups.moveHorizontalExtension(HorizontalExtension.EXTENSION3), commandGroups.moveToIntakingRightAuto()))
-                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION))
-                .addNext(commandGroups.collectCone());
-
-        auto.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION), commandGroups.moveHorizontalExtension(HorizontalExtension.EXTENSION3), commandGroups.moveToIntakingRightAuto()))
-                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION))
-                .addNext(commandGroups.collectCone());
-
-        auto.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION), commandGroups.moveHorizontalExtension(HorizontalExtension.EXTENSION3), commandGroups.moveToIntakingRightAuto()))
-                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION))
-                .addNext(commandGroups.collectCone());
+        for (int i = 0; i < 5; ++i) {
+            addCycle(auto,commandGroups);
+        }
 
         auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION))
                 .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION));
-        ;
 
-//        auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION))
-//                .addNext(new Delay(0.5))
-//                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION));
-//        auto.addNext(new ToggleBreak(robot.drivetrain))
-//                .addNext(new Delay(0.5))
-//                .addNext(followRR(park));
+        //auto.addNext(followRR(park));
         return auto;
+    }
+
+    public void addCycle(Command command, ScoringCommandGroups commandGroups) {
+        command.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION),
+                        commandGroups.moveHorizontalExtension(HorizontalExtension.autoExtension),
+                        commandGroups.moveToIntakingRightAuto()))
+
+                .addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION),
+                        commandGroups.collectConeAuto()));
     }
 }

@@ -17,7 +17,7 @@ public class Drivetrain extends Subsystem {
 	protected double rightPower = 0;
 	SampleMecanumDrive drive;
 	Servo aBreak;
-	double breakActive = 0.4;
+	double breakActive = 0.5;
 	double breakReleased = 0.7;
 	BreakStates breakState = BreakStates.FREE;
 

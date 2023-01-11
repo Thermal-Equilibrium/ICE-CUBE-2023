@@ -39,7 +39,7 @@ public class ScoringCommandGroups {
 
 	public Command moveToIntakingLeftWithDeposit() {
 		return moveTurretAsync(Turret.TurretStates.FAR_LEFT)
-				.addNext(new MultipleCommand(moveHorizontalExtension(HorizontalExtension.EXTENSION3),
+				.addNext(new MultipleCommand(moveHorizontalExtension(HorizontalExtension.autoExtension),
 							moveVerticalExtension(VerticalExtension.HIGH_POSITION)))
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
 				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
@@ -64,7 +64,7 @@ public class ScoringCommandGroups {
 
 		return moveArm(Turret.ArmStates.TRANSFER_SAFE)
 				.addNext(moveTurret(Turret.TurretStates.Slight_RIGHT_AUTO))
-				.addNext(new MultipleCommand(moveArmDirect(-0.03 + armConeHeights[currentCone]), openClaw()));
+				.addNext(new MultipleCommand(moveArmDirect(-0 + armConeHeights[currentCone]), openClaw()));
 	}
 
 	// very far to the left, in order to place near by
@@ -100,6 +100,17 @@ public class ScoringCommandGroups {
 		if (verticalExtension.getSlidePosition() > 50) {
 			return new NullCommand();
 		}
+
+		return grabCone()
+				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
+				.addNext(moveTurret(Turret.TurretStates.TRANSFER))
+				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION))
+				.addNext(moveArm(Turret.ArmStates.TRANSFER))
+				.addNext(releaseCone())
+				.addNext(new Delay(0.2))
+				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
+	}
+	public Command collectConeAuto() {
 
 		return grabCone()
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))

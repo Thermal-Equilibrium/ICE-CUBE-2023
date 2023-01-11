@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
 public abstract class BaseTeleop extends LinearOpMode {
 
     protected Robot robot;
-    public final Pose2d initialPose = new Pose2d(); // new Pose2d( -36, 63.5, Math.toRadians(-90));
+    public final Pose2d initialPose = new Pose2d(-36, 66.5,Math.toRadians(-90)); // new Pose2d( -36, 63.5, Math.toRadians(-90));
 
 
     @Override

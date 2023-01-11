@@ -16,7 +16,7 @@ public class MotorFinder extends LinearOpMode {
 
 
 	double highPosition = 833;
-	double setpoint = 0;
+	double setpoint = 150;
 	PIDCoefficients coefficients = new PIDCoefficients(0.01,0,0);
 	MotionConstraint upConstraint = new MotionConstraint(5000,5000,2000);
 	MotionConstraint downConstraint = new MotionConstraint(5000,5000,2000);
@@ -55,34 +55,28 @@ public class MotorFinder extends LinearOpMode {
 		Servo s2 = hardwareMap.get(Servo.class, "ch2");
 		Servo turret = hardwareMap.get(Servo.class, "turret");
 		waitForStart();
-		double clawAngle = 0.3;
+		double turretAngle = 0.51889;
 		while (opModeIsActive()) {
-			clawAngle += -gamepad1.left_stick_y * 0.01;
-			arm.setPosition(clawAngle);
-			//s1.setPosition(clawAngle);
+			turretAngle += -gamepad1.left_stick_y * 0.01;
+			setpoint -= gamepad1.right_stick_y;
+			turret.setPosition(turretAngle);
+			//s1.setPosition(turretAngle);
 			// s0.setPosition(0.5);
 //			arm.setPosition(0.3);
 
-			double slidePosition = (vertical1.getCurrentPosition() + vertical2.getCurrentPosition()) / 2.0;
-			double power = 0; //= pid.calculate(setpoint,slidePosition);
-			if (gamepad1.dpad_up) {
-				setpoint = highPosition;
-			}
-			if (gamepad1.dpad_down) {
-				setpoint = 0;
-			}
-			vertical1.setPower(power);
-			vertical2.setPower(power);
-			telemetry.addData("average position",slidePosition);
-//			telemetry.addData("target position",pid.getTargetPosition());
-//			telemetry.addData("target velo",pid.getVelocity());
-			telemetry.addData("servo angle",clawAngle);
+			double slidePosition = (leftHorizontal.getCurrentPosition() + rightHorizontal.getCurrentPosition()) / 2.0;
+			double power = pid.calculate(setpoint,slidePosition);
+
+			leftHorizontal.setPower(power);
+			rightHorizontal.setPower(power);
+			telemetry.addData("target position",setpoint);
+			telemetry.addData("turret angle",turretAngle);
 			telemetry.update();
 			if (gamepad1.triangle) {
-				aBreak.setPosition(0.7);
+				arm.setPosition(0.4);
 			}
 			if (gamepad1.square) {
-				aBreak.setPosition(0.5);
+				arm.setPosition(0.1978);
 			}
 		}
 	}
