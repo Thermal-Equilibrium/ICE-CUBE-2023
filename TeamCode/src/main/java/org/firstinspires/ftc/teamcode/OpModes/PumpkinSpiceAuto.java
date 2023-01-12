@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.CommandFramework.BaseAuto;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Break.ToggleBreak;
+import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.NullCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringCommandGroups;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
@@ -20,7 +21,13 @@ public class PumpkinSpiceAuto extends BaseAuto {
 
     Pose2d startPose = new Pose2d(-36, 66.5,Math.toRadians(-90));
     final Pose2d goToPole1 = new Pose2d(-36, 24,Math.toRadians(-90));
-    final Pose2d goToPole2 = new Pose2d(-35.2273297,10.137647235973153,Math.toRadians(327.48678));
+    Pose2d goToPole2 = shiftRobotRelative(
+            new Pose2d(-34.714046022304565,10.158013549498268,Math.toRadians(338.11832672430523)),
+            -0.8,
+            -3.3
+    );
+
+    final Pose2d parkRight1= new Pose2d(goToPole2.getX() - 1, goToPole2.getY() + 1, goToPole2.getHeading());
     final Pose2d parkRight = new Pose2d(-60, 12, Math.toRadians(0));
     final Pose2d parkMID = new Pose2d(-40, 18, Math.toRadians(-90));
     final Pose2d parkLeft1 = new Pose2d(-36,24,Math.toRadians(-90));
@@ -40,7 +47,8 @@ public class PumpkinSpiceAuto extends BaseAuto {
                 .build();
 
         Trajectory parkRightTraj = robot.drivetrain.getBuilder().trajectoryBuilder(goToPole2,true)
-                .splineToSplineHeading(parkRight,calculateTangent(goToPole2, parkRight))
+                .splineToConstantHeading(parkRight1.vec(),calculateTangent(goToPole2,parkRight1))
+                .splineToSplineHeading(parkRight,calculateTangent(parkRight1, parkRight))
                 .build();
 
         Trajectory parkMidTraj = robot.drivetrain.getBuilder().trajectoryBuilder(goToPole2,true)
@@ -66,10 +74,10 @@ public class PumpkinSpiceAuto extends BaseAuto {
                 break;
         }
 
-        //Command auto = followRR(driveToPole);
+        Command auto = followRR(driveToPole);
 
 
-        Command auto = new ToggleBreak(robot.drivetrain);
+         auto.addNext(new ToggleBreak(robot.drivetrain));
 
         for (int i = 0; i < 5; ++i) {
             addCycle(auto,commandGroups);
@@ -78,7 +86,8 @@ public class PumpkinSpiceAuto extends BaseAuto {
         auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION))
                 .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION));
 
-        //auto.addNext(followRR(park));
+        auto.addNext(new Delay(0.1).addNext(new ToggleBreak(robot.drivetrain)));
+        auto.addNext(followRR(park));
         return auto;
     }
 

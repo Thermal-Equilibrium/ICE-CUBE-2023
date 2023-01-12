@@ -31,7 +31,7 @@ public class HorizontalExtension extends Subsystem {
 	public final static double EXTENSION1 = 500;
 	public final static double PRE_EMPTIVE_EXTEND = 100;
 	public final static double EXTENSION2 = 300; // todo figure out our max safe extension
-	public final static double autoExtension = 385
+	public final static double autoExtension = 375
 			;
 	protected double targetPosition = IN_POSITION;
 

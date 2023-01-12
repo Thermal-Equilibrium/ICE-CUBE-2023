@@ -21,9 +21,14 @@ public class MeepMeepTesting {
 		MeepMeep meepMeep = new MeepMeep(800);
 		final Pose2d startPose = new Pose2d(-36, 66,Math.toRadians(-90));
 		final Pose2d goToPole1 = new Pose2d(-36, 24,Math.toRadians(-90));
-		final Pose2d goToPole2 = shiftRobotRelative(new Pose2d(-34,6,Math.toRadians(335)),-3.7,2);
-		final Pose2d parkRight = new Pose2d(-58, 12, Math.toRadians(0));
-		final Pose2d parkMID = new Pose2d(-36, 12, Math.toRadians(-90));
+		Pose2d goToPole2 = shiftRobotRelative(
+				new Pose2d(-34.714046022304565,10.158013549498268,Math.toRadians(338.11832672430523)),
+				-1,
+				-3.1
+		);
+		final Pose2d parkRight1= new Pose2d(goToPole2.getX() - 1, goToPole2.getY() + 1, goToPole2.getHeading());
+		final Pose2d parkRight = new Pose2d(-60, 12, Math.toRadians(0));
+		final Pose2d parkMID = new Pose2d(-40, 18, Math.toRadians(-90));
 		final Pose2d parkLeft1 = new Pose2d(-36,24,Math.toRadians(-90));
 		final Pose2d parkLeft = new Pose2d(-12,36,Math.toRadians(180));
 
@@ -36,7 +41,7 @@ public class MeepMeepTesting {
 								.splineToSplineHeading(goToPole2,calculateTangent(goToPole1,goToPole2))
 								.setReversed(true)
 								.splineTo(parkLeft1.vec(),Math.toRadians(75))
-								.splineToLinearHeading(parkLeft, Math.toRadians(0))
+								.splineTo(parkLeft.vec(), Math.toRadians(0))
 								.build()
 
 				);
