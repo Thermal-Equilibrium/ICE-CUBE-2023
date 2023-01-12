@@ -32,7 +32,7 @@ public class PumpkinSpiceAuto extends BaseAuto {
     }
     @Override
     public Command setupAuto(CommandScheduler scheduler) {
-        ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism);
+        ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism, robot.drivetrain);
 
         Trajectory driveToPole = robot.drivetrain.getBuilder().trajectoryBuilder(startPose)
                 .splineTo(goToPole1.vec(),goToPole1.getHeading())
@@ -69,7 +69,7 @@ public class PumpkinSpiceAuto extends BaseAuto {
         //Command auto = followRR(driveToPole);
 
 
-        Command auto = new NullCommand();
+        Command auto = new ToggleBreak(robot.drivetrain);
 
         for (int i = 0; i < 5; ++i) {
             addCycle(auto,commandGroups);

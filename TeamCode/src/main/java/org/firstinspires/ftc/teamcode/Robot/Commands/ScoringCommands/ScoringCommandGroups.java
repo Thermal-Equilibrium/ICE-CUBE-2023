@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands;
 
+import com.acmerobotics.roadrunner.drive.Drive;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
@@ -12,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMo
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurret;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurretAsync;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveVerticalExtension;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.MainScoringMechanism;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
@@ -23,21 +27,32 @@ public class ScoringCommandGroups {
 	VerticalExtension verticalExtension;
 	HorizontalExtension horizontalExtension;
 
-	public ScoringCommandGroups(MainScoringMechanism mechanism) {
+	Drivetrain drivetrain;
+
+	Pose2d intakePosition = new Pose2d();
+
+
+	public ScoringCommandGroups(MainScoringMechanism mechanism, Drivetrain drivetrain) {
 		this.horizontalExtension = mechanism.horizontalExtension;
 		this.verticalExtension = mechanism.verticalExtension;
 		this.turret = mechanism.turret;
+		this.drivetrain = drivetrain;
 	}
 
 	// near straight but tilted to the left
 	public Command moveToIntakingLeft() {
-		return moveHorizontalExtension(HorizontalExtension.EXTENSION1)
+		return moveHorizontalExtension(HorizontalExtension.CLOSE_INTAKE)
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
 				.addNext(moveTurret(Turret.TurretStates.Slight_LEFT))
 				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
 	}
 
 	public Command moveToIntakingLeftWithDeposit() {
+		Pose2d drivetrainPos = drivetrain.getPose();
+		if (Math.hypot(intakePosition.getX() - drivetrainPos.getX(), intakePosition.getY() - drivetrainPos.getY()) > 15) {
+			// if this is the case, dont put out the extension, just put out the vertical extension
+			return moveVerticalExtension(VerticalExtension.HIGH_POSITION);
+		}
 		return moveTurretAsync(Turret.TurretStates.FAR_LEFT)
 				.addNext(new MultipleCommand(moveHorizontalExtension(HorizontalExtension.autoExtension),
 							moveVerticalExtension(VerticalExtension.HIGH_POSITION)))
@@ -96,6 +111,8 @@ public class ScoringCommandGroups {
 
 
 	public Command collectCone() {
+
+		intakePosition = drivetrain.getPose();
 
 		if (verticalExtension.getSlidePosition() > 50) {
 			return new NullCommand();

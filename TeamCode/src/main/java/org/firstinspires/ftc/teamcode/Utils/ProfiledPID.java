@@ -41,6 +41,7 @@ public class ProfiledPID implements FeedbackController {
 		generateMotionProfile(reference, state);
 		m_targetPosition = getTargetPosition();
 		m_state = state;
+//		double power = controller.calculate(m_targetPosition,m_state);
 		double power = controller.calculate(m_targetPosition,m_state);
 		if (power < 0) {
 			power = Range.clip(power, -0.5, 0.5);

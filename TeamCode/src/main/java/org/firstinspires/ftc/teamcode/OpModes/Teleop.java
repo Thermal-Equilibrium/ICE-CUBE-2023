@@ -19,7 +19,7 @@ public class Teleop extends BaseTeleop {
 
 	@Override
 	public Command setupTeleop(CommandScheduler scheduler) {
-		ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism);
+		ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism, robot.drivetrain);
 
 
 		robot.gamepad1.whenDPadDownPressed(commandGroups.moveToIntakingLeft());
@@ -30,7 +30,7 @@ public class Teleop extends BaseTeleop {
 		robot.gamepad1.whenRightBumperPressed(new RunCommand(commandGroups::collectCone));
 		robot.gamepad1.whenRightTriggerPressed(new RunCommand(commandGroups::moveVerticalExtensionDownOrReleaseClaw));
 		robot.gamepad1.whenSquarePressed(commandGroups.moveVerticalExtension(VerticalExtension.MID_POSITION));
-		robot.gamepad1.whenTrianglePressed(commandGroups.moveToIntakingLeftWithDeposit());
+		robot.gamepad1.whenTrianglePressed(new RunCommand(commandGroups::moveToIntakingLeftWithDeposit));
 		robot.gamepad1.whenCirclePressed(commandGroups.moveToLowGoalScoring());
 		robot.gamepad1.whenCrossPressed(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION));
 

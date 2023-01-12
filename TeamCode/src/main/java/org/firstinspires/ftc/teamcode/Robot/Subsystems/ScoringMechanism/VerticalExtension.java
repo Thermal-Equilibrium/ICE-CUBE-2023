@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 import org.firstinspires.ftc.teamcode.Math.AsymmetricProfile.MotionConstraint;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Utils.ProfiledPID;
 
 public class VerticalExtension extends Subsystem {
@@ -17,9 +18,9 @@ public class VerticalExtension extends Subsystem {
 	DcMotorEx vertical1;
 	DcMotorEx vertical2;
 
-	PIDCoefficients coefficients = new PIDCoefficients(0.010,0,0);
+	PIDCoefficients coefficients = new PIDCoefficients(0.015,0,0);
 	MotionConstraint upConstraint = new MotionConstraint(3500,3500,2000);
-	MotionConstraint downConstraint = new MotionConstraint(10000,10000,2300);
+	MotionConstraint downConstraint = new MotionConstraint(3500,10000,3000);
 
 	ProfiledPID controller = new ProfiledPID(upConstraint,downConstraint,coefficients);
 	public final static double HIGH_POSITION = 880;
@@ -58,6 +59,7 @@ public class VerticalExtension extends Subsystem {
 	public void periodic() {
 
 		updatePID();
+
 	}
 
 	@Override
@@ -70,6 +72,9 @@ public class VerticalExtension extends Subsystem {
 		double power = controller.calculate(slideTargetPosition,measuredPosition);
 		vertical1.setPower(power);
 		vertical2.setPower(power);
+		Dashboard.packet.put("measured slide position",measuredPosition);
+		Dashboard.packet.put("target slide position",slideTargetPosition);
+		Dashboard.packet.put("slide power",power);
 	}
 
 	/**

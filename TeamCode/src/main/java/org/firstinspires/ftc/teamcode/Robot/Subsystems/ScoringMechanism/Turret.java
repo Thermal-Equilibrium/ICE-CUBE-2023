@@ -33,6 +33,7 @@ public class Turret extends Subsystem {
 		arm1.setDirection(Servo.Direction.REVERSE);
 		arm1.setPosition(armSafe);
 		claw = hwMap.get(Servo.class, "claw");
+		claw.setDirection(Servo.Direction.REVERSE);
 		claw.setPosition(clawTransferPosition);
 	}
 
