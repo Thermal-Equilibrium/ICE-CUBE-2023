@@ -16,17 +16,11 @@ public class Cone {
     public Classification classification;
     public double servoAngle;
 
-    public Cone(MatOfPoint contour, VisionBasedPosition position, Point top, Classification classification){
+    public Cone(MatOfPoint contour, VisionBasedPosition position, Point top, Classification classification, double cameraAngle){
         this.contour = contour;
         this.position = position;
         this.top = top;
         this.classification = classification;
-        this.servoAngle  = radianToServo(position.angle);
+        this.servoAngle = ServoMath.radiansToServo(position.angle-cameraAngle);
     }
-
-    private double radianToServo(double radians) {
-        return 0 - .1 *  radians / Math.toRadians(30);
-    }
-
-
 }

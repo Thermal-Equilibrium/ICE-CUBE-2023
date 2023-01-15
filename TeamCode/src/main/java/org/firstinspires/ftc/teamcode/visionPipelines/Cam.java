@@ -11,16 +11,9 @@ import org.openftc.easyopencv.OpenCvWebcam;
 import java.util.ArrayList;
 
 public class Cam {
-    Size nativeRes;
+    public Size nativeRes;
     double focalLen;// = 1; //mm
-    double fx;// top left
-    double fy;// middle middle
-    double mx;// in px/mm
-    double my;// in px/mm
-    double m;
-
     double camID;
-//    public Size position;
     public Pose2d position;
 
     Mat camMat;
@@ -29,10 +22,7 @@ public class Cam {
     public Size res;
     public double FOV;
 
-    Mat theOut = new Mat();
-
     public OpenCvWebcam webcam;
-    public ArrayList<MonocularPole> detectedPoles;
     public double currentFrame;
     public double lastFrame;
 
@@ -51,13 +41,6 @@ public class Cam {
         this.newCamMat = this.loadNewCamMatrix();
         this.dists = this.loadDists();
 
-        this.fx = this.camMat.get(0,0)[0];
-        this.fy = this.camMat.get(1,1)[0];
-        this.mx = this.fx / this.focalLen;
-        this.my = this.fy / this.focalLen;
-        this.m = (this.mx + this.my) / 2;
-
-        this.detectedPoles = new ArrayList<MonocularPole>();
         this.currentFrame=0;
         this.lastFrame=0;
     }

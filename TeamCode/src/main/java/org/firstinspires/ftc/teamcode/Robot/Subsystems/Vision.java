@@ -29,31 +29,16 @@ public class Vision extends Subsystem {
     }
 
     public OpenCvWebcam webcam;
-
     public FtcDashboard dashboard = FtcDashboard.getInstance();
-
     static final Size low = new Size(320,240); // bad aspect ratio don't use
     static final Size medium = new Size(800,448);
-//    static final Size medium = new Size(800,600);
-//    static final Size medium = new Size(800,480);
     static final Size high = new Size(1280,720);
     static final Size hd = new Size(1920,1080);
-
     static Size resolution = medium;
-
     public Cam cam;
-
-//    OpenCvPipeline pipeline = new VisionPipe(cam);
-//    private VisionPipe pipe = new VisionPipe(cam);
-
     public Optimized pipe;
-
-    static ArrayList<MonocularPole> rawPoles;
     private Drivetrain drivetrain;
-
-    private boolean hasInitialized = false;
-    private boolean isDestroyed = false;
-
+    static ArrayList<MonocularPole> rawPoles;
     public void pauseView(){
         webcam.pauseViewport();
     }
@@ -76,7 +61,7 @@ public class Vision extends Subsystem {
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         webcam.setViewportRenderer(OpenCvCamera.ViewportRenderer.GPU_ACCELERATED);
 //        webcam.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.MAXIMIZE_EFFICIENCY);
-        cam = new Cam(0, resolution, new Pose2d(0,4),Math.toRadians(70.428), resolution,1, webcam);// for 78 dfov
+        cam = new Cam(0, resolution, new Pose2d(0,4, Math.toRadians(-30)),Math.toRadians(70.428), resolution,1, webcam);// for 78 dfov
         pipe = new Optimized(cam);
         webcam.setPipeline(pipe);
         webcam.openCameraDeviceAsync(new OpenCvWebcam.AsyncCameraOpenListener() {

@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
 public class Optimized extends OpenCvPipeline {
     @Config
     public static class VisionConfig {
-        public static double WEBCAM_CENTER_AS_SERVO_ANGLE = 0;
-
         public static double distanceCorrection = .8;
         public static int coneMinArea = 900;
 
@@ -218,7 +216,7 @@ public class Optimized extends OpenCvPipeline {
             else {
                 classification = Cone.Classification.PERFECT;
             }
-            this.cones.add(new Cone(contour, position, getTop(contour), classification));
+            this.cones.add(new Cone(contour, position, getTop(contour), classification, this.cam.position.getHeading()));
         }
     }
 
