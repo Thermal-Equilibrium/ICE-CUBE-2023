@@ -10,7 +10,9 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.RobotRel
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.RunCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringCommandGroups;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
+import org.firstinspires.ftc.teamcode.visionPipelines.Color;
 
 
 @TeleOp
@@ -19,8 +21,9 @@ public class Teleop extends BaseTeleop {
 
 	@Override
 	public Command setupTeleop(CommandScheduler scheduler) {
-		ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism, robot.drivetrain);
+		Robot.team = this.getTeam();
 
+		ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism, robot.drivetrain);
 
 		robot.gamepad1.whenDPadDownPressed(commandGroups.moveToIntakingLeft());
 		robot.gamepad1.whenDPadLeftPressed(commandGroups.moveToIntakingLeftClosePole());
@@ -35,5 +38,8 @@ public class Teleop extends BaseTeleop {
 		robot.gamepad1.whenCrossPressed(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION));
 
 		return new MultipleCommand(new RobotRelative(robot, robot.gamepad1));
+	}
+	public Color getTeam() {
+		return null;
 	}
 }

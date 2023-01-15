@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
 import org.firstinspires.ftc.teamcode.Purepursuit.AStar.Main;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.MainScoringMechanism;
 import org.firstinspires.ftc.teamcode.Simulation.TestCommandsSubsystems.PrintSubsystem1;
+import org.firstinspires.ftc.teamcode.visionPipelines.Color;
 
 import java.util.ArrayList;
 
@@ -26,14 +27,13 @@ public class Robot {
 	public Drivetrain drivetrain = new Drivetrain();
 	public MainScoringMechanism scoringMechanism = new MainScoringMechanism();
 	public FieldMap field = new FieldMap();
-//	public DetectionSubsystem detectionSubsystem = new DetectionSubsystem(dashboard.dashboard);
 	public Vision vision = new Vision();
+	public static Color team = null;
 
 	// print subsystem for testing
 	public PrintSubsystem1 print = new PrintSubsystem1();
 
 	protected CommandScheduler scheduler;
-	public boolean doVision;
 
 	ArrayList<LynxModule> modules = new ArrayList<>() ;
 	public Robot(HardwareMap hwMap, OpMode opMode, Gamepad gamepad1, Gamepad gamepad2) {
@@ -67,7 +67,6 @@ public class Robot {
 		Dashboard.packet.put("scoring Delay",scoringMechanism.getDelayLength());
 		Dashboard.packet.put("distanceSensor Delay",scoringMechanism.getDelayLength());
 		Dashboard.packet.put("field delay",field.getDelayLength());
-
 	}
 
 	public void shutdown() {
@@ -82,8 +81,4 @@ public class Robot {
 	public CommandScheduler getScheduler() {
 		return scheduler;
 	}
-
-
-
-
 }

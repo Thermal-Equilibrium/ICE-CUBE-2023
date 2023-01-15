@@ -29,15 +29,10 @@ public class Vision extends Subsystem {
 
     @Override
     public void initAuto(HardwareMap hwMap) {
-
-        FtcDashboard dashboard = FtcDashboard.getInstance();
-
         frontCam = new Cam(new SleeveDetection(), hwMap, "Front Webcam", LOW, HIGH, new Pose2d(0,0, Math.toRadians(0)), Math.toRadians(70.428),OpenCvCameraRotation.SIDEWAYS_LEFT);
         backCam = new Cam(new Optimized(backCam), hwMap,"Back Webcam", MEDIUM, HD, new Pose2d(0,0, Math.toRadians(-30)), Math.toRadians(70.428),OpenCvCameraRotation.UPRIGHT);
-
-
+        FtcDashboard dashboard = FtcDashboard.getInstance();
         dashboard.startCameraStream(backCam.webcam, 5);
-
     }
 
     @Override

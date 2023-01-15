@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.visionPipelines;
 
 import com.acmerobotics.dashboard.config.Config;
 
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
@@ -38,7 +40,6 @@ public class Optimized extends OpenCvPipeline {
         public static double perfectTolerance = 2.5;
     }
 
-    private static final Color TEAM = Color.RED;
     private static final double POLE_WIDTH = 1;
     private static final double CONE_WIDTH = 4;
     private static final double CONE_HEIGHT = 5;
@@ -50,7 +51,6 @@ public class Optimized extends OpenCvPipeline {
     private static final Scalar ORANGE = new Scalar(255,165,0);
     private static final Scalar PURPLE = new Scalar(255,0,255);
     private static final Scalar WHITE = new Scalar(255,255,255);
-
     private final Scalar compare = new Scalar(171);
     private final Cam cam;
     private Point camCenter;
@@ -59,31 +59,23 @@ public class Optimized extends OpenCvPipeline {
     private final Mat HUDMask = new Mat();
     private final Mat hue = new Mat();
     private final Mat structuringElement = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_ELLIPSE, new Size(7,7));
-
     private final Mat hsv = new Mat();
-
     private final Mat hierarchy = new Mat();
     private final Mat out = new Mat();
     private final Mat deviation = new Mat();
-
     private final ArrayList<Cone> cones = new ArrayList<>();
     private final Mat edgeBin = new Mat();
     private final Mat color = new Mat();
-
     ArrayList<MatOfPoint> rawContours = new ArrayList<>();
-
     public List<Cone> perfectList;
     public List<Cone> farList;
     public List<Cone> closeList;
     public List<Cone> deadzoneList;
-
     public volatile Cone perfect = null;
     public volatile Cone far = null;
     public volatile Cone close = null;
     public volatile Cone deadzone = null;
-
     public volatile Cone conestackGuess = null;
-
 
     public Optimized(Cam cam) {
         this.cam = cam;
@@ -95,14 +87,14 @@ public class Optimized extends OpenCvPipeline {
         if (input.channels() == 4) {
             Imgproc.cvtColor(input, input, Imgproc.COLOR_RGBA2RGB);
         }
-        if (TEAM == Color.RED) {
+        if (Robot.team == Color.RED) {
             Imgproc.cvtColor(input, this.hsv, Imgproc.COLOR_BGR2HSV_FULL);
             Core.extractChannel(this.hsv, this.hue, 0);
             Core.absdiff(this.hue, this.compare, this.deviation);
             Imgproc.threshold(this.deviation, this.color, VisionConfig.RED_THRESH, 255, Imgproc.THRESH_BINARY_INV);
             Core.inRange(this.hsv, new Scalar(0,VisionConfig.RED_MIN_SATURATION,VisionConfig.RED_MIN_VALUE), new Scalar(255,VisionConfig.RED_MAX_SATURATION,VisionConfig.RED_MAX_VALUE), this.edgeBin);
         }
-        else if (TEAM == Color.BLUE) {
+        else if (Robot.team == Color.BLUE) {
             Imgproc.cvtColor(input, this.hsv, Imgproc.COLOR_RGB2HSV_FULL);
             Core.extractChannel(this.hsv, this.hue, 0);
             Core.absdiff(this.hue, this.compare, this.deviation);

@@ -13,8 +13,10 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Break.To
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.NullCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringCommandGroups;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
+import org.firstinspires.ftc.teamcode.visionPipelines.Color;
 
 @Autonomous
 public class PumpkinSpiceAuto extends BaseAuto {
@@ -39,6 +41,8 @@ public class PumpkinSpiceAuto extends BaseAuto {
     }
     @Override
     public Command setupAuto(CommandScheduler scheduler) {
+        Robot.team = this.getTeam();
+
         ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism, robot.drivetrain);
 
         Trajectory driveToPole = robot.drivetrain.getBuilder().trajectoryBuilder(startPose)
@@ -95,8 +99,10 @@ public class PumpkinSpiceAuto extends BaseAuto {
         command.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION),
                         commandGroups.moveHorizontalExtension(HorizontalExtension.autoExtension),
                         commandGroups.moveToIntakingRightAuto()))
-
                 .addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION),
                         commandGroups.collectConeAuto()));
+    }
+    public Color getTeam() {
+        return null;
     }
 }
