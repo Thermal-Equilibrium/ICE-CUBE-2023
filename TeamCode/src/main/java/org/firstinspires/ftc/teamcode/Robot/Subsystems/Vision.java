@@ -5,101 +5,59 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 import org.firstinspires.ftc.teamcode.visionPipelines.Cam;
-import org.firstinspires.ftc.teamcode.visionPipelines.MonocularPole;
-import org.firstinspires.ftc.teamcode.visionPipelines.Optimized;
-import org.opencv.core.Size;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvWebcam;
 
-import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
+import org.firstinspires.ftc.teamcode.visionPipelines.Optimized;
+import org.firstinspires.ftc.teamcode.visionPipelines.SleeveDetection;
+import org.opencv.core.Size;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
 public class Vision extends Subsystem {
     @Config
     public static class VisionConfig {
         public static double focusDistance = 1;
     }
+    static final Size LOW = new Size(320,240);
+    static final Size MEDIUM = new Size(800,448);
+    static final Size HIGH = new Size(1280,720);
+    static final Size HD = new Size(1920,1080);
+    public Cam backCam;
+    public Cam frontCam;
 
-    public OpenCvWebcam webcam;
-    public FtcDashboard dashboard = FtcDashboard.getInstance();
-    static final Size low = new Size(320,240); // bad aspect ratio don't use
-    static final Size medium = new Size(800,448);
-    static final Size high = new Size(1280,720);
-    static final Size hd = new Size(1920,1080);
-    static Size resolution = medium;
-    public Cam cam;
-    public Optimized pipe;
-    private Drivetrain drivetrain;
-    static ArrayList<MonocularPole> rawPoles;
-    public void pauseView(){
-        webcam.pauseViewport();
-    }
-    public void resumeView(){
-        webcam.resumeViewport();
-    }
+    public Vision() { }
 
-    public Vision(Drivetrain drivetrain) {
-        this.drivetrain = drivetrain;
-    }
-
-    void run() {
-
-    }
     @Override
     public void initAuto(HardwareMap hwMap) {
+
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
-        int cameraMonitorViewId = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName());
-        webcam = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        webcam.setViewportRenderer(OpenCvCamera.ViewportRenderer.GPU_ACCELERATED);
-//        webcam.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.MAXIMIZE_EFFICIENCY);
-        cam = new Cam(0, resolution, new Pose2d(0,4, Math.toRadians(-30)),Math.toRadians(70.428), resolution,1, webcam);// for 78 dfov
-        pipe = new Optimized(cam);
-        webcam.setPipeline(pipe);
-        webcam.openCameraDeviceAsync(new OpenCvWebcam.AsyncCameraOpenListener() {
-            @Override public void onOpened() {
-                webcam.startStreaming( (int) resolution.width, (int) resolution.height,OpenCvCameraRotation.UPRIGHT);
-//                webcam.startStreaming( (int) resolution.width, (int) resolution.height,OpenCvCameraRotation.SIDEWAYS_LEFT);
-                Dashboard.packet.put("CAMCONFIG: max gain", webcam.getGainControl().getMaxGain());
-                Dashboard.packet.put("CAMCONFIG: Gain Set Success", webcam.getGainControl().setGain(100));
-                Dashboard.packet.put("CAMCONFIG: Exposure Mode Success", webcam.getExposureControl().setMode(ExposureControl.Mode.Manual));
-                Dashboard.packet.put("CAMCONFIG: Exposure Time Success", webcam.getExposureControl().setExposure(25L, TimeUnit.MILLISECONDS));
-                Dashboard.packet.put("CAMCONFIG: Focus Mode Success", webcam.getFocusControl().setMode(FocusControl.Mode.Fixed));
-                Dashboard.packet.put("CAMCONFIG: Focus Distance Success", webcam.getFocusControl().setFocusLength(VisionConfig.focusDistance));
-            }
-            @Override public void onError(int errorCode) { }
-        });
+        frontCam = new Cam(new SleeveDetection(), hwMap, "Front Webcam", LOW, HIGH, new Pose2d(0,0, Math.toRadians(0)), Math.toRadians(70.428),OpenCvCameraRotation.SIDEWAYS_LEFT);
+        backCam = new Cam(new Optimized(backCam), hwMap,"Back Webcam", MEDIUM, HD, new Pose2d(0,0, Math.toRadians(-30)), Math.toRadians(70.428),OpenCvCameraRotation.UPRIGHT);
 
 
+        dashboard.startCameraStream(backCam.webcam, 5);
 
-        dashboard.startCameraStream(webcam,5);
-
-
-        rawPoles = new ArrayList<MonocularPole>();
     }
 
     @Override
     public void periodic() {
-        cam.currentFrame= webcam.getFrameCount();
-        if (cam.currentFrame> cam.lastFrame) { run(); }
-        Dashboard.packet.put("CAMCONFIG: Focus Distance Success", webcam.getFocusControl().setFocusLength(VisionConfig.focusDistance));
-        cam.lastFrame= cam.currentFrame;
-        Dashboard.packet.put("Cam FPS", webcam.getFps());
-        Dashboard.packet.put("Cam Frame", webcam.getFrameCount());
-
+        Dashboard.packet.put("CAMCONFIG: Focus Distance Success", backCam.webcam.getFocusControl().setFocusLength(VisionConfig.focusDistance));
+        Dashboard.packet.put("Back Cam FPS", backCam.webcam.getFps());
     }
 
     @Override
     public void shutdown() {
-        webcam.closeCameraDevice();
+        frontCam.destroy();
+        backCam.destroy();
     }
 
+    public SleeveDetection.ParkingPosition getParkingPosition() {
+        if (frontCam.currentFrame < 1 || backCam.destroyed) {
+            return SleeveDetection.ParkingPosition.CENTER;
+        }
+        assert frontCam.pipe instanceof SleeveDetection;
+        return ((SleeveDetection) frontCam.pipe).getPosition();
+    }
 
 }

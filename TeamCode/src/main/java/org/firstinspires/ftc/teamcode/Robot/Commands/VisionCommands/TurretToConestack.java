@@ -5,6 +5,7 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision;
 import org.firstinspires.ftc.teamcode.visionPipelines.Cone;
+import org.firstinspires.ftc.teamcode.visionPipelines.Optimized;
 
 public class TurretToConestack extends Command {
     private Turret turret;
@@ -43,7 +44,8 @@ public class TurretToConestack extends Command {
     }
 
     private void findTarget() {
-        this.target = this.vision.pipe.conestackGuess;
+        assert this.vision.backCam.pipe instanceof Optimized;
+        this.target = ((Optimized) this.vision.backCam.pipe).conestackGuess;
         if (this.target != null) {
             this.foundTarget = true;
             this.turret.setTurretPositionSync(this.target.servoAngle);

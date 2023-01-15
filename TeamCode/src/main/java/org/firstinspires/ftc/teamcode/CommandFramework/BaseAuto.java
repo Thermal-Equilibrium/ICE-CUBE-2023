@@ -11,7 +11,6 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Roadrunn
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.DelayedCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
-import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.SetPoleContext;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
 import org.firstinspires.ftc.teamcode.visionPipelines.SleeveDetection;
 
@@ -29,12 +28,12 @@ public abstract class BaseAuto extends LinearOpMode {
 		setRobotPosition();
 
 		while (!isStopRequested() && !opModeIsActive() && opModeInInit()) {
-			parkingPosition = robot.detectionSubsystem.getPosition();
+			parkingPosition = robot.vision.getParkingPosition();
 			telemetry.addData("current parking position is: ", parkingPosition);
 			telemetry.update();
 		}
 
-		robot.detectionSubsystem.destroy(); // TODO, Dear Worth this may cause issues... it did
+		robot.vision.frontCam.destroy();
 
 
 		waitForStart();

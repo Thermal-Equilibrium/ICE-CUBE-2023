@@ -24,20 +24,21 @@ public class Robot {
 	public Input gamepad1;
 	public Input gamepad2;
 	public Drivetrain drivetrain = new Drivetrain();
-	//public PoleDetectionSubsystem detectionSubsystem = new PoleDetectionSubsystem(dashboard);
 	public MainScoringMechanism scoringMechanism = new MainScoringMechanism();
 	public FieldMap field = new FieldMap();
-	public DetectionSubsystem detectionSubsystem = new DetectionSubsystem(dashboard.dashboard);
-//	public Vision vision = new Vision(drivetrain);
+//	public DetectionSubsystem detectionSubsystem = new DetectionSubsystem(dashboard.dashboard);
+	public Vision vision = new Vision();
 
 	// print subsystem for testing
 	public PrintSubsystem1 print = new PrintSubsystem1();
 
 	protected CommandScheduler scheduler;
+	public boolean doVision;
 
 	ArrayList<LynxModule> modules = new ArrayList<>() ;
 	public Robot(HardwareMap hwMap, OpMode opMode, Gamepad gamepad1, Gamepad gamepad2) {
-		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard, scoringMechanism, field,detectionSubsystem);//detectionSubsystem,visualOdometry
+
+		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard, scoringMechanism, field, vision);
 		this.gamepad1 = new Input(gamepad1, scheduler);
 		this.gamepad2 = new Input(gamepad2, scheduler);
 
