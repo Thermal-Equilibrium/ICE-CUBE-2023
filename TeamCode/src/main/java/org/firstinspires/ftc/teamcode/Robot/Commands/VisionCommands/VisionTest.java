@@ -8,7 +8,6 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision;
 import org.firstinspires.ftc.teamcode.visionPipelines.Cone;
-import org.firstinspires.ftc.teamcode.visionPipelines.LetsSee;
 
 public class VisionTest extends Command {
     Turret turret;
@@ -32,7 +31,7 @@ public class VisionTest extends Command {
 
     @Override
     public void init() {
-        cone = vision.pipe.theCone;
+        cone = vision.pipe.perfect;
         if (cone == null) {
             return;
         }
@@ -42,7 +41,7 @@ public class VisionTest extends Command {
 
     @Override
     public void periodic() {
-        cone = vision.pipe.theCone;
+        cone = vision.pipe.perfect;
         if (cone == null) {
             return;
         }

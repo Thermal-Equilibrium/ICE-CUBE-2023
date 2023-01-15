@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.visionPipelines;
 
 import com.acmerobotics.dashboard.config.Config;
 
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
@@ -72,9 +71,19 @@ public class Optimized extends OpenCvPipeline {
     private final Mat color = new Mat();
 
     ArrayList<MatOfPoint> rawContours = new ArrayList<>();
-    ArrayList<MatOfPoint> coneContours = new ArrayList<>();
 
-    public volatile Cone theCone = null;
+    public List<Cone> perfectList;
+    public List<Cone> farList;
+    public List<Cone> closeList;
+    public List<Cone> deadzoneList;
+
+    public volatile Cone perfect = null;
+    public volatile Cone far = null;
+    public volatile Cone close = null;
+    public volatile Cone deadzone = null;
+
+    public volatile Cone conestackGuess = null;
+
 
     public Optimized(Cam cam) {
         this.cam = cam;
@@ -83,11 +92,9 @@ public class Optimized extends OpenCvPipeline {
     }
     @Override
     public Mat processFrame(Mat input) {
-        this.cones.clear();
         if (input.channels() == 4) {
             Imgproc.cvtColor(input, input, Imgproc.COLOR_RGBA2RGB);
         }
-        this.cones.clear();
         if (TEAM == Color.RED) {
             Imgproc.cvtColor(input, this.hsv, Imgproc.COLOR_BGR2HSV_FULL);
             Core.extractChannel(this.hsv, this.hue, 0);
@@ -110,8 +117,7 @@ public class Optimized extends OpenCvPipeline {
         Imgproc.morphologyEx(this.color,this.color,Imgproc.MORPH_DILATE, this.structuringElement);
 
         this.detectCones();
-        this.coneClassification();
-        this.theCone = this.requestCone(true);
+        this.pickCones();
         this.doHUD();
         this.finalize(this.deviation).copyTo(out);
         return out;
@@ -158,13 +164,12 @@ public class Optimized extends OpenCvPipeline {
             this.textOutlined((int) Math.toDegrees(cone.position.angle) + " deg", getCenter(cone.contour, new Point(15,+15)), Imgproc.FONT_HERSHEY_SIMPLEX,.5, color, 2);
             this.textOutlined(cone.classification.name(), getCenter(cone.contour, new Point(15,+35)), Imgproc.FONT_HERSHEY_SIMPLEX,.5, color, 2);
         }
-        Cone selectionPerfect = requestCone(true);
-        if (selectionPerfect != null) {
-            this.markerOutlined(getCenter(selectionPerfect.contour, new Point(0,-30)), PURPLE, Imgproc.MARKER_STAR, 20, 2);
+
+        if (this.perfect != null) {
+            this.markerOutlined(getCenter(this.perfect.contour, new Point(0,-30)), PURPLE, Imgproc.MARKER_STAR, 20, 2);
         }
-        Cone selection = requestCone(false);
-        if (selection != null) {
-            this.markerOutlined(getCenter(selection.contour, new Point(0,-30)), PURPLE, Imgproc.MARKER_STAR, 20, 2);
+        if (this.far != null) {
+            this.markerOutlined(getCenter(this.far.contour, new Point(0,-30)), PURPLE, Imgproc.MARKER_STAR, 20, 2);
         }
     }
     private static Point getTop(MatOfPoint contour) {
@@ -190,59 +195,34 @@ public class Optimized extends OpenCvPipeline {
         return this.cam.FOV * (point.x / this.cam.res.width) - this.cam.FOV/2;
     }
     private void detectCones() {
-        this.coneContours.clear();
         this.rawContours.clear();
         Imgproc.findContours(this.color, this.rawContours, this.hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+        this.cones.clear();
         for (MatOfPoint contour: this.rawContours) {
             if (Imgproc.contourArea(contour) >= VisionConfig.coneMinArea && Imgproc.boundingRect(contour).height > Imgproc.boundingRect(contour).width) { //&& Imgproc.isContourConvex(contour)
-                this.coneContours.add(contour);
+                this.cones.add(new Cone(contour, new VisionBasedPosition(this.getDistance(Imgproc.boundingRect(contour).width,CONE_WIDTH), this.getAngle(getTop(contour))), getTop(contour), this.cam.position.getHeading()));
             }
         }
     }
-    private void coneClassification() {
-        for (MatOfPoint contour: this.coneContours) {
-            Cone.Classification classification;
+    private void pickCones() {
+        this.perfect = null;
+        this.far = null;
+        this.close = null;
+        this.deadzone = null;
+        if (this.cones.size() < 1) return;
 
-            VisionBasedPosition position = new VisionBasedPosition( this.getDistance(Imgproc.boundingRect(contour).width,CONE_WIDTH), this.getAngle(getTop(contour)));
-            if (position.angle > Math.toRadians(0) && position.angle < Math.toRadians(30)){
-                classification = Cone.Classification.DEADZONE;
-            }
-            else if (position.distance < VisionConfig.perfectDistance - VisionConfig.perfectTolerance) {
-                classification = Cone.Classification.CLOSE;
-            }
-            else if (position.distance > VisionConfig.perfectDistance + VisionConfig.perfectTolerance) {
-                classification = Cone.Classification.FAR;
-            }
-            else {
-                classification = Cone.Classification.PERFECT;
-            }
-            this.cones.add(new Cone(contour, position, getTop(contour), classification, this.cam.position.getHeading()));
-        }
-    }
+        this.perfectList = this.cones.stream().filter(cone -> cone.classification == Cone.Classification.PERFECT).collect(Collectors.toList());
+        if (this.perfectList.size() > 0) this.perfect = Collections.min(perfectList, Comparator.comparing(cone -> Math.abs(cone.position.distance - VisionConfig.perfectDistance)));
 
-    private Cone requestCone(boolean requireNonDeadzone) {
-        Cone match = null;
-        if (this.cones.size() < 1) return null;
+        this.farList = this.cones.stream().filter(cone -> cone.classification == Cone.Classification.FAR).collect(Collectors.toList());
+        if (this.farList.size() > 0) this.far = Collections.min(this.farList, Comparator.comparing(cone -> Math.abs(cone.position.distance - VisionConfig.perfectDistance)));
 
-        List<Cone> perfect = this.cones.stream().filter(cone -> cone.classification != Cone.Classification.DEADZONE).collect(Collectors.toList());
-        if (perfect.size() > 0) match = Collections.min(perfect, Comparator.comparing(cone -> Math.abs(cone.position.distance - VisionConfig.perfectDistance)));
-        else if (requireNonDeadzone) return match;
-        else {
-            match = Collections.min(this.cones, Comparator.comparing(cone -> Math.abs(cone.position.distance - VisionConfig.perfectDistance)));
-        }
-        return match;
-    }
+        this.closeList = this.cones.stream().filter(cone -> cone.classification == Cone.Classification.CLOSE).collect(Collectors.toList());
+        if (this.closeList.size() > 0) this.close = Collections.min(this.closeList, Comparator.comparing(cone -> Math.abs(cone.position.distance - VisionConfig.perfectDistance)));
 
+        this.deadzoneList = this.cones.stream().filter(cone -> cone.classification == Cone.Classification.DEADZONE).collect(Collectors.toList());
+        if (this.deadzoneList.size() > 0) this.deadzone = Collections.min(this.deadzoneList, Comparator.comparing(cone -> Math.abs(cone.position.distance - VisionConfig.perfectDistance)));
 
-    private ConeStack requestConeStack(boolean requirePerfect) {
-        Cone match = null;
-        if (this.cones.size() < 1) return null;
-        List<Cone> perfect = this.cones.stream().filter(cone -> cone.classification == Cone.Classification.PERFECT).collect(Collectors.toList());
-        if (perfect.size() > 0) match = Collections.max(perfect, Comparator.comparing(cone -> cone.contour.height()));
-        else if (requirePerfect) return null;
-        else {
-            match = Collections.max(this.cones, Comparator.comparing(cone -> cone.contour.height()));
-        }
-        return ConeStack.fromCone(match);
+        this.conestackGuess = Collections.max(this.cones, Comparator.comparing(cone -> cone.contour.height()));
     }
 }

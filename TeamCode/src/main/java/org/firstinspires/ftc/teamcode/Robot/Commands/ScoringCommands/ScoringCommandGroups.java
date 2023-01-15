@@ -185,6 +185,6 @@ public class ScoringCommandGroups {
 		return new MoveHorizontalExtension(horizontalExtension,position);
 	}
 	public MoveVerticalExtension moveVerticalExtension(double position) {
-		return new MoveVerticalExtension(verticalExtension,position);
+		return new MoveVerticalExtension(verticalExtension,position,drivetrain);
 	}
 }

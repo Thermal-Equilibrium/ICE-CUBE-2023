@@ -17,11 +17,6 @@ public class WorthIsBad extends BaseAuto {
     @Override
     public Command setupAuto(CommandScheduler scheduler) {
         waitForStart();
-//        ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism);
-//        Command auto = commandGroups.moveTurretDirect(1);
-//        Command auto = new VisionTest(robot.scoringMechanism.turret, robot.vision);
-//        waitForStart();
-//        return auto;
         return null;
     }
 
