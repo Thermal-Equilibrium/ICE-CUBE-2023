@@ -4,6 +4,7 @@ import com.outoftheboxrobotics.photoncore.PhotonCore;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
+import org.firstinspires.ftc.teamcode.Utils.Team;
 
 public abstract class BaseTeleop extends LinearOpMode {
 
@@ -15,7 +16,7 @@ public abstract class BaseTeleop extends LinearOpMode {
     public void runOpMode() {
         PhotonCore.enable();
 
-        robot = new Robot(hardwareMap, Robot.OpMode.Auto, gamepad1, gamepad2);
+        robot = new Robot(hardwareMap, Robot.OpMode.Auto, gamepad1, gamepad2, getTeam());
         robot.drivetrain.setPose(initialPose);
 
         waitForStart();
@@ -33,4 +34,8 @@ public abstract class BaseTeleop extends LinearOpMode {
      * @return The command that will be run until the opmode is stopped.
      */
     public abstract Command setupTeleop(CommandScheduler scheduler);
+
+    public Team getTeam() {
+        return Team.NOT_ASSIGNED;
+    }
 }

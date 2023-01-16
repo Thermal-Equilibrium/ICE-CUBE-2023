@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.Math.TheArcaneConceptThatIsTurningInPlace.
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.DistanceSensor;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Drivetrain;
-import org.firstinspires.ftc.teamcode.visionPipelines.MonocularPole;
+import org.firstinspires.ftc.teamcode.visionPipelines.Pole;
 
 import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
@@ -48,7 +48,7 @@ public class PoleApproach2 extends Command {
     AngleController turnControlWrapped;
 
     boolean isComplete = false;
-    MonocularPole theRawPole;
+    Pole theRawPole;
 
     Drivetrain drivetrain;
 
@@ -65,7 +65,7 @@ public class PoleApproach2 extends Command {
     double currentVisionFrame;
     double lastVisionFrame;
 
-    ArrayList<MonocularPole> rawPoles = new ArrayList<MonocularPole>();
+    ArrayList<Pole> rawPoles = new ArrayList<Pole>();
 
     boolean locked;
 

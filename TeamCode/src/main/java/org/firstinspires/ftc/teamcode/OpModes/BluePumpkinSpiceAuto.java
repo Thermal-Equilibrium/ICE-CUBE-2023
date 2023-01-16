@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import org.firstinspires.ftc.teamcode.visionPipelines.Color;
+import org.firstinspires.ftc.teamcode.Utils.Team;
 
 public class BluePumpkinSpiceAuto extends PumpkinSpiceAuto{
     @Override
-    public Color getTeam() {
-        return Color.BLUE;
+    public Team getTeam() {
+        return Team.BLUE;
     }
 }

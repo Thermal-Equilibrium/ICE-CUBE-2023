@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.visionPipelines;
 
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
-import org.opencv.imgproc.Imgproc;
 
 public class Cone {
     public enum Classification {
@@ -28,10 +27,10 @@ public class Cone {
         if (this.servoAngle <= 1 && this.servoAngle >= 0){
             this.classification = Cone.Classification.DEADZONE;
         }
-        else if (this.position.distance < Optimized.VisionConfig.perfectDistance - Optimized.VisionConfig.perfectTolerance) {
+        else if (this.position.distance < ConeDetection.ConeConfig.perfectDistance - ConeDetection.ConeConfig.perfectTolerance) {
             this.classification = Cone.Classification.CLOSE;
         }
-        else if (this.position.distance > Optimized.VisionConfig.perfectDistance + Optimized.VisionConfig.perfectTolerance) {
+        else if (this.position.distance > ConeDetection.ConeConfig.perfectDistance + ConeDetection.ConeConfig.perfectTolerance) {
             this.classification = Cone.Classification.FAR;
         }
         else {

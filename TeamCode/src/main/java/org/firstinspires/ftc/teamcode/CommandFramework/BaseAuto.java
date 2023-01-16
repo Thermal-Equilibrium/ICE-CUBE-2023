@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.DelayedCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
+import org.firstinspires.ftc.teamcode.Utils.Team;
 import org.firstinspires.ftc.teamcode.visionPipelines.SleeveDetection;
 
 public abstract class BaseAuto extends LinearOpMode {
@@ -24,7 +25,7 @@ public abstract class BaseAuto extends LinearOpMode {
 	@Override
 	public void runOpMode() {
 		PhotonCore.enable();
-		robot = new Robot(hardwareMap, Robot.OpMode.Auto, gamepad1, gamepad2);
+		robot = new Robot(hardwareMap, Robot.OpMode.Auto, gamepad1, gamepad2, getTeam());
 		setRobotPosition();
 
 		while (!isStopRequested() && !opModeIsActive() && opModeInInit()) {
@@ -80,6 +81,8 @@ public abstract class BaseAuto extends LinearOpMode {
 		double yd = initialPosition.getY() - finalPosition.getY();
 		return Math.atan2(yd,xd) - Math.PI;
 	}
+
+	public Team getTeam() { return Team.NOT_ASSIGNED; }
 
 
 }
