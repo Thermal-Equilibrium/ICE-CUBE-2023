@@ -173,7 +173,7 @@ public class ScoringCommandGroups {
 
 
 	public Command asyncMoveVerticalExtension(double position) {
-		return new AsyncMoveVerticalExtension(verticalExtension,position);
+		return new AsyncMoveVerticalExtension(verticalExtension,drivetrain,position);
 	}
 
 	public MoveArm moveArm(Turret.ArmStates armStates) {
