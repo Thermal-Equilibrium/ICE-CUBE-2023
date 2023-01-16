@@ -6,7 +6,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 public class BasedMath {
 
 
-	/**              q
+	/**
 	 * given a global pose, offset it by robot relative positions
 	 * @param poseGlobal global pose
 	 * @param robotRelativeX forward direction relative to the robot
@@ -16,7 +16,7 @@ public class BasedMath {
 	public static Pose2d shiftRobotRelative(Pose2d poseGlobal, double robotRelativeX, double robotRelativeY) {
 		// unit vector of the global Pose
 		Vector2d globalVec = poseGlobal.vec();
-		Vector2d globalVecUnit = poseGlobal.headingVec();//globalVec.div(globalVec.norm());  // vec / mag = unit vector
+		Vector2d globalVecUnit = poseGlobal.headingVec();
 		// orthogonal vec
 		Vector2d orthogonalVec = new Vector2d(-globalVecUnit.getY(),globalVecUnit.getX());
 

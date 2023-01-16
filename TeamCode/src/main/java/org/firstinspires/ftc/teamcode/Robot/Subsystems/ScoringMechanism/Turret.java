@@ -9,14 +9,14 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 
 public class Turret extends Subsystem {
 
-	public double armDown = 0.1;
+	public double armDown = 0.05;
 
 	MainScoringMechanism.MechanismStates state = MainScoringMechanism.MechanismStates.BEGIN;
 
 	Servo turret;
 	Servo arm1;
 	Servo claw;
-	double clawTransferPosition = 0.35;
+	double clawTransferPosition = 0.34;
 	double armSafe = 0.4;
 	double turretTransfer = 0.51889;
 	double currentFreeStateValue = 0;
@@ -67,7 +67,7 @@ public class Turret extends Subsystem {
 	public void setArm(ArmStates armStates) {
 		switch (armStates) {
 			case TRANSFER:
-				arm1.setPosition(0.21);
+				arm1.setPosition(0.19);
 				break;
 			case TRANSFER_SAFE:
 				arm1.setPosition(armSafe);

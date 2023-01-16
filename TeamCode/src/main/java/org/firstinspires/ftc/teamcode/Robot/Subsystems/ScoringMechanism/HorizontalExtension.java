@@ -30,9 +30,8 @@ public class HorizontalExtension extends Subsystem {
 	public final static double CLOSE_INTAKE = 100;
 	public final static double EXTENSION1 = 500;
 	public final static double PRE_EMPTIVE_EXTEND = 100;
-	public final static double EXTENSION2 = 300; // todo figure out our max safe extension
-	public final static double autoExtension = 375
-			;
+	public final static double TELE_CYCLE_EXTENSION = 300; // todo figure out our max safe extension
+	public final static double autoExtension = 465;
 	protected double targetPosition = IN_POSITION;
 
 	public void commonInit(HardwareMap hwMap) {

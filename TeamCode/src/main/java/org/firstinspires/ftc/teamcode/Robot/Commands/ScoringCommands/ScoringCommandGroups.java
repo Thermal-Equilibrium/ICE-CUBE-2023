@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands;
 
-import com.acmerobotics.roadrunner.drive.Drive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
@@ -8,6 +7,7 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.NullCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.RunCommand;
+import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.AsyncMoveVerticalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveArm;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveArmDirect;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveClaw;
@@ -53,8 +53,8 @@ public class ScoringCommandGroups {
 			// if this is the case, dont put out the extension, just put out the vertical extension
 			return moveVerticalExtension(VerticalExtension.HIGH_POSITION);
 		}
-		return moveTurretAsync(Turret.TurretStates.FAR_LEFT)
-				.addNext(new MultipleCommand(moveHorizontalExtension(HorizontalExtension.autoExtension),
+		return moveTurretAsync(Turret.TurretStates.Slight_LEFT)
+				.addNext(new MultipleCommand(moveHorizontalExtension(HorizontalExtension.TELE_CYCLE_EXTENSION),
 							moveVerticalExtension(VerticalExtension.HIGH_POSITION)))
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
 				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
@@ -90,7 +90,7 @@ public class ScoringCommandGroups {
 				//moveHorizontalExtension(HorizontalExtension.PRE_EMPTIVE_EXTEND),
 				//moveTurret(Turret.TurretStates.FAR_LEFT))
 				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()))
-				.addNext(moveHorizontalExtension(HorizontalExtension.EXTENSION2));
+				.addNext(moveHorizontalExtension(HorizontalExtension.TELE_CYCLE_EXTENSION));
 	}
 
 	public Command moveToIntakingRightClosePole() {
@@ -99,7 +99,7 @@ public class ScoringCommandGroups {
 				moveTurret(Turret.TurretStates.FAR_RIGHT))
 				.addNext(new Delay(0.1))
 				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()))
-				.addNext(moveHorizontalExtension(HorizontalExtension.EXTENSION2));
+				.addNext(moveHorizontalExtension(HorizontalExtension.TELE_CYCLE_EXTENSION));
 		return new RunCommand(() -> command);
 	}
 
@@ -123,20 +123,25 @@ public class ScoringCommandGroups {
 				.addNext(moveTurret(Turret.TurretStates.TRANSFER))
 				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION))
 				.addNext(moveArm(Turret.ArmStates.TRANSFER))
+				.addNext(new Delay(0.15))
 				.addNext(releaseCone())
 				.addNext(new Delay(0.2))
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
 	}
 	public Command collectConeAuto() {
 
-		return grabCone()
+		return asyncMoveVerticalExtension(VerticalExtension.IN_POSITION)
+				.addNext(new Delay(0.75))
+				.addNext(grabCone())
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
 				.addNext(moveTurret(Turret.TurretStates.TRANSFER))
 				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION))
 				.addNext(moveArm(Turret.ArmStates.TRANSFER))
+				.addNext(new Delay(0.15))
 				.addNext(releaseCone())
 				.addNext(new Delay(0.2))
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
+
 	}
 
 	public Command grabCone() {
@@ -164,6 +169,11 @@ public class ScoringCommandGroups {
 		} else {
 			return moveVerticalExtension(VerticalExtension.IN_POSITION);
 		}
+	}
+
+
+	public Command asyncMoveVerticalExtension(double position) {
+		return new AsyncMoveVerticalExtension(verticalExtension,position);
 	}
 
 	public MoveArm moveArm(Turret.ArmStates armStates) {

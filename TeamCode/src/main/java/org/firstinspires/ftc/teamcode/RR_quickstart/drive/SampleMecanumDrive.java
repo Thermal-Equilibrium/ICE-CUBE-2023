@@ -120,9 +120,6 @@ public class SampleMecanumDrive extends MecanumDrive {
 
 
 
-
-
-
         // TODO: adjust the names of the following hardware devices to match your configuration
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -324,7 +321,6 @@ public class SampleMecanumDrive extends MecanumDrive {
     @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
         double voltage = batteryVoltageSensor.getVoltage();
-        Dashboard.packet.put("voltage",voltageFilter.estimate(voltage));
         double scaleFactor = 12 / voltage;
         leftFront.setPower(v * scaleFactor);
         leftRear.setPower(v1 * scaleFactor);
