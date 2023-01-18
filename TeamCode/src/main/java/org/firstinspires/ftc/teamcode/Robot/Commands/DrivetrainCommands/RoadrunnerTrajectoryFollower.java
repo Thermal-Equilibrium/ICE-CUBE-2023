@@ -27,6 +27,7 @@ public class RoadrunnerTrajectoryFollower extends Command {
         super(robot.drivetrain);
         this.robot = robot;
         this.traj = traj;
+        this.robot.drivetrain.setTrajectoryTracking(true);
     }
 
 
@@ -61,6 +62,6 @@ public class RoadrunnerTrajectoryFollower extends Command {
 
     @Override
     public void shutdown() {
-
+        robot.drivetrain.shutdown();
     }
 }

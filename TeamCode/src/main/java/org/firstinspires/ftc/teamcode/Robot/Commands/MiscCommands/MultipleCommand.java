@@ -9,7 +9,6 @@ import java.util.Collections;
 
 /**
  * Run multiple commands at once, will complete once ALL are complete,
- * To exit when only one is finished see {@link RaceCommand}
  */
 public class MultipleCommand extends Command {
 

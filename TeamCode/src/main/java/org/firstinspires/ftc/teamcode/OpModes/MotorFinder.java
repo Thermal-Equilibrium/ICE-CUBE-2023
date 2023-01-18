@@ -57,16 +57,16 @@ public class MotorFinder extends LinearOpMode {
 		waitForStart();
 		double turretAngle = 0.51889;
 		while (opModeIsActive()) {
-//			turretAngle += -gamepad1.left_stick_y * 0.01;
-//			setpoint -= gamepad1.right_stick_y;
-//			turret.setPosition(turretAngle);
+			turretAngle += -gamepad1.left_stick_y * 0.01;
+			setpoint -= gamepad1.right_stick_y;
+			turret.setPosition(turretAngle);
 			//s1.setPosition(turretAngle);
 			// s0.setPosition(0.5);
 //			arm.setPosition(0.3);
 			claw.setPosition(0.5);
 
 			double slidePosition = (leftHorizontal.getCurrentPosition() + rightHorizontal.getCurrentPosition()) / 2.0;
-			double power = 0;//pid.calculate(setpoint,slidePosition);
+			double power = pid.calculate(setpoint,slidePosition);
 
 			leftHorizontal.setPower(power);
 			rightHorizontal.setPower(power);
@@ -77,7 +77,7 @@ public class MotorFinder extends LinearOpMode {
 				arm.setPosition(0.4);
 			}
 			if (gamepad1.square) {
-				arm.setPosition(0.1978);
+				arm.setPosition(0.08);
 			}
 		}
 	}

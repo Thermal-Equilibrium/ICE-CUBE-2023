@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 
 public class Turret extends Subsystem {
 
-	public double armDown = 0.05;
+	public double armDown = 0.08;
 
 	MainScoringMechanism.MechanismStates state = MainScoringMechanism.MechanismStates.BEGIN;
 
@@ -33,8 +33,8 @@ public class Turret extends Subsystem {
 		arm1.setDirection(Servo.Direction.REVERSE);
 		arm1.setPosition(armSafe);
 		claw = hwMap.get(Servo.class, "claw");
-		claw.setDirection(Servo.Direction.REVERSE);
-		claw.setPosition(clawTransferPosition);
+		claw.setDirection(Servo.Direction.FORWARD);
+		claw.setPosition(0.5);
 	}
 
 	@Override

@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.CommandFramework.BaseAuto;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Break.ToggleBreak;
+import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.RoadrunnerHoldPose;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.NullCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringCommandGroups;
@@ -20,18 +21,18 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Vertical
 public class PumpkinSpiceAuto extends BaseAuto {
 
     Pose2d startPose = new Pose2d(-36, 66.5,Math.toRadians(-90));
-    final Pose2d goToPole1 = new Pose2d(-36, 24,Math.toRadians(-90));
+    final Pose2d goToPole1 = new Pose2d(-38, 24,Math.toRadians(-100));
     Pose2d goToPole2 = shiftRobotRelative(
             new Pose2d(-34.714046022304565,10.158013549498268,Math.toRadians(338.11832672430523)),
-            -0.8,
-            -3.3
+            -2.5,
+            -0.5
     );
 
     final Pose2d parkRight1= new Pose2d(goToPole2.getX() - 1, goToPole2.getY() + 1, goToPole2.getHeading());
-    final Pose2d parkRight = new Pose2d(-60, 12, Math.toRadians(0));
+    final Pose2d parkRight = new Pose2d(-63, 12, Math.toRadians(0));
     final Pose2d parkMID = new Pose2d(-40, 18, Math.toRadians(-90));
     final Pose2d parkLeft1 = new Pose2d(-36,24,Math.toRadians(-90));
-    final Pose2d parkLeft = new Pose2d(-12,36,Math.toRadians(180));
+    final Pose2d parkLeft = new Pose2d(-7,36,Math.toRadians(180));
 
     @Override
     public void setRobotPosition() {
@@ -78,7 +79,7 @@ public class PumpkinSpiceAuto extends BaseAuto {
 
 
          auto.addNext(new ToggleBreak(robot.drivetrain));
-
+//        auto.addNext(new RoadrunnerHoldPose(robot,goToPole2));
         for (int i = 0; i < 5; ++i) {
             addCycle(auto,commandGroups);
         }
@@ -93,10 +94,9 @@ public class PumpkinSpiceAuto extends BaseAuto {
 
     public void addCycle(Command command, ScoringCommandGroups commandGroups) {
         command.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION),
-                        commandGroups.moveHorizontalExtension(HorizontalExtension.autoExtension),
-                        commandGroups.moveToIntakingRightAuto()))
-
-                .addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION),
-                        commandGroups.collectConeAuto()));
+                        commandGroups.moveToIntakingRightAuto(),
+                        commandGroups.moveHorizontalExtension(HorizontalExtension.PRE_EMPTIVE_EXTEND)))
+                .addNext(commandGroups.moveHorizontalExtension(HorizontalExtension.autoExtension))
+                .addNext(commandGroups.collectConeAuto());
     }
 }

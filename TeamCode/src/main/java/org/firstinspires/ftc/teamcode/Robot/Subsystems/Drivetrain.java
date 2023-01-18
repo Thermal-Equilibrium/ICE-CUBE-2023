@@ -112,4 +112,14 @@ public class Drivetrain extends Subsystem {
 		FREE,
 		ACTIVATED
 	}
+
+	public void setTrajectoryTracking(boolean shouldTrajectoryTrackNotStablilize) {
+		drive.isHoldingPosition = !shouldTrajectoryTrackNotStablilize;
+	}
+
+	public void setHoldingPose(Pose2d pose) {
+		drive.holdingPose = pose;
+	}
+
+
 }

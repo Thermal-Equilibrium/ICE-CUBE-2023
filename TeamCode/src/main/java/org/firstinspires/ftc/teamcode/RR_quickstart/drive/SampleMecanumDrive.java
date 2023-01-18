@@ -7,11 +7,13 @@ import androidx.annotation.NonNull;
 import com.ThermalEquilibrium.homeostasis.Filters.FilterAlgorithms.LowPassFilter;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
+import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
 import com.acmerobotics.roadrunner.drive.MecanumDrive;
 import com.acmerobotics.roadrunner.followers.HolonomicPIDVAFollower;
 import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.kinematics.Kinematics;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint;
@@ -63,6 +65,9 @@ public class SampleMecanumDrive extends MecanumDrive {
     static double rotation_Kp = 6;
     public static PIDCoefficients TRANSLATIONAL_PID;
 
+    public boolean isHoldingPosition = false;
+    public Pose2d holdingPose = new Pose2d();
+
     MedianFilter3 voltageFilter = new MedianFilter3();
 
     private BNO055IMU imu;
@@ -94,6 +99,11 @@ public class SampleMecanumDrive extends MecanumDrive {
     public static double VY_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 1;
 
+    private PIDFController axialController = new PIDFController(TRANSLATIONAL_PID);
+    private PIDFController lateralController = new PIDFController(TRANSLATIONAL_PID);
+    private PIDFController headingController = new PIDFController(HEADING_PID);
+
+
     private TrajectorySequenceRunner trajectorySequenceRunner;
 
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
@@ -110,6 +120,8 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     public SampleMecanumDrive(HardwareMap hardwareMap) {
         super(DriveConstants.kV, DriveConstants.kA, DriveConstants.kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
+
+        headingController.setInputBounds(-Math.PI,Math.PI);
 
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
                 new Pose2d(0.1, 0.1, Math.toRadians(0.3)), 1);
@@ -243,7 +255,12 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     public void update() {
         updatePoseEstimate();
-        DriveSignal signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
+        DriveSignal signal;
+        if (!isHoldingPosition) {
+            signal = trajectorySequenceRunner.update(getPoseEstimate(), getPoseVelocity());
+        } else {
+            signal = poseStabilize(holdingPose);
+        }
         if (signal != null) setDriveSignal(signal);
     }
 
@@ -366,6 +383,24 @@ public class SampleMecanumDrive extends MecanumDrive {
     @NonNull
     public List<Double> getWheelPos() {
         return localizer2Wheel.getWheelPositions();
+    }
+
+    public DriveSignal poseStabilize(Pose2d targetPose) {
+        Pose2d poseError = Kinematics.calculateRobotPoseError(targetPose,getPoseEstimate());
+        axialController.setTargetPosition(poseError.getX());
+        lateralController.setTargetPosition(poseError.getY());
+        headingController.setTargetPosition(poseError.getHeading());
+        Pose2d robotVelocity = getPoseVelocity();
+
+        if (robotVelocity == null) {
+            robotVelocity = new Pose2d();
+        }
+
+        double axialCorrection = axialController.update(0.0,robotVelocity.getX());
+        double lateralCorrection = lateralController.update(0.0,robotVelocity.getY());
+        double headingCorrection = headingController.update(0.0,robotVelocity.getHeading());
+        return new DriveSignal(new Pose2d(axialCorrection,lateralCorrection,headingCorrection), new Pose2d(0,0,0));
+
     }
 
 }

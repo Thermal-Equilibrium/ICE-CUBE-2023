@@ -12,22 +12,23 @@ import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 import org.jetbrains.annotations.NotNull;
 
 public class MeepMeepTesting {
-	public static double MAX_VEL = 40;
-	public static double MAX_ACCEL = 30;
-	public static double MAX_ANG_VEL = Math.toRadians(70);
-	public static double MAX_ANG_ACCEL = Math.toRadians(50);
+	public static double MAX_VEL = 65;
+	public static double MAX_ACCEL = 65;
+	public static double MAX_ANG_VEL = Math.toRadians(150);
+	public static double MAX_ANG_ACCEL = Math.toRadians(120);
 
 	public static void main(String[] args) {
 		MeepMeep meepMeep = new MeepMeep(800);
-		final Pose2d startPose = new Pose2d(-36, 66,Math.toRadians(-90));
-		final Pose2d goToPole1 = new Pose2d(-36, 24,Math.toRadians(-90));
+		Pose2d startPose = new Pose2d(-36, 66.5,Math.toRadians(-90));
+		final Pose2d goToPole1 = new Pose2d(-38, 24,Math.toRadians(-100));
 		Pose2d goToPole2 = shiftRobotRelative(
 				new Pose2d(-34.714046022304565,10.158013549498268,Math.toRadians(338.11832672430523)),
 				-1,
-				-3.1
+				-2.9
 		);
+
 		final Pose2d parkRight1= new Pose2d(goToPole2.getX() - 1, goToPole2.getY() + 1, goToPole2.getHeading());
-		final Pose2d parkRight = new Pose2d(-60, 12, Math.toRadians(0));
+		final Pose2d parkRight = new Pose2d(-63, 12, Math.toRadians(0));
 		final Pose2d parkMID = new Pose2d(-40, 18, Math.toRadians(-90));
 		final Pose2d parkLeft1 = new Pose2d(-36,24,Math.toRadians(-90));
 		final Pose2d parkLeft = new Pose2d(-12,36,Math.toRadians(180));

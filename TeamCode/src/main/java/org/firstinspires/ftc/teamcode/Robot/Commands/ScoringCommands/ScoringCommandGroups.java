@@ -67,7 +67,7 @@ public class ScoringCommandGroups {
 	}
 
 	public int currentCone = 5;
-	double[] armConeHeights = {0.08, 0.11, 0.1357, 0.1632, 0.1978};
+	double[] armConeHeights = {0.08, 0.11, 0.1357, 0.1632, 0.1800};
 
 	public Command moveToIntakingRightAuto() {
 		currentCone--;
@@ -86,7 +86,7 @@ public class ScoringCommandGroups {
 	public Command moveToIntakingLeftClosePole() {
 		return moveArm(Turret.ArmStates.TRANSFER_SAFE)
 				.addNext(moveHorizontalExtension(HorizontalExtension.PRE_EMPTIVE_EXTEND))
-				.addNext(moveTurret(Turret.TurretStates.FAR_LEFT))//new MultipleCommand(moveArm(Turret.ArmStates.TRANSFER_SAFE),
+				.addNext(moveTurret(Turret.TurretStates.Slight_LEFT))//new MultipleCommand(moveArm(Turret.ArmStates.TRANSFER_SAFE),
 				//moveHorizontalExtension(HorizontalExtension.PRE_EMPTIVE_EXTEND),
 				//moveTurret(Turret.TurretStates.FAR_LEFT))
 				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()))
@@ -96,7 +96,7 @@ public class ScoringCommandGroups {
 	public Command moveToIntakingRightClosePole() {
 		Command command = new MultipleCommand(moveArm(Turret.ArmStates.TRANSFER_SAFE),
 				moveHorizontalExtension(HorizontalExtension.PRE_EMPTIVE_EXTEND),
-				moveTurret(Turret.TurretStates.FAR_RIGHT))
+				moveTurret(Turret.TurretStates.Slight_RIGHT))
 				.addNext(new Delay(0.1))
 				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()))
 				.addNext(moveHorizontalExtension(HorizontalExtension.TELE_CYCLE_EXTENSION));
@@ -131,7 +131,7 @@ public class ScoringCommandGroups {
 	public Command collectConeAuto() {
 
 		return asyncMoveVerticalExtension(VerticalExtension.IN_POSITION)
-				.addNext(new Delay(0.75))
+				.addNext(new Delay(0.45))
 				.addNext(grabCone())
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
 				.addNext(moveTurret(Turret.TurretStates.TRANSFER))
@@ -139,7 +139,7 @@ public class ScoringCommandGroups {
 				.addNext(moveArm(Turret.ArmStates.TRANSFER))
 				.addNext(new Delay(0.15))
 				.addNext(releaseCone())
-				.addNext(new Delay(0.2))
+				.addNext(new Delay(0.1))
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
 
 	}

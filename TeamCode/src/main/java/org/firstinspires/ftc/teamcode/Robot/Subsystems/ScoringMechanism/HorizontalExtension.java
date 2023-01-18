@@ -18,7 +18,7 @@ public class HorizontalExtension extends Subsystem {
 	DcMotorEx leftMotor;
 	DcMotorEx rightMotor;
 
-	PIDCoefficients coefficients = new PIDCoefficients(0.01,0,0);
+	PIDCoefficients coefficients = new PIDCoefficients(0.013,0,0);
 	MotionConstraint upConstraint = new MotionConstraint(6000,5000,2000);
 	MotionConstraint downConstraint = new MotionConstraint(6000,5000,2000);
 
@@ -30,8 +30,8 @@ public class HorizontalExtension extends Subsystem {
 	public final static double CLOSE_INTAKE = 100;
 	public final static double EXTENSION1 = 500;
 	public final static double PRE_EMPTIVE_EXTEND = 100;
-	public final static double TELE_CYCLE_EXTENSION = 300; // todo figure out our max safe extension
-	public final static double autoExtension = 465;
+	public final static double TELE_CYCLE_EXTENSION = 359; // todo figure out our max safe extension
+	public final static double autoExtension = 400;
 	protected double targetPosition = IN_POSITION;
 
 	public void commonInit(HardwareMap hwMap) {

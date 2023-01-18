@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Roadrunn
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.DelayedCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
+import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.RaceAction;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
 import org.firstinspires.ftc.teamcode.visionPipelines.SleeveDetection;
 
@@ -68,6 +69,9 @@ public abstract class BaseAuto extends LinearOpMode {
 	}
 
 
+	public RaceAction raceCommand(Command... commands) {
+		return new RaceAction(commands);
+	}
 
 
 

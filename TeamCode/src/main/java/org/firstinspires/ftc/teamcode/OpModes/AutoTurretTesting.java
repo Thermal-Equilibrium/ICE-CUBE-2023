@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.CommandFramework.BaseAuto;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
+import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.NullCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.TurretToBestCone;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
 import org.firstinspires.ftc.teamcode.visionPipelines.Color;
@@ -15,6 +16,7 @@ public class AutoTurretTesting extends BaseAuto {
     public Command setupAuto(CommandScheduler scheduler) {
         Robot.team = Color.RED;
         waitForStart();
-        return new TurretToBestCone(robot.scoringMechanism.turret, robot.vision, false, true, true, false, false);
+//        return new TurretToBestCone(robot.scoringMechanism.turret, robot.vision, false, true, true, false, false);
+        return new NullCommand();
     }
 }

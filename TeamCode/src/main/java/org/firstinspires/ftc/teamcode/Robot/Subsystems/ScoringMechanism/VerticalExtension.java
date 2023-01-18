@@ -18,7 +18,7 @@ public class VerticalExtension extends Subsystem {
 	DcMotorEx vertical1;
 	DcMotorEx vertical2;
 
-	PIDCoefficients coefficients = new PIDCoefficients(0.015,0,0);
+	PIDCoefficients coefficients = new PIDCoefficients(0.013,0,0);
 	MotionConstraint upConstraint = new MotionConstraint(3500,3500,2000);
 	MotionConstraint downConstraint = new MotionConstraint(3500,10000,3000);
 
