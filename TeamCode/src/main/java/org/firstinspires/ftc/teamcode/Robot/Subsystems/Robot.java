@@ -4,12 +4,10 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
-import org.firstinspires.ftc.teamcode.Purepursuit.AStar.Main;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.MainScoringMechanism;
 import org.firstinspires.ftc.teamcode.Simulation.TestCommandsSubsystems.PrintSubsystem1;
-import org.firstinspires.ftc.teamcode.visionPipelines.Color;
+import org.firstinspires.ftc.teamcode.Utils.Team;
 
 import java.util.ArrayList;
 
@@ -27,8 +25,7 @@ public class Robot {
 	public Drivetrain drivetrain = new Drivetrain();
 	public MainScoringMechanism scoringMechanism = new MainScoringMechanism();
 	public FieldMap field = new FieldMap();
-	public Vision vision = new Vision();
-	public static Color team = null;
+	public Vision vision;
 
 	// print subsystem for testing
 	public PrintSubsystem1 print = new PrintSubsystem1();
@@ -36,8 +33,8 @@ public class Robot {
 	protected CommandScheduler scheduler;
 
 	ArrayList<LynxModule> modules = new ArrayList<>() ;
-	public Robot(HardwareMap hwMap, OpMode opMode, Gamepad gamepad1, Gamepad gamepad2) {
-
+	public Robot(HardwareMap hwMap, OpMode opMode, Gamepad gamepad1, Gamepad gamepad2, Team team) {
+		vision = new Vision(team);
 		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard, scoringMechanism, field, vision);
 		this.gamepad1 = new Input(gamepad1, scheduler);
 		this.gamepad2 = new Input(gamepad2, scheduler);

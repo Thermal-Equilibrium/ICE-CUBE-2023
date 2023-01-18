@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.visionPipelines;
 import org.opencv.core.Point;
 
 public class VisionBasedPosition {
-    public Point raw;
     public double distance;
     public double angle;
 

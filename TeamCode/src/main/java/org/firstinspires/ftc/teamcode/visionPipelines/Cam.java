@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.Exposur
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision;
+import org.firstinspires.ftc.teamcode.Utils.Team;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
@@ -35,8 +36,10 @@ public class Cam {
     public double currentFrame;
     public double lastFrame;
     public boolean destroyed = false;
+    public Team team;
 
-    public Cam(OpenCvPipeline pipe, HardwareMap hwMap, String name, Size res, Size nativeRes, Pose2d position, double FOV, OpenCvCameraRotation rotation) {
+    public Cam(OpenCvPipeline pipe, HardwareMap hwMap, String name, Size res, Size nativeRes, Pose2d position, double FOV, OpenCvCameraRotation rotation, Team team) {
+        this.team = team;
         this.name = name;
         this.res = res;
         this.position=position;

@@ -2,8 +2,7 @@ package org.firstinspires.ftc.teamcode.visionPipelines;
 
 import com.acmerobotics.dashboard.config.Config;
 
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision;
+import org.firstinspires.ftc.teamcode.Utils.Team;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
@@ -15,32 +14,25 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Optimized extends OpenCvPipeline {
+public class ConeDetection extends OpenCvPipeline {
     @Config
-    public static class VisionConfig {
+    public static class ConeConfig {
         public static double distanceCorrection = .8;
         public static int coneMinArea = 900;
-
         public static int RED_THRESH = 10;
         public static int BLUE_THRESH = 25;
-
         public static int RED_MIN_SATURATION = 110;
         public static int BLUE_MIN_SATURATION = 75;
-
         public static int RED_MAX_SATURATION = 255;
         public static int BLUE_MAX_SATURATION = 255;
-
         public static int RED_MIN_VALUE = 50;
         public static int BLUE_MIN_VALUE = 50;
-
         public static int RED_MAX_VALUE = 255;
         public static int BLUE_MAX_VALUE = 200;
-
         public static double perfectDistance = 13.5;
         public static double perfectTolerance = 2.5;
     }
 
-    private static final double POLE_WIDTH = 1;
     private static final double CONE_WIDTH = 4;
     private static final double CONE_HEIGHT = 5;
     private static final Scalar BLANK = new Scalar(0,0,0);
@@ -48,9 +40,9 @@ public class Optimized extends OpenCvPipeline {
     private static final Scalar YELLOW = new Scalar(255,255,0);
     private static final Scalar BLUE = new Scalar(0,0,255);
     private static final Scalar GREEN = new Scalar(0,255,0);
-    private static final Scalar ORANGE = new Scalar(255,165,0);
     private static final Scalar PURPLE = new Scalar(255,0,255);
     private static final Scalar WHITE = new Scalar(255,255,255);
+    private static final Scalar ORANGE = new Scalar(255,165,0);
     private final Scalar compare = new Scalar(171);
     private final Cam cam;
     private Point camCenter;
@@ -77,7 +69,7 @@ public class Optimized extends OpenCvPipeline {
     public volatile Cone deadzone = null;
     public volatile Cone conestackGuess = null;
 
-    public Optimized(Cam cam) {
+    public ConeDetection(Cam cam) {
         this.cam = cam;
         this.camCenter = getCenter(this.cam.res);
         this.HUD = new Mat(this.cam.res, CvType.CV_8UC3, new Scalar(0,0,0));
@@ -87,19 +79,19 @@ public class Optimized extends OpenCvPipeline {
         if (input.channels() == 4) {
             Imgproc.cvtColor(input, input, Imgproc.COLOR_RGBA2RGB);
         }
-        if (Robot.team == Color.RED) {
+        if (this.cam.team == Team.RED) {
             Imgproc.cvtColor(input, this.hsv, Imgproc.COLOR_BGR2HSV_FULL);
             Core.extractChannel(this.hsv, this.hue, 0);
             Core.absdiff(this.hue, this.compare, this.deviation);
-            Imgproc.threshold(this.deviation, this.color, VisionConfig.RED_THRESH, 255, Imgproc.THRESH_BINARY_INV);
-            Core.inRange(this.hsv, new Scalar(0,VisionConfig.RED_MIN_SATURATION,VisionConfig.RED_MIN_VALUE), new Scalar(255,VisionConfig.RED_MAX_SATURATION,VisionConfig.RED_MAX_VALUE), this.edgeBin);
+            Imgproc.threshold(this.deviation, this.color, ConeConfig.RED_THRESH, 255, Imgproc.THRESH_BINARY_INV);
+            Core.inRange(this.hsv, new Scalar(0, ConeConfig.RED_MIN_SATURATION, ConeConfig.RED_MIN_VALUE), new Scalar(255, ConeConfig.RED_MAX_SATURATION, ConeConfig.RED_MAX_VALUE), this.edgeBin);
         }
-        else if (Robot.team == Color.BLUE) {
+        else if (this.cam.team == Team.BLUE) {
             Imgproc.cvtColor(input, this.hsv, Imgproc.COLOR_RGB2HSV_FULL);
             Core.extractChannel(this.hsv, this.hue, 0);
             Core.absdiff(this.hue, this.compare, this.deviation);
-            Imgproc.threshold(this.deviation, this.color, VisionConfig.BLUE_THRESH, 255, Imgproc.THRESH_BINARY_INV);
-            Core.inRange(this.hsv, new Scalar(0,VisionConfig.BLUE_MIN_SATURATION,VisionConfig.BLUE_MIN_VALUE), new Scalar(255,VisionConfig.BLUE_MAX_SATURATION,VisionConfig.BLUE_MAX_VALUE), this.edgeBin);
+            Imgproc.threshold(this.deviation, this.color, ConeConfig.BLUE_THRESH, 255, Imgproc.THRESH_BINARY_INV);
+            Core.inRange(this.hsv, new Scalar(0, ConeConfig.BLUE_MIN_SATURATION, ConeConfig.BLUE_MIN_VALUE), new Scalar(255, ConeConfig.BLUE_MAX_SATURATION, ConeConfig.BLUE_MAX_VALUE), this.edgeBin);
         }
 
         Core.bitwise_and(this.color, this.edgeBin, this.color);
@@ -181,7 +173,7 @@ public class Optimized extends OpenCvPipeline {
     }
     private double getDistance(double width, double realWidth) {
         double occupiedFOV = this.cam.FOV * (width / this.cam.res.width);
-        return VisionConfig.distanceCorrection * ( (realWidth/2)/Math.tan(occupiedFOV/2) + (realWidth/2) );
+        return ConeConfig.distanceCorrection * ( (realWidth/2)/Math.tan(occupiedFOV/2) + (realWidth/2) );
     }
     private double getAngle(Point point) {
         return this.cam.FOV * (point.x / this.cam.res.width) - this.cam.FOV/2;
@@ -191,7 +183,7 @@ public class Optimized extends OpenCvPipeline {
         Imgproc.findContours(this.color, this.rawContours, this.hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
         this.cones.clear();
         for (MatOfPoint contour: this.rawContours) {
-            if (Imgproc.contourArea(contour) >= VisionConfig.coneMinArea && Imgproc.boundingRect(contour).height > Imgproc.boundingRect(contour).width) { //&& Imgproc.isContourConvex(contour)
+            if (Imgproc.contourArea(contour) >= ConeConfig.coneMinArea && Imgproc.boundingRect(contour).height > Imgproc.boundingRect(contour).width) { //&& Imgproc.isContourConvex(contour)
                 this.cones.add(new Cone(contour, new VisionBasedPosition(this.getDistance(Imgproc.boundingRect(contour).width,CONE_WIDTH), this.getAngle(getTop(contour))), getTop(contour), this.cam.position.getHeading()));
             }
         }
@@ -201,19 +193,20 @@ public class Optimized extends OpenCvPipeline {
         this.far = null;
         this.close = null;
         this.deadzone = null;
+        this.conestackGuess = null;
         if (this.cones.size() < 1) return;
 
         this.perfectList = this.cones.stream().filter(cone -> cone.classification == Cone.Classification.PERFECT).collect(Collectors.toList());
-        if (this.perfectList.size() > 0) this.perfect = Collections.min(perfectList, Comparator.comparing(cone -> Math.abs(cone.position.distance - VisionConfig.perfectDistance)));
+        if (this.perfectList.size() > 0) this.perfect = Collections.min(perfectList, Comparator.comparing(cone -> Math.abs(cone.position.distance - ConeConfig.perfectDistance)));
 
         this.farList = this.cones.stream().filter(cone -> cone.classification == Cone.Classification.FAR).collect(Collectors.toList());
-        if (this.farList.size() > 0) this.far = Collections.min(this.farList, Comparator.comparing(cone -> Math.abs(cone.position.distance - VisionConfig.perfectDistance)));
+        if (this.farList.size() > 0) this.far = Collections.min(this.farList, Comparator.comparing(cone -> Math.abs(cone.position.distance - ConeConfig.perfectDistance)));
 
         this.closeList = this.cones.stream().filter(cone -> cone.classification == Cone.Classification.CLOSE).collect(Collectors.toList());
-        if (this.closeList.size() > 0) this.close = Collections.min(this.closeList, Comparator.comparing(cone -> Math.abs(cone.position.distance - VisionConfig.perfectDistance)));
+        if (this.closeList.size() > 0) this.close = Collections.min(this.closeList, Comparator.comparing(cone -> Math.abs(cone.position.distance - ConeConfig.perfectDistance)));
 
         this.deadzoneList = this.cones.stream().filter(cone -> cone.classification == Cone.Classification.DEADZONE).collect(Collectors.toList());
-        if (this.deadzoneList.size() > 0) this.deadzone = Collections.min(this.deadzoneList, Comparator.comparing(cone -> Math.abs(cone.position.distance - VisionConfig.perfectDistance)));
+        if (this.deadzoneList.size() > 0) this.deadzone = Collections.min(this.deadzoneList, Comparator.comparing(cone -> Math.abs(cone.position.distance - ConeConfig.perfectDistance)));
 
         this.conestackGuess = Collections.max(this.cones, Comparator.comparing(cone -> cone.contour.height()));
     }
