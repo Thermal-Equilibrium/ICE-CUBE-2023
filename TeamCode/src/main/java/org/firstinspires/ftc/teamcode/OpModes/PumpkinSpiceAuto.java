@@ -32,7 +32,7 @@ public class PumpkinSpiceAuto extends BaseAuto {
     final Pose2d parkRight = new Pose2d(-63, 12, Math.toRadians(0));
     final Pose2d parkMID = new Pose2d(-40, 18, Math.toRadians(-90));
     final Pose2d parkLeft1 = new Pose2d(-36,24,Math.toRadians(-90));
-    final Pose2d parkLeft = new Pose2d(-7,36,Math.toRadians(180));
+    final Pose2d parkLeft = new Pose2d(-6,38,Math.toRadians(180));
 
     @Override
     public void setRobotPosition() {
@@ -85,7 +85,7 @@ public class PumpkinSpiceAuto extends BaseAuto {
         }
 
         auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION))
-                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.IN_POSITION));
+                .addNext(commandGroups.depositCone());
 
         auto.addNext(new Delay(0.1).addNext(new ToggleBreak(robot.drivetrain)));
         auto.addNext(followRR(park));

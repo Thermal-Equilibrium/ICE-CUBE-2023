@@ -54,16 +54,19 @@ public class MotorFinder extends LinearOpMode {
 		Servo claw = hardwareMap.get(Servo.class,"claw");
 		Servo s2 = hardwareMap.get(Servo.class, "ch2");
 		Servo turret = hardwareMap.get(Servo.class, "turret");
+		Servo latch = hardwareMap.get(Servo.class,"latch");
 		waitForStart();
 		double turretAngle = 0.51889;
+		double latchAngle = 0;
 		while (opModeIsActive()) {
-			turretAngle += -gamepad1.left_stick_y * 0.01;
+			latchAngle += -gamepad1.left_stick_y * 0.01;
 			setpoint -= gamepad1.right_stick_y;
 			turret.setPosition(turretAngle);
 			//s1.setPosition(turretAngle);
 			// s0.setPosition(0.5);
 //			arm.setPosition(0.3);
 			claw.setPosition(0.5);
+			latch.setPosition(latchAngle);
 
 			double slidePosition = (leftHorizontal.getCurrentPosition() + rightHorizontal.getCurrentPosition()) / 2.0;
 			double power = pid.calculate(setpoint,slidePosition);
@@ -71,7 +74,7 @@ public class MotorFinder extends LinearOpMode {
 			leftHorizontal.setPower(power);
 			rightHorizontal.setPower(power);
 			telemetry.addData("target position",setpoint);
-			telemetry.addData("turret angle",turretAngle);
+			telemetry.addData("latch angle",latchAngle);
 			telemetry.update();
 			if (gamepad1.triangle) {
 				arm.setPosition(0.4);

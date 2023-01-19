@@ -38,7 +38,7 @@ public class Cam {
     public boolean destroyed = false;
     public Team team;
 
-    public Cam(OpenCvPipeline pipe, HardwareMap hwMap, String name, Size res, Size nativeRes, Pose2d position, double FOV, OpenCvCameraRotation rotation, Team team) {
+    public Cam(OpenCvPipeline pipe, HardwareMap hwMap, String name, Size res, Size nativeRes, Pose2d position, double FOV, OpenCvCameraRotation rotation) {
         this.team = team;
         this.name = name;
         this.res = res;

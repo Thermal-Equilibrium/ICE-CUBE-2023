@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleComman
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.NullCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.RunCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.AsyncMoveVerticalExtension;
+import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.CloseLatch;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveArm;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveArmDirect;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveClaw;
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMo
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurret;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurretAsync;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveVerticalExtension;
+import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.OpenLatch;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.MainScoringMechanism;
@@ -119,18 +121,21 @@ public class ScoringCommandGroups {
 		}
 
 		return grabCone()
+				.addNext(openLatch())
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
 				.addNext(moveTurret(Turret.TurretStates.TRANSFER))
 				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION))
 				.addNext(moveArm(Turret.ArmStates.TRANSFER))
 				.addNext(new Delay(0.15))
 				.addNext(releaseCone())
+				.addNext(closeLatch())
 				.addNext(new Delay(0.2))
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
 	}
 	public Command collectConeAuto() {
 
-		return asyncMoveVerticalExtension(VerticalExtension.IN_POSITION)
+		return depositConeAsync()
+				.addNext(openLatch())
 				.addNext(new Delay(0.45))
 				.addNext(grabCone())
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
@@ -139,6 +144,7 @@ public class ScoringCommandGroups {
 				.addNext(moveArm(Turret.ArmStates.TRANSFER))
 				.addNext(new Delay(0.15))
 				.addNext(releaseCone())
+				.addNext(closeLatch())
 				.addNext(new Delay(0.1))
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
 
@@ -167,7 +173,7 @@ public class ScoringCommandGroups {
 		if (verticalExtension.getSlideTargetPosition() == VerticalExtension.IN_POSITION) {
 			return moveClaw(Turret.ClawStates.Open);
 		} else {
-			return moveVerticalExtension(VerticalExtension.IN_POSITION);
+			return depositCone();
 		}
 	}
 
@@ -197,4 +203,19 @@ public class ScoringCommandGroups {
 	public MoveVerticalExtension moveVerticalExtension(double position) {
 		return new MoveVerticalExtension(verticalExtension,position,drivetrain);
 	}
+
+	public Command depositCone() {
+		return openLatch().addNext(moveVerticalExtension(VerticalExtension.IN_POSITION));
+	}
+	public Command depositConeAsync() {
+		return openLatch().addNext(asyncMoveVerticalExtension(VerticalExtension.IN_POSITION));
+	}
+
+	public CloseLatch closeLatch() {
+		return new CloseLatch(turret);
+	}
+	public OpenLatch openLatch() {
+		return new OpenLatch(turret);
+	}
+
 }

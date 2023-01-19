@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 import org.firstinspires.ftc.teamcode.visionPipelines.Cam;
 
-import org.firstinspires.ftc.teamcode.visionPipelines.Optimized;
 import org.firstinspires.ftc.teamcode.visionPipelines.SleeveDetection;
 import org.opencv.core.Size;
 import org.openftc.easyopencv.OpenCvCameraRotation;

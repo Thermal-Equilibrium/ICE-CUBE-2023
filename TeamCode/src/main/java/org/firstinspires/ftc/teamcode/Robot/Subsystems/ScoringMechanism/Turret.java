@@ -20,6 +20,10 @@ public class Turret extends Subsystem {
 	double armSafe = 0.4;
 	double turretTransfer = 0.51889;
 	double currentFreeStateValue = 0;
+	Servo latch;
+
+	double latch_open = 0.48;
+	double latch_closed = 0.2;
 
 
 
@@ -35,6 +39,24 @@ public class Turret extends Subsystem {
 		claw = hwMap.get(Servo.class, "claw");
 		claw.setDirection(Servo.Direction.FORWARD);
 		claw.setPosition(0.5);
+		latch = hwMap.get(Servo.class,"latch");
+		latch.setPosition(latch_closed);
+
+	}
+
+	@Override
+	public void initTeleop(HardwareMap hwMap) {
+		turret = hwMap.get(Servo.class, "turret");
+		turret.setPosition(turretTransfer);
+
+		arm1 = hwMap.get(Servo.class,"arm");
+		arm1.setDirection(Servo.Direction.REVERSE);
+		arm1.setPosition(armSafe);
+		claw = hwMap.get(Servo.class, "claw");
+		claw.setDirection(Servo.Direction.FORWARD);
+		claw.setPosition(0.5);
+		latch = hwMap.get(Servo.class,"latch");
+		latch.setPosition(latch_open);
 	}
 
 	@Override
@@ -156,6 +178,13 @@ public class Turret extends Subsystem {
 		FREE_STATE
 	}
 
+	public void close_latch() {
+		latch.setPosition(latch_closed);
+	}
+
+	public void open_latch() {
+		latch.setPosition(latch_open);
+	}
 
 	public void setCurrentFreeStateValue(double currentFreeStateValue) {
 		this.currentFreeStateValue = currentFreeStateValue;
