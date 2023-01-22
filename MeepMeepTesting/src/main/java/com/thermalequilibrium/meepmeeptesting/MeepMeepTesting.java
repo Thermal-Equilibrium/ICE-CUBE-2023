@@ -23,15 +23,20 @@ public class MeepMeepTesting {
 		final Pose2d goToPole1 = new Pose2d(-38, 24,Math.toRadians(-100));
 		Pose2d goToPole2 = shiftRobotRelative(
 				new Pose2d(-34.714046022304565,10.158013549498268,Math.toRadians(338.11832672430523)),
-				-1,
-				-2.9
+				-2.5,
+				-0.5
 		);
 
 		final Pose2d parkRight1= new Pose2d(goToPole2.getX() - 1, goToPole2.getY() + 1, goToPole2.getHeading());
-		final Pose2d parkRight = new Pose2d(-63, 12, Math.toRadians(0));
+		final Pose2d parkRight = new Pose2d(-63, 14, Math.toRadians(0));
 		final Pose2d parkMID = new Pose2d(-40, 18, Math.toRadians(-90));
-		final Pose2d parkLeft1 = new Pose2d(-36,24,Math.toRadians(-90));
-		final Pose2d parkLeft = new Pose2d(-12,36,Math.toRadians(180));
+		final Pose2d parkLeft1 = new Pose2d(-38,26,Math.toRadians(-90));
+
+		final Pose2d parkLeft = new Pose2d(-6,38,Math.toRadians(0));
+		final Pose2d parkLeft1_new = new Pose2d(-38,18,Math.toRadians(270));
+
+			final Pose2d parkLeft_new = new Pose2d(-12,14,Math.toRadians(20));
+
 
 		RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
 				// Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
@@ -41,8 +46,8 @@ public class MeepMeepTesting {
 								.splineTo(goToPole1.vec(), goToPole1.getHeading())
 								.splineToSplineHeading(goToPole2,calculateTangent(goToPole1,goToPole2))
 								.setReversed(true)
-								.splineTo(parkLeft1.vec(),Math.toRadians(75))
-								.splineTo(parkLeft.vec(), Math.toRadians(0))
+								.splineToConstantHeading(parkLeft1_new.vec(),Math.toRadians(0))
+								.splineToSplineHeading(parkLeft_new,Math.toRadians(0))
 								.build()
 
 				);

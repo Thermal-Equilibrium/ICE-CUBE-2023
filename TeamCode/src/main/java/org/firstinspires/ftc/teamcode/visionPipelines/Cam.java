@@ -66,9 +66,9 @@ public class Cam {
             @Override public void onOpened() {
                 webcam.startStreaming( (int) res.width, (int) res.height, rotation);
                 Dashboard.packet.put("CAMCONFIG: max gain", webcam.getGainControl().getMaxGain());
-                Dashboard.packet.put("CAMCONFIG: Gain Set Success", webcam.getGainControl().setGain(100));
+                Dashboard.packet.put("CAMCONFIG: Gain Set Success", webcam.getGainControl().setGain(50));
                 Dashboard.packet.put("CAMCONFIG: Exposure Mode Success", webcam.getExposureControl().setMode(ExposureControl.Mode.Manual));
-                Dashboard.packet.put("CAMCONFIG: Exposure Time Success", webcam.getExposureControl().setExposure(25L, TimeUnit.MILLISECONDS));
+                Dashboard.packet.put("CAMCONFIG: Exposure Time Success", webcam.getExposureControl().setExposure(15L, TimeUnit.MILLISECONDS));
                 Dashboard.packet.put("CAMCONFIG: Focus Mode Success", webcam.getFocusControl().setMode(FocusControl.Mode.Fixed));
                 Dashboard.packet.put("CAMCONFIG: Focus Distance Success", webcam.getFocusControl().setFocusLength(Vision.VisionConfig.focusDistance));
             }

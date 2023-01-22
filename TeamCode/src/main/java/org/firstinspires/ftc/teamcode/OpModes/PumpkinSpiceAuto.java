@@ -28,11 +28,13 @@ public class PumpkinSpiceAuto extends BaseAuto {
             -0.5
     );
 
-    final Pose2d parkRight1= new Pose2d(goToPole2.getX() - 1, goToPole2.getY() + 1, goToPole2.getHeading());
-    final Pose2d parkRight = new Pose2d(-63, 12, Math.toRadians(0));
+    final Pose2d parkRight1= new Pose2d(goToPole2.getX() - 1, goToPole2.getY() + 3, goToPole2.getHeading());
+    final Pose2d parkRight = new Pose2d(-63, 20, Math.toRadians(0));
     final Pose2d parkMID = new Pose2d(-40, 18, Math.toRadians(-90));
-    final Pose2d parkLeft1 = new Pose2d(-36,24,Math.toRadians(-90));
-    final Pose2d parkLeft = new Pose2d(-6,38,Math.toRadians(180));
+//    final Pose2d parkLeft1 = new Pose2d(-38,26,Math.toRadians(-90));
+//    final Pose2d parkLeft = new Pose2d(-6,38,Math.toRadians(180));
+    final Pose2d parkLeft1_new = new Pose2d(-38,18,Math.toRadians(270));
+    final Pose2d parkLeft_new = new Pose2d(-8,14,Math.toRadians(90));
 
     @Override
     public void setRobotPosition() {
@@ -55,17 +57,22 @@ public class PumpkinSpiceAuto extends BaseAuto {
         Trajectory parkMidTraj = robot.drivetrain.getBuilder().trajectoryBuilder(goToPole2,true)
                 .lineToLinearHeading(parkMID)
                 .build();
+//
+//        Trajectory parkLeftTraj = robot.drivetrain.getBuilder().trajectoryBuilder(goToPole2,true)
+//                .splineTo(parkLeft1.vec(),Math.toRadians(75))
+//                .splineTo(parkLeft.vec(), Math.toRadians(0))
+//                .build();
 
-        Trajectory parkLeftTraj = robot.drivetrain.getBuilder().trajectoryBuilder(goToPole2,true)
-                .splineTo(parkLeft1.vec(),Math.toRadians(75))
-                .splineTo(parkLeft.vec(), Math.toRadians(0))
+        Trajectory parkLeftTrajNew = robot.drivetrain.getBuilder().trajectoryBuilder(goToPole2,true)
+                .splineToConstantHeading(parkLeft1_new.vec(),Math.toRadians(0))
+                .splineToSplineHeading(parkLeft_new,Math.toRadians(0))
                 .build();
 
-        Trajectory park = parkLeftTraj;
+        Trajectory park = parkLeftTrajNew;
 
         switch (parkingPosition) {
             case LEFT:
-                park = parkLeftTraj;
+                park = parkLeftTrajNew;
                 break;
             case CENTER:
                 park = parkMidTraj;
@@ -96,7 +103,7 @@ public class PumpkinSpiceAuto extends BaseAuto {
         command.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION),
                         commandGroups.moveToIntakingRightAuto(),
                         commandGroups.moveHorizontalExtension(HorizontalExtension.PRE_EMPTIVE_EXTEND)))
-                .addNext(commandGroups.moveHorizontalExtension(HorizontalExtension.autoExtension))
+                .addNext(commandGroups.moveHorizontalExtension(HorizontalExtension.mostlyAutoExtension))
                 .addNext(commandGroups.collectConeAuto());
     }
 }
