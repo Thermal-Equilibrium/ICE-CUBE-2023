@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
@@ -18,12 +19,21 @@ public class Turret extends Subsystem {
 	Servo claw;
 	double clawTransferPosition = 0.34;
 	double armSafe = 0.4;
-	double turretTransfer = 0.51889;
+	double turretTransfer = Math.toRadians(Math.PI);
 	double currentFreeStateValue = 0;
 	Servo latch;
+	private static double MIN_RAW_SERVO_ANGLE = 0;
+	private static double MAX_RAW_SERVO_ANGLE = .67;
+	private static final double TAU = Math.PI * 2;
 
 	double latch_open = 0.48;
 	double latch_closed = 0.2;
+
+	@Config
+	public static class TurretRange {
+		public static double MIN = 0;
+		public static double MAX = .67;
+	}
 
 
 
@@ -113,22 +123,22 @@ public class Turret extends Subsystem {
 	public void setTurret(TurretStates turretStates) {
 		switch (turretStates) {
 			case TRANSFER:
-				setTurretPositionSync(turretTransfer);
-				break;
-			case Slight_LEFT:
-				setTurretPositionSync(1);
+				setBasedTurretPositionSync(turretTransfer);
 				break;
 			case Slight_RIGHT:
-				setTurretPositionSync(0);
-				break;
-			case Slight_RIGHT_AUTO:
-				setTurretPositionSync(0.0169);
-				break;
-			case FAR_LEFT:
-				setTurretPositionSync(0.9);
+				setBasedTurretPositionSync(Math.toRadians(30));
 				break;
 			case FAR_RIGHT:
-				setTurretPositionSync(0.1);
+				setBasedTurretPositionSync(Math.toRadians(60));
+				break;
+			case Slight_RIGHT_AUTO:
+				setBasedTurretPositionSync(Math.toRadians(35));
+				break;
+			case Slight_LEFT:
+				setBasedTurretPositionSync(Math.toRadians(-30));
+				break;
+			case FAR_LEFT:
+				setBasedTurretPositionSync(Math.toRadians(-60));
 				break;
 		}
 	}
@@ -177,6 +187,13 @@ public class Turret extends Subsystem {
 		LOW_SCORING,
 		FREE_STATE
 	}
+	private void setRawTurretPositionSync(double position) {
+		position = Range.clip(position, MIN_RAW_SERVO_ANGLE, MAX_RAW_SERVO_ANGLE);
+		turret.setPosition(position);
+	}
+	private double getRawTurretPosition() { //TODO make private or protected
+		return turret.getPosition();
+	}
 
 	public void close_latch() {
 		latch.setPosition(latch_closed);
@@ -189,4 +206,27 @@ public class Turret extends Subsystem {
 	public void setCurrentFreeStateValue(double currentFreeStateValue) {
 		this.currentFreeStateValue = currentFreeStateValue;
 	}
+	private double radiansToServo(double radians) {
+		return Range.scale(radians,0,Math.PI * 2, MIN_RAW_SERVO_ANGLE, MAX_RAW_SERVO_ANGLE);
+	}
+
+	private double servoToRadians(double servoAngle) {
+		return Range.scale(servoAngle, MIN_RAW_SERVO_ANGLE, MAX_RAW_SERVO_ANGLE,0,TAU);
+	}
+	public void setBasedTurretPositionSync(double radians) {
+		radians = Range.clip(radians,0,TAU);
+		if (radians == 0 || radians == TAU) { // turn to 0/360 degrees the fastest way
+			double currentPosition = getBasedTurretPosition();
+			if (currentPosition > Math.PI) { // if current position is closer to 360 than 0, turn to 360
+				radians = TAU;
+			} else if (currentPosition < Math.PI) { // if current position is closer to 0 than 360, turn to 0
+				radians = 0;
+			}
+		}
+		setRawTurretPositionSync(radiansToServo(radians));
+	}
+	public double getBasedTurretPosition() {
+		return servoToRadians(getRawTurretPosition());
+	}
+
 }
