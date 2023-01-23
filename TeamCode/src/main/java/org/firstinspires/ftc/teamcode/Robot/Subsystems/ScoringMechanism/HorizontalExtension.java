@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 import org.firstinspires.ftc.teamcode.Math.AsymmetricProfile.MotionConstraint;
+import org.firstinspires.ftc.teamcode.Math.Kinematics.Intake3DKinematics;
 import org.firstinspires.ftc.teamcode.Utils.ProfiledPID;
 
 public class HorizontalExtension extends Subsystem {
@@ -92,5 +93,9 @@ public class HorizontalExtension extends Subsystem {
 	}
 	public boolean isMovementFinished() {
 		return controller.isDone();
+	}
+
+	public void setExtensionKinematicPosition(double x, double y, double z) {
+		setTargetPosition(Intake3DKinematics.getHorizontalSlideExtensionToTarget(x,y,z));
 	}
 }

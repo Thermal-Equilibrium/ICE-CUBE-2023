@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
+import org.firstinspires.ftc.teamcode.Math.Kinematics.Intake3DKinematics;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 
 public class Turret extends Subsystem {
@@ -211,5 +212,11 @@ public class Turret extends Subsystem {
 
 	public void setCurrentFreeStateValue(double currentFreeStateValue) {
 		this.currentFreeStateValue = currentFreeStateValue;
+	}
+
+	public void setArmKinematicPosition(double y, double z) {
+		setBasedTurretPosition(Intake3DKinematics.getYawAngleToTarget(y, z));
+		setArmDirect(Intake3DKinematics.getPitchAngleToTarget(z));
+
 	}
 }
