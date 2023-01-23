@@ -30,13 +30,11 @@ public abstract class BaseAuto extends LinearOpMode {
 		setRobotPosition();
 
 		while (!isStopRequested() && !opModeIsActive() && opModeInInit()) {
-			parkingPosition = robot.vision.getParkingPosition();
+			parkingPosition = robot.frontCamera.getParkingPosition();
 			telemetry.addData("current parking position is: ", parkingPosition);
 			telemetry.update();
 		}
-
-		robot.vision.frontCam.destroy();
-
+		robot.frontCamera.close();
 
 		waitForStart();
 		robot.getScheduler().forceCommand(setupAuto(robot.getScheduler()));

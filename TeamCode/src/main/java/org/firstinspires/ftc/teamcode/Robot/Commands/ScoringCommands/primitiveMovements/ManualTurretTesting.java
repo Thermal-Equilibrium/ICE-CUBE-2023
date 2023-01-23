@@ -1,37 +1,35 @@
 package org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements;
 
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.acmerobotics.dashboard.config.Config;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
 
-public class MoveTurretDirect extends Command {
-    double delayS = 0.5;
+public class ManualTurretTesting extends Command {
+    @Config
+    public static class ManualTurretControl {
+        public static double DEGREES = 180;
+    }
 
     Turret turret;
-    double angle;
 
-    ElapsedTime timer = new ElapsedTime();
-
-    public MoveTurretDirect(Turret turret, double angle) {
+    public ManualTurretTesting(Turret turret) {
         this.turret = turret;
-        this.angle = angle;
     }
 
     @Override
     public void init() {
-        turret.setBasedTurretPosition(angle);
-        timer.reset();
+        turret.setBasedTurretPosition(Math.toRadians(ManualTurretControl.DEGREES));
     }
 
     @Override
     public void periodic() {
-
+        turret.setBasedTurretPosition(Math.toRadians(ManualTurretControl.DEGREES));
     }
 
     @Override
     public boolean completed() {
-        return timer.seconds() > delayS;
+        return false;
     }
 
     @Override
@@ -39,3 +37,4 @@ public class MoveTurretDirect extends Command {
 
     }
 }
+
