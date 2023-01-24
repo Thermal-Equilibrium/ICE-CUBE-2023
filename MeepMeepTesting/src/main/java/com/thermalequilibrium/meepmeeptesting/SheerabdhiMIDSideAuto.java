@@ -15,7 +15,7 @@ public class SheerabdhiMIDSideAuto {
 	public static double MAX_ANG_ACCEL = Math.toRadians(120);
 
 	public static void main(String[] args) {
-		int parkingLocation = 1;
+		int parkingLocation = 2;
 
 		MeepMeep meepMeep = new MeepMeep(800);
 		Pose2d startPose = new Pose2d(-36, 66.5,Math.toRadians(-90));
