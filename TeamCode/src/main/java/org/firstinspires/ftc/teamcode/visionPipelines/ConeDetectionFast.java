@@ -30,16 +30,16 @@ public class ConeDetectionFast extends OpenCvPipeline {
         public static int coneMinArea = 900;
 
         public static int RED_MIN_HUE = 161;
-        public static int RED_MIN_SATURATION = 110;
-        public static int RED_MIN_VALUE = 50;
+        public static int RED_MIN_SATURATION = 80;
+        public static int RED_MIN_VALUE = 0;
 
-        public static int RED_MAX_HUE = 181;
+        public static int RED_MAX_HUE = 200;
         public static int RED_MAX_SATURATION = 255;
         public static int RED_MAX_VALUE = 255;
 
         public static int BLUE_MIN_HUE = 146;
-        public static int BLUE_MIN_SATURATION = 75;
-        public static int BLUE_MIN_VALUE = 50;
+        public static int BLUE_MIN_SATURATION = 55;
+        public static int BLUE_MIN_VALUE = 0;
 
         public static int BLUE_MAX_HUE = 196;
         public static int BLUE_MAX_SATURATION = 255;
@@ -74,10 +74,10 @@ public class ConeDetectionFast extends OpenCvPipeline {
 
     private BackCamera camera;
 
-    private final Scalar redLower = new Scalar(ConeConfig.RED_MIN_HUE, ConeConfig.RED_MIN_SATURATION, ConeConfig.RED_MIN_VALUE);
-    private final Scalar redUpper = new Scalar(ConeConfig.RED_MAX_HUE, ConeConfig.RED_MAX_SATURATION, ConeConfig.RED_MAX_VALUE);
-    private final Scalar blueLower = new Scalar(ConeConfig.BLUE_MIN_HUE, ConeConfig.BLUE_MIN_SATURATION, ConeConfig.BLUE_MIN_VALUE);
-    private final Scalar blueUpper = new Scalar(ConeConfig.BLUE_MAX_HUE, ConeConfig.BLUE_MAX_SATURATION, ConeConfig.BLUE_MAX_VALUE);
+    private Scalar redLower = new Scalar(ConeConfig.RED_MIN_HUE, ConeConfig.RED_MIN_SATURATION, ConeConfig.RED_MIN_VALUE);
+    private Scalar redUpper = new Scalar(ConeConfig.RED_MAX_HUE, ConeConfig.RED_MAX_SATURATION, ConeConfig.RED_MAX_VALUE);
+    private Scalar blueLower = new Scalar(ConeConfig.BLUE_MIN_HUE, ConeConfig.BLUE_MIN_SATURATION, ConeConfig.BLUE_MIN_VALUE);
+    private Scalar blueUpper = new Scalar(ConeConfig.BLUE_MAX_HUE, ConeConfig.BLUE_MAX_SATURATION, ConeConfig.BLUE_MAX_VALUE);
 
 
     public ConeDetectionFast(Team team, BackCamera backCamera) {
@@ -87,6 +87,11 @@ public class ConeDetectionFast extends OpenCvPipeline {
     }
     @Override
     public Mat processFrame(Mat input) {
+        this.redLower = new Scalar(ConeConfig.RED_MIN_HUE, ConeConfig.RED_MIN_SATURATION, ConeConfig.RED_MIN_VALUE);
+        this.redUpper = new Scalar(ConeConfig.RED_MAX_HUE, ConeConfig.RED_MAX_SATURATION, ConeConfig.RED_MAX_VALUE);
+        this.blueLower = new Scalar(ConeConfig.BLUE_MIN_HUE, ConeConfig.BLUE_MIN_SATURATION, ConeConfig.BLUE_MIN_VALUE);
+        this.blueUpper = new Scalar(ConeConfig.BLUE_MAX_HUE, ConeConfig.BLUE_MAX_SATURATION, ConeConfig.BLUE_MAX_VALUE);
+
         if (this.team == Team.RED) {
             Imgproc.cvtColor(input, input, Imgproc.COLOR_BGR2HSV_FULL);
             Core.inRange(input, this.redLower,this.redUpper, this.mask);
@@ -99,8 +104,8 @@ public class ConeDetectionFast extends OpenCvPipeline {
             return input;
         }
 
-        Imgproc.morphologyEx(this.mask,this.mask,Imgproc.MORPH_ERODE, this.structuringLarge);
-        Imgproc.morphologyEx(this.mask,this.mask,Imgproc.MORPH_DILATE, this.structuringMedium);
+        Imgproc.morphologyEx(this.mask,this.mask,Imgproc.MORPH_OPEN, this.structuringLarge);
+        Imgproc.morphologyEx(this.mask,this.mask,Imgproc.MORPH_CLOSE, this.structuringMedium);
 
         Imgproc.findContours(this.mask, this.rawContours, this.hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
         this.cones.clear();
@@ -139,6 +144,7 @@ public class ConeDetectionFast extends OpenCvPipeline {
 //        if (this.close != null)
 //            Imgproc.drawMarker(input, this.close.top,ORANGE, Imgproc.MARKER_TILTED_CROSS);
 //        input.setTo(new Scalar(0,0,0), this.mask);
+//        Imgproc.cvtColor(input, input, Imgproc.COLOR_HSV2RGB_FULL);
         return this.mask;
     }
 

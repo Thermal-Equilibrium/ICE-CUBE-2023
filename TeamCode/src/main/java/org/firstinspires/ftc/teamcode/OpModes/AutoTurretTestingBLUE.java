@@ -5,13 +5,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.CommandFramework.BaseAuto;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
-import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.NullCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.ConeFollow;
-import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.TurretToBestCone;
 import org.firstinspires.ftc.teamcode.Utils.Team;
 
 @Autonomous
-public class AutoTurretTesting extends BaseAuto {
+public class AutoTurretTestingBLUE extends BaseAuto {
     @Override
     public Command setupAuto(CommandScheduler scheduler) {
         waitForStart();
@@ -20,6 +18,6 @@ public class AutoTurretTesting extends BaseAuto {
     }
     @Override
     public Team getTeam() {
-        return Team.RED;
+        return Team.BLUE;
     }
 }
