@@ -19,7 +19,7 @@ public class Turret extends Subsystem {
 	Servo claw;
 	double clawTransferPosition = 0.34;
 	double armSafe = 0.4;
-	double turretTransfer = Math.toRadians(Math.PI);
+	double turretTransfer = Math.PI;
 	double currentFreeStateValue = 0;
 	Servo latch;
 	private static double MIN_RAW_SERVO_ANGLE = 0;
@@ -41,8 +41,7 @@ public class Turret extends Subsystem {
 	public void initAuto(HardwareMap hwMap) {
 
 		turret = hwMap.get(Servo.class, "turret");
-		turret.setPosition(turretTransfer);
-
+		setBasedTurretPositionSync(turretTransfer);
 		arm1 = hwMap.get(Servo.class,"arm");
 		arm1.setDirection(Servo.Direction.REVERSE);
 		arm1.setPosition(armSafe);
@@ -57,8 +56,7 @@ public class Turret extends Subsystem {
 	@Override
 	public void initTeleop(HardwareMap hwMap) {
 		turret = hwMap.get(Servo.class, "turret");
-		turret.setPosition(turretTransfer);
-
+		setBasedTurretPositionSync(turretTransfer);
 		arm1 = hwMap.get(Servo.class,"arm");
 		arm1.setDirection(Servo.Direction.REVERSE);
 		arm1.setPosition(armSafe);
@@ -132,13 +130,13 @@ public class Turret extends Subsystem {
 				setBasedTurretPositionSync(Math.toRadians(60));
 				break;
 			case Slight_RIGHT_AUTO:
-				setBasedTurretPositionSync(Math.toRadians(35));
+				setBasedTurretPositionSync(Math.toRadians(20));
 				break;
 			case Slight_LEFT:
-				setBasedTurretPositionSync(Math.toRadians(-30));
+				setBasedTurretPositionSync(TAU - 0.48);
 				break;
 			case FAR_LEFT:
-				setBasedTurretPositionSync(Math.toRadians(-60));
+				setBasedTurretPositionSync(TAU - Math.toRadians(60));
 				break;
 		}
 	}
