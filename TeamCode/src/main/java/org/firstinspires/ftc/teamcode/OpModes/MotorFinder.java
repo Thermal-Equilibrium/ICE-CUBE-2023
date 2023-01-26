@@ -6,7 +6,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImpl;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Math.AsymmetricProfile.MotionConstraint;
@@ -21,7 +24,7 @@ public class MotorFinder extends LinearOpMode {
 	PIDCoefficients coefficients = new PIDCoefficients(0.01,0,0);
 	MotionConstraint upConstraint = new MotionConstraint(5000,5000,2000);
 	MotionConstraint downConstraint = new MotionConstraint(5000,5000,2000);
-	Servo turret;
+	ServoImplEx turret;
 	ProfiledPID pid = new ProfiledPID(upConstraint,downConstraint,coefficients);
 	@Override
 	public void runOpMode() throws InterruptedException {
@@ -54,10 +57,12 @@ public class MotorFinder extends LinearOpMode {
 		arm.setDirection(Servo.Direction.REVERSE);
 		Servo claw = hardwareMap.get(Servo.class,"claw");
 		Servo s2 = hardwareMap.get(Servo.class, "ch2");
-		turret = hardwareMap.get(Servo.class, "turret");
+		turret = hardwareMap.get(ServoImplEx.class, "turret");
+		turret.setPwmRange(new PwmControl.PwmRange(500,2500));
 		Servo latch = hardwareMap.get(Servo.class,"latch");
 		waitForStart();
 		double turretAngle = Math.PI;
+
 		double latchAngle = 0;
 		while (opModeIsActive()) {
 			turretAngle += -gamepad1.left_stick_y * 0.01;
@@ -75,6 +80,7 @@ public class MotorFinder extends LinearOpMode {
 			rightHorizontal.setPower(power);
 			telemetry.addData("slidePosition position",slidePosition);
 			telemetry.addData("turretAngle angle",turretAngle);
+			telemetry.addData("servo unit position",turret.getPosition());
 			telemetry.update();
 			if (gamepad1.triangle) {
 				arm.setPosition(0.4);
@@ -94,22 +100,21 @@ public class MotorFinder extends LinearOpMode {
 	}
 	public void setBasedTurretPositionSync(double radians) {
 		radians = Range.clip(radians,0,TAU);
-//		if (radians == 0 || radians == TAU) { // turn to 0/360 degrees the fastest way
-//			double currentPosition = getBasedTurretPosition();
-//			if (currentPosition > Math.PI) { // if current position is closer to 360 than 0, turn to 360
-//				radians = TAU;
-//			} else if (currentPosition < Math.PI) { // if current position is closer to 0 than 360, turn to 0
-//				radians = 0;
-//			}
-//		}
+		if (radians == 0 || radians == TAU) { // turn to 0/360 degrees the fastest way
+			double currentPosition = getBasedTurretPosition();
+			if (currentPosition > Math.PI) { // if current position is closer to 360 than 0, turn to 360
+				radians = TAU;
+			} else if (currentPosition < Math.PI) { // if current position is closer to 0 than 360, turn to 0
+				radians = 0;
+			}
+		}
 		setRawTurretPositionSync(radiansToServo(radians));
 	}
 	public double getBasedTurretPosition() {
 		return servoToRadians(getRawTurretPosition());
 	}
-	Servo latch;
 	private static double MIN_RAW_SERVO_ANGLE = 0;
-	private static double MAX_RAW_SERVO_ANGLE = .67;
+	private static double MAX_RAW_SERVO_ANGLE = 1;
 	private static final double TAU = Math.PI * 2;
 	private void setRawTurretPositionSync(double position) {
 		position = Range.clip(position, MIN_RAW_SERVO_ANGLE, MAX_RAW_SERVO_ANGLE);
