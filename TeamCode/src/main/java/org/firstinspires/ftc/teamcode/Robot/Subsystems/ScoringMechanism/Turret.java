@@ -27,6 +27,9 @@ public class Turret extends Subsystem {
 	double currentFreeStateValue = 0;
 	Servo latch;
 
+	int MIN_PWM_RANGE = 500;
+	int MAX_PWM_RANGE = 2500;
+
 	double latch_open = 0.48;
 	double latch_closed = 0.2;
 
@@ -36,7 +39,7 @@ public class Turret extends Subsystem {
 	public void initAuto(HardwareMap hwMap) {
 
 		turret = hwMap.get(ServoImplEx.class, "turret");
-		turret.setPwmRange(new PwmControl.PwmRange(500,2500));
+		turret.setPwmRange(new PwmControl.PwmRange(MIN_PWM_RANGE,MAX_PWM_RANGE));
 		setBasedTurretPosition(turretTransfer);
 
 
@@ -54,7 +57,7 @@ public class Turret extends Subsystem {
 	@Override
 	public void initTeleop(HardwareMap hwMap) {
 		turret = hwMap.get(ServoImplEx.class, "turret");
-		turret.setPwmRange(new PwmControl.PwmRange(500,2500));
+		turret.setPwmRange(new PwmControl.PwmRange(MIN_PWM_RANGE,MAX_PWM_RANGE));
 		setBasedTurretPosition(turretTransfer);
 
 		arm1 = hwMap.get(Servo.class,"arm");
