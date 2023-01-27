@@ -16,7 +16,7 @@ public abstract class BaseTeleop extends LinearOpMode {
     public void runOpMode() {
         PhotonCore.enable();
 
-        robot = new Robot(hardwareMap, Robot.OpMode.Auto, gamepad1, gamepad2, getTeam());
+        robot = new Robot(hardwareMap, Robot.OpMode.Teleop, gamepad1, gamepad2, getTeam());
         robot.drivetrain.setPose(initialPose);
 
         waitForStart();
