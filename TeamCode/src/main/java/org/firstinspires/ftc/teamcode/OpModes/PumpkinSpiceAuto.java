@@ -85,8 +85,8 @@ public class PumpkinSpiceAuto extends BaseAuto {
         Command auto = followRR(driveToPole);
 
 
-         auto.addNext(new ToggleBreak(robot.drivetrain));
-//        auto.addNext(new RoadrunnerHoldPose(robot,goToPole2));
+        auto.addNext(new ToggleBreak(robot.drivetrain));
+        auto.addNext(new RoadrunnerHoldPose(robot,goToPole2));
         for (int i = 0; i < 5; ++i) {
             addCycle(auto,commandGroups);
         }

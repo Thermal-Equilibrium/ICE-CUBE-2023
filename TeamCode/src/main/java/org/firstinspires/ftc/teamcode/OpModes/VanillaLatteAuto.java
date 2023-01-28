@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.OpModes;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.BaseAuto;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
@@ -13,12 +14,20 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Vertical
 import org.firstinspires.ftc.teamcode.visionPipelines.SleeveDetection;
 
 import java.util.HashMap;
+import java.util.Objects;
 
-public class VanillaLattte extends BaseAuto {
+@Autonomous
+public class VanillaLatteAuto extends BaseAuto {
+    Pose2d startPose = new Pose2d(-36, 66.5,Math.toRadians(-90));
+
+    @Override
+    public void setRobotPosition() {
+        robot.drivetrain.setPose(startPose);
+    }
+
     @Override
     public Command setupAuto(CommandScheduler scheduler) {
 
-        Pose2d startPose = new Pose2d(-36, 66.5,Math.toRadians(-90));
         Pose2d exampleEnd = new Pose2d(0, 0,Math.toRadians(0));
         Vector2d goToPole = new Vector2d(-36, 12.5);
 //		Pose2d goToPole1 = new Pose2d(-35, 8, Math.toRadians(-90));
@@ -43,11 +52,10 @@ public class VanillaLattte extends BaseAuto {
         Trajectory scoring = robot.drivetrain.getBuilder().trajectoryBuilder(startPose,false)
                 .splineToConstantHeading(goToPole,Math.toRadians(270))
                 .splineTo(rotateFaceMedium, Math.toRadians(45))
-                .lineToLinearHeading(parking.get(parkingPosition))
                 .build();
 
         Trajectory parkTraj = robot.drivetrain.getBuilder().trajectoryBuilder(scoring.end(),false)
-                .splineToLinearHeading(parking.get(parkingPosition),Math.toRadians(0))
+                .lineToLinearHeading(Objects.requireNonNull(parking.get(parkingPosition)))
                 .build();
 
         Command auto = followRR(scoring).addNext(followRR(parkTraj));
