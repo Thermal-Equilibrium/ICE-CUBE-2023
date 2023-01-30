@@ -104,6 +104,6 @@ public class PumpkinSpiceAuto extends BaseAuto {
                         commandGroups.moveToIntakingRightAuto(),
                         commandGroups.moveHorizontalExtension(HorizontalExtension.PRE_EMPTIVE_EXTEND)))
                 .addNext(commandGroups.moveHorizontalExtension(HorizontalExtension.mostlyAutoExtension))
-                .addNext(commandGroups.collectConeAuto());
+                .addNext(commandGroups.collectConeAuto(HorizontalExtension.autoExtension));
     }
 }

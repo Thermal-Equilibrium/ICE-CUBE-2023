@@ -73,16 +73,17 @@ public class ScoringCommandGroups {
 	public Command moveToIntakingRightAuto() {
 		currentCone--;
 
-//		return moveHorizontalExtension(HorizontalExtension.EXTENSION3)
-//				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
-//				.addNext(moveTurret(Turret.TurretStates.Slight_RIGHT_AUTO))
-//				.addNext(new MultipleCommand(moveArmDirect(-0.03 + armConeHeights[currentCone]), openClaw()));
-
 		return moveArm(Turret.ArmStates.TRANSFER_SAFE)
 				.addNext(moveTurret(Turret.TurretStates.Slight_RIGHT_AUTO))
-				.addNext(new MultipleCommand(moveArmDirect(-0 + armConeHeights[currentCone]), openClaw()));
+				.addNext(new MultipleCommand(moveArmDirect(-0.02 + armConeHeights[currentCone]), openClaw()));
 	}
+	public Command moveToIntakingLeftAuto() {
+		currentCone--;
 
+		return moveArm(Turret.ArmStates.TRANSFER_SAFE)
+				.addNext(moveTurret(Turret.TurretStates.Slight_LEFT_AUTO))
+				.addNext(new MultipleCommand(moveArmDirect(-0.02 + armConeHeights[currentCone]), openClaw()));
+	}
 	// very far to the left, in order to place near by
 	public Command moveToIntakingLeftClosePole() {
 		return moveArm(Turret.ArmStates.TRANSFER_SAFE)
@@ -132,12 +133,12 @@ public class ScoringCommandGroups {
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
 	}
 
-	public Command collectConeAuto() {
+	public Command collectConeAuto(double autoExtensionDistance) {
 
 		return depositConeAsync()
 				.addNext(openLatch())
 				.addNext(new Delay(0.45))
-				.addNext(moveHorizontalExtension(HorizontalExtension.autoExtension))
+				.addNext(moveHorizontalExtension(autoExtensionDistance))
 				.addNext(grabCone())
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
 				.addNext(moveTurret(Turret.TurretStates.TRANSFER))

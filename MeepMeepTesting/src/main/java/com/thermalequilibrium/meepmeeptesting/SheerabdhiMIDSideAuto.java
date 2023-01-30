@@ -22,7 +22,7 @@ public class SheerabdhiMIDSideAuto {
 		Pose2d exampleEnd = new Pose2d(0, 0,Math.toRadians(0));
 		Vector2d goToPole = new Vector2d(-36, 12.5);
 //		Pose2d goToPole1 = new Pose2d(-35, 8, Math.toRadians(-90));
-		Vector2d rotateFaceMedium = new Vector2d(-32.5, 14.5);
+		Pose2d rotateFaceMedium = new Pose2d(-32.5, 16,Math.toRadians(21.8816732757));
 //		Vector2d rotateFaceMedium = new Vector2d(-32.5, 14.5);
 //		Pose2d rotateFaceMedium1 = new Pose2d(-36, 6, Math.toRadians(50));
 		Pose2d goToPark1 = new Pose2d(-12.5, 12.5, Math.toRadians(180));
@@ -54,7 +54,7 @@ public class SheerabdhiMIDSideAuto {
 				.followTrajectorySequence(drive ->
 						drive.trajectorySequenceBuilder(startPose)
 								.splineToConstantHeading(goToPole,Math.toRadians(270))
-								.splineTo(rotateFaceMedium, Math.toRadians(45))
+								.lineToLinearHeading(rotateFaceMedium)
 								.lineToLinearHeading(parking.get(parkingLocation))
 								.build()
 				);

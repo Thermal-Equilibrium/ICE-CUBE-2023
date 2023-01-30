@@ -96,6 +96,9 @@ public class Turret extends Subsystem {
 			case Slight_LEFT:
 				setBasedTurretPosition(Math.toRadians(350));
 				break;
+			case Slight_LEFT_AUTO:
+				setBasedTurretPosition(Math.toRadians(330));
+				break;
 			case FAR_LEFT:
 				setBasedTurretPosition(Math.toRadians(290));
 				break;
@@ -138,6 +141,7 @@ public class Turret extends Subsystem {
 		Slight_LEFT,
 		Slight_RIGHT,
 		Slight_RIGHT_AUTO,
+		Slight_LEFT_AUTO,
 		FAR_LEFT, // me
 		FAR_RIGHT
 	}
@@ -172,6 +176,7 @@ public class Turret extends Subsystem {
 				break;
 			case LOW_SCORING:
 				arm1.setPosition(0.4);
+				break;
 			case FREE_STATE:
 				arm1.setPosition(currentFreeStateValue);
 				break;
