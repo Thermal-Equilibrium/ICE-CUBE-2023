@@ -123,13 +123,13 @@ public class ConeDetectionFast extends OpenCvPipeline {
         this.close = null;
         this.conestackGuess = null;
         if (this.cones.size() > 0) {
-            this.perfectList = this.cones.stream().filter(cone -> cone.classification == Cone.Classification.PERFECT).collect(Collectors.toList());
+            this.perfectList = this.cones.stream().filter(cone -> cone.classification == Cone.Classification.PERFECT && !cone.deadzoned).collect(Collectors.toList());
             if (this.perfectList.size() > 0) this.perfect = Collections.min(perfectList, Comparator.comparing(cone -> Math.abs(cone.position.distance - ConeConfig.perfectDistance)));
 
-            this.farList = this.cones.stream().filter(cone -> cone.classification == Cone.Classification.FAR).collect(Collectors.toList());
+            this.farList = this.cones.stream().filter(cone -> cone.classification == Cone.Classification.FAR && !cone.deadzoned).collect(Collectors.toList());
             if (this.farList.size() > 0) this.far = Collections.min(this.farList, Comparator.comparing(cone -> Math.abs(cone.position.distance - ConeConfig.perfectDistance)));
 
-            this.closeList = this.cones.stream().filter(cone -> cone.classification == Cone.Classification.CLOSE).collect(Collectors.toList());
+            this.closeList = this.cones.stream().filter(cone -> cone.classification == Cone.Classification.CLOSE && !cone.deadzoned).collect(Collectors.toList());
             if (this.closeList.size() > 0) this.close = Collections.min(this.closeList, Comparator.comparing(cone -> Math.abs(cone.position.distance - ConeConfig.perfectDistance)));
 
             this.conestackGuess = Collections.max(this.cones, Comparator.comparing(cone -> cone.size.height));

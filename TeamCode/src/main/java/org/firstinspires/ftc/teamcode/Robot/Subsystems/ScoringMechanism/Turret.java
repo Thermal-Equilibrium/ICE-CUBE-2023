@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 import org.firstinspires.ftc.teamcode.Math.Kinematics.Intake3DKinematics;
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 
 public class Turret extends Subsystem {
 
@@ -14,27 +15,31 @@ public class Turret extends Subsystem {
 
 	MainScoringMechanism.MechanismStates state = MainScoringMechanism.MechanismStates.BEGIN;
 
-	Servo turret;
+	ServoImplEx turret;
 	Servo arm1;
 	Servo claw;
 	double clawTransferPosition = 0.34;
 	double armSafe = 0.4;
 	private static final double turretTransfer = Math.toRadians(0);
 	private static final double MIN_RAW_SERVO_ANGLE = 0;
-	private static final double MAX_RAW_SERVO_ANGLE = .67;
-	private static final double TAU = Math.PI * 2;
+	private static final double MAX_RAW_SERVO_ANGLE = 1;
+
+	public static final double MIN_SERVO_RADIANS = Math.toRadians(2.5);
+	public static final double MAX_SERVO_RADIANS = Math.toRadians(357.5);
+
 	double currentFreeStateValue = 0;
 	Servo latch;
 
 	double latch_open = 0.48;
 	double latch_closed = 0.2;
 
-
-
 	@Override
 	public void initAuto(HardwareMap hwMap) {
 
-		turret = hwMap.get(Servo.class, "turret");
+		turret = hwMap.get(ServoImplEx.class, "turret");
+		turret.setPwmEnable();
+		turret.setPwmRange(new PwmControl.PwmRange(0,2500));
+
 		turret.setPosition(turretTransfer);
 
 		arm1 = hwMap.get(Servo.class,"arm");
@@ -50,7 +55,7 @@ public class Turret extends Subsystem {
 
 	@Override
 	public void initTeleop(HardwareMap hwMap) {
-		turret = hwMap.get(Servo.class, "turret");
+		turret = hwMap.get(ServoImplEx.class, "turret");
 		turret.setPosition(turretTransfer);
 
 		arm1 = hwMap.get(Servo.class,"arm");
@@ -99,20 +104,12 @@ public class Turret extends Subsystem {
 		position = Range.clip(position, MIN_RAW_SERVO_ANGLE, MAX_RAW_SERVO_ANGLE);
 		turret.setPosition(position);
 	}
-	private double getRawTurretPosition() { //TODO make private or protected
+	private double getRawTurretPosition() {
 		return turret.getPosition();
 	}
 
 	public void setBasedTurretPosition(double radians) {
-		radians = Range.clip(radians,0,TAU);
-		if (radians == 0 || radians == TAU) { // turn to 0/360 degrees the fastest way
-			double currentPosition = getBasedTurretPosition();
-			if (currentPosition > Math.PI) { // if current position is closer to 360 than 0, turn to 360
-				radians = TAU;
-			} else if (currentPosition < Math.PI) { // if current position is closer to 0 than 360, turn to 0
-				radians = 0;
-			}
-		}
+		radians = Range.clip(radians, MIN_SERVO_RADIANS, MAX_SERVO_RADIANS);
 		setRawTurretPosition(radiansToServo(radians));
 	}
 	public double getBasedTurretPosition() {
@@ -120,11 +117,11 @@ public class Turret extends Subsystem {
 	}
 
 	private double radiansToServo(double radians) {
-		return Range.scale(radians,0,Math.PI * 2, MIN_RAW_SERVO_ANGLE, MAX_RAW_SERVO_ANGLE);
+		return Range.scale(radians, MIN_SERVO_RADIANS, MAX_SERVO_RADIANS, MIN_RAW_SERVO_ANGLE, MAX_RAW_SERVO_ANGLE);
 	}
 
 	private double servoToRadians(double servoAngle) {
-		return Range.scale(servoAngle, MIN_RAW_SERVO_ANGLE, MAX_RAW_SERVO_ANGLE,0,TAU);
+		return Range.scale(servoAngle, MIN_RAW_SERVO_ANGLE, MAX_RAW_SERVO_ANGLE, MIN_SERVO_RADIANS, MAX_SERVO_RADIANS);
 	}
 	public enum TurretStates {
 		TRANSFER,

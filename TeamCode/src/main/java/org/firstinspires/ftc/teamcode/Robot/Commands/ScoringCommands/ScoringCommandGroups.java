@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
+import org.firstinspires.ftc.teamcode.Math.Kinematics.IntakeKinematics;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.NullCommand;
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMo
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveHorizontalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurret;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurretAsync;
+import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurretDirect;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveVerticalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.OpenLatch;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Drivetrain;
@@ -22,8 +24,11 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Horizont
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.MainScoringMechanism;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.BackCamera;
+import org.firstinspires.ftc.teamcode.VisionUtils.Cone;
 
 public class ScoringCommandGroups {
+	BackCamera backCamera;
 
 	Turret turret;
 	VerticalExtension verticalExtension;
@@ -34,11 +39,21 @@ public class ScoringCommandGroups {
 	Pose2d intakePosition = new Pose2d();
 
 
-	public ScoringCommandGroups(MainScoringMechanism mechanism, Drivetrain drivetrain) {
+	public ScoringCommandGroups(MainScoringMechanism mechanism, Drivetrain drivetrain, BackCamera backCamera) {
 		this.horizontalExtension = mechanism.horizontalExtension;
 		this.verticalExtension = mechanism.verticalExtension;
 		this.turret = mechanism.turret;
 		this.drivetrain = drivetrain;
+		this.backCamera = backCamera;
+	}
+
+	public Command autoPickup() {
+		Cone cone = backCamera.getCone(false,false);
+		if (cone != null) {
+			double angle = IntakeKinematics.getTurretAngleToTarget(cone.position.toPoseRobotRelative().getX());
+			double extendDistance = IntakeKinematics.getHorizontalSlideExtensionToTarget(cone.position.toPoseRobotRelative().getY(),cone.position.toPoseRobotRelative().getX(),horizontalExtension.getSlidePosition());
+			return new MoveTurretDirect(turret, angle).addNext(new MoveHorizontalExtension(horizontalExtension, extendDistance));
+		} else return null;
 	}
 
 	// near straight but tilted to the left
