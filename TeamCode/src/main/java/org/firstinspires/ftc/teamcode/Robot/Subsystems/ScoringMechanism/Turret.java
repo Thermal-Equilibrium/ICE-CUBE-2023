@@ -22,7 +22,7 @@ public class Turret extends Subsystem {
 	double armSafe = 0.4;
 	private static final double turretTransfer = Math.toRadians(0);
 	private static final double MIN_RAW_SERVO_ANGLE = 0;
-	private static final double MAX_RAW_SERVO_ANGLE = 1;
+	private static final double MAX_RAW_SERVO_ANGLE = .99;
 
 	public static final double MIN_SERVO_RADIANS = Math.toRadians(2.5);
 	public static final double MAX_SERVO_RADIANS = Math.toRadians(357.5);
