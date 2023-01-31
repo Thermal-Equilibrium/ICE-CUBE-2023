@@ -9,7 +9,7 @@ public class Cone {
     public enum Classification {
         PERFECT,
         FAR,
-        CLOSE,
+        CLOSE
     }
 
     public Size size;
