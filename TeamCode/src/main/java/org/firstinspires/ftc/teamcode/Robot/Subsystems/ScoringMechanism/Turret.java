@@ -22,10 +22,10 @@ public class Turret extends Subsystem {
 	double armSafe = 0.4;
 	private static final double turretTransfer = Math.toRadians(0);
 	private static final double MIN_RAW_SERVO_ANGLE = 0;
-	private static final double MAX_RAW_SERVO_ANGLE = .99;
+	private static final double MAX_RAW_SERVO_ANGLE = 1;
 
-	public static final double MIN_SERVO_RADIANS = Math.toRadians(2.5);
-	public static final double MAX_SERVO_RADIANS = Math.toRadians(357.5);
+	public static final double MIN_SERVO_RADIANS = Math.toRadians(15);
+	public static final double MAX_SERVO_RADIANS = Math.toRadians(345);
 
 	double currentFreeStateValue = 0;
 	Servo latch;
@@ -37,8 +37,8 @@ public class Turret extends Subsystem {
 	public void initAuto(HardwareMap hwMap) {
 
 		turret = hwMap.get(ServoImplEx.class, "turret");
-		turret.setPwmEnable();
-		turret.setPwmRange(new PwmControl.PwmRange(0,2500));
+//		turret.setPwmEnable();
+//		turret.setPwmRange(new PwmControl.PwmRange(500,2500));
 
 		turret.setPosition(turretTransfer);
 
@@ -100,11 +100,11 @@ public class Turret extends Subsystem {
 		}
 	}
 
-	private void setRawTurretPosition(double position) {
+	public void setRawTurretPosition(double position) {
 		position = Range.clip(position, MIN_RAW_SERVO_ANGLE, MAX_RAW_SERVO_ANGLE);
 		turret.setPosition(position);
 	}
-	private double getRawTurretPosition() {
+	public double getRawTurretPosition() {
 		return turret.getPosition();
 	}
 

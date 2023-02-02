@@ -26,7 +26,6 @@ public class HorizontalExtension extends Subsystem {
 
 	ProfiledPID controller = new ProfiledPID(upConstraint,downConstraint,coefficients);
 
-
 	public final static double IN_POSITION = 0;
 	public final static double SAFE_POSITION = 300;
 	public final static double CLOSE_INTAKE = 100;
@@ -36,6 +35,9 @@ public class HorizontalExtension extends Subsystem {
 	public final static double autoExtension = 395;
 	public final static double mostlyAutoExtension = autoExtension - 30;
 	protected double targetPosition = IN_POSITION;
+
+	private static final double TICKS_TO_INCH = .03;
+	private static final double INCH_TO_TICKS = 33.3333333333;
 
 	public void commonInit(HardwareMap hwMap) {
 		leftMotor = hwMap.get(DcMotorEx.class, "leftHorizontal");
@@ -60,9 +62,9 @@ public class HorizontalExtension extends Subsystem {
 
 	@Override
 	public void periodic() {
-
 		updatePID();
-		Dashboard.packet.put("ticks", getSlidePosition());
+		Dashboard.packet.put("horizontal ticks", getSlidePosition());
+		Dashboard.packet.put("horizontal inches", getSlidePositionInches());
 	}
 
 	@Override
@@ -99,5 +101,19 @@ public class HorizontalExtension extends Subsystem {
 
 	public void setExtensionKinematicPosition(double x, double y, double z) {
 		setTargetPosition(Intake3DKinematics.getHorizontalSlideExtensionToTarget(x,y,z));
+	}
+
+	private double ticksToInches(double ticks) {
+		return (ticks - IN_POSITION) * TICKS_TO_INCH;
+	}
+	private double inchesToTicks(double inches) {
+		return (inches - ticksToInches(IN_POSITION)) * INCH_TO_TICKS;
+	}
+
+	public double getSlidePositionInches() {
+		return ticksToInches(getSlidePosition());
+	}
+	public void setTargetPositionInches(double targetPositionInches) {
+		this.targetPosition = inchesToTicks(targetPositionInches);
 	}
 }

@@ -20,11 +20,13 @@ public class ManualTurretTesting extends Command {
     @Override
     public void init() {
         turret.setBasedTurretPosition(Math.toRadians(ManualTurretControl.DEGREES));
+//        turret.setRawTurretPosition(ManualTurretControl.DEGREES);
     }
 
     @Override
     public void periodic() {
         turret.setBasedTurretPosition(Math.toRadians(ManualTurretControl.DEGREES));
+//        turret.setRawTurretPosition(ManualTurretControl.DEGREES);
     }
 
     @Override
@@ -34,7 +36,6 @@ public class ManualTurretTesting extends Command {
 
     @Override
     public void shutdown() {
-
     }
 }
 

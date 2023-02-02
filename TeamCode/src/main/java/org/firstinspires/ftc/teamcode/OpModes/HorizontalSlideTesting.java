@@ -1,25 +1,33 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.BaseAuto;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
-import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.NullCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringCommandGroups;
-import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.ConeFollow;
-import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.TurretToBestCone;
 import org.firstinspires.ftc.teamcode.Utils.Team;
 
 @Autonomous
-public class AutoTurretTesting extends BaseAuto {
+public class HorizontalSlideTesting extends BaseAuto {
+    @Config
+    public static class ManualHorizontalSlide {
+        public static double position = 0;
+    }
+    //0: 2
+    //50: 3.5
+    //100: 5
+    //150: 6.5 (slightly under)
+    //200: 8
+    //250: 9.5
+    //300: 11
+
     @Override
     public Command setupAuto(CommandScheduler scheduler) {
         ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism, robot.drivetrain, robot.backCamera);
         waitForStart();
-//            return commandGroups.autoPickup();
-        return new ConeFollow(robot.scoringMechanism.turret, robot.backCamera, true, true);
-//        return new NullCommand();
+        return commandGroups.moveHorizontalExtension(ManualHorizontalSlide.position);
     }
     @Override
     public Team getTeam() {

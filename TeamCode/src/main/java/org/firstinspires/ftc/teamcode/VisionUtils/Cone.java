@@ -13,19 +13,19 @@ public class Cone {
     }
 
     public Size size;
-    public VisionBasedPosition position;
+    public CameraBasedPosition position;
     public Point top;
     public Classification classification;
     public boolean deadzoned;
 
-    public Cone(Size size, VisionBasedPosition position, Point top){
+    public Cone(Size size, CameraBasedPosition position, Point top){
         this.size = size;
         this.position = position;
         this.top = top;
         this.classify();
     }
     private void classify() {
-        this.deadzoned = !(this.position.angle + this.position.cameraPosition.getHeading() <= Turret.MAX_SERVO_RADIANS) || !(this.position.angle + this.position.cameraPosition.getHeading() >= Turret.MIN_SERVO_RADIANS);
+        this.deadzoned = false;//!(this.position.angle <= Turret.MAX_SERVO_RADIANS) || !(this.position.angle >= Turret.MIN_SERVO_RADIANS);
         if (this.position.distance < ConeDetectionFast.ConeConfig.perfectDistance - ConeDetectionFast.ConeConfig.perfectTolerance) {
             this.classification = Classification.CLOSE;
         }

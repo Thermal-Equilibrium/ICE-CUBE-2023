@@ -6,7 +6,7 @@ import com.acmerobotics.dashboard.config.Config;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.BackCamera;
 import org.firstinspires.ftc.teamcode.Utils.Team;
 import org.firstinspires.ftc.teamcode.VisionUtils.Cone;
-import org.firstinspires.ftc.teamcode.VisionUtils.VisionBasedPosition;
+import org.firstinspires.ftc.teamcode.VisionUtils.CameraBasedPosition;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class ConeDetectionFast extends OpenCvPipeline {
     @Config
     public static class ConeConfig {
-        public static double distanceCorrection = .8;
+        public static double distanceCorrection = 1;
         public static int coneMinArea = 900;
 
         public static int RED_MIN_HUE = 161;
@@ -113,7 +113,7 @@ public class ConeDetectionFast extends OpenCvPipeline {
             this.tempRect = Imgproc.boundingRect(contour);
             this.tempPoint = getTop(contour);
             if (Imgproc.contourArea(contour) >= ConeConfig.coneMinArea && this.tempRect.height > this.tempRect.width) {
-                this.cones.add(new Cone(this.tempRect.size(), new VisionBasedPosition(this.getDistance(this.tempRect.width,CONE_WIDTH), this.getAngle(this.tempPoint), this.camera.position), this.tempPoint));
+                this.cones.add(new Cone(this.tempRect.size(), new CameraBasedPosition(this.getDistance(this.tempRect.width,CONE_WIDTH), this.getAngle(this.tempPoint), this.camera.position), this.tempPoint));
             }
         }
         this.rawContours.clear();
@@ -134,7 +134,6 @@ public class ConeDetectionFast extends OpenCvPipeline {
 
             this.conestackGuess = Collections.max(this.cones, Comparator.comparing(cone -> cone.size.height));
         }
-
         this.cones.clear();
 
 //        if (this.perfect != null)

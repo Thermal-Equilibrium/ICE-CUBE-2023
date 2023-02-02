@@ -10,11 +10,11 @@ public class Pole {
 
     public MatOfPoint contour;
     public RotatedRect rect;
-    public VisionBasedPosition position;
+    public CameraBasedPosition position;
     public Pose2d dEstimate;
     public Point top;
 
-    public Pole(MatOfPoint contour,RotatedRect rect, VisionBasedPosition position, Point top, double cameraAngle){
+    public Pole(MatOfPoint contour, RotatedRect rect, CameraBasedPosition position, Point top, double cameraAngle){
         this.contour = contour;
         this.rect = rect;
         this.position = position;

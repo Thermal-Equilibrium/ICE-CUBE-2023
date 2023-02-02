@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.BackCamera;
 import org.firstinspires.ftc.teamcode.VisionUtils.Cone;
@@ -26,7 +27,8 @@ public class ConeFollow extends Command {
     public void init() {
         this.target = this.backCamera.getCone(this.allowFar, this.allowClose);
         if (this.target != null) {
-            this.turret.setBasedTurretPosition(-1*this.target.position.angle + this.target.position.cameraPosition.getHeading());
+            this.turret.setBasedTurretPosition(Math.toRadians(360) - this.target.position.angle);
+            Dashboard.packet.put("ConeAngle", Math.toDegrees(Math.toRadians(360) - this.target.position.angle));
         }
     }
 
@@ -34,7 +36,8 @@ public class ConeFollow extends Command {
     public void periodic() {
         this.target = this.backCamera.getCone(this.allowFar, this.allowClose);
         if (this.target != null) {
-            this.turret.setBasedTurretPosition(-1*this.target.position.angle + this.target.position.cameraPosition.getHeading());
+            this.turret.setBasedTurretPosition(Math.toRadians(360) - this.target.position.angle);
+            Dashboard.packet.put("ConeAngle", Math.toDegrees(Math.toRadians(360) - this.target.position.angle));
         }
     }
 

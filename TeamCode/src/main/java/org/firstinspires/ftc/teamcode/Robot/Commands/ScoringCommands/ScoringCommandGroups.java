@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMo
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveArmDirect;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveClaw;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveHorizontalExtension;
+import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveHorizontalExtensionInches;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurret;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurretAsync;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurretDirect;
@@ -48,11 +49,11 @@ public class ScoringCommandGroups {
 	}
 
 	public Command autoPickup() {
-		Cone cone = backCamera.getCone(false,false);
+		Cone cone = backCamera.getCone(true,false);
 		if (cone != null) {
-			double angle = IntakeKinematics.getTurretAngleToTarget(cone.position.toPoseRobotRelative().getX());
-			double extendDistance = IntakeKinematics.getHorizontalSlideExtensionToTarget(cone.position.toPoseRobotRelative().getY(),cone.position.toPoseRobotRelative().getX(),horizontalExtension.getSlidePosition());
-			return new MoveTurretDirect(turret, angle).addNext(new MoveHorizontalExtension(horizontalExtension, extendDistance));
+			double angle = IntakeKinematics.getTurretAngleToTarget(-1*cone.position.dx);
+			double extendDistance = IntakeKinematics.getHorizontalSlideExtensionToTarget(cone.position.dy,-1*cone.position.dx,horizontalExtension.getSlidePositionInches());
+			return new MoveTurretDirect(turret, angle).addNext(new MoveHorizontalExtensionInches(horizontalExtension, extendDistance));
 		} else return null;
 	}
 
