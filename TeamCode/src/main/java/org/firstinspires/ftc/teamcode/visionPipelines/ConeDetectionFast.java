@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
 public class ConeDetectionFast extends OpenCvPipeline {
     @Config
     public static class ConeConfig {
-        public static double distanceCorrection = 1;
-        public static int coneMinArea = 900;
+        public static double distanceCorrection = .91;
+        public static int coneMinArea = 600;
 
         public static int RED_MIN_HUE = 161;
         public static int RED_MIN_SATURATION = 80;
@@ -111,7 +111,8 @@ public class ConeDetectionFast extends OpenCvPipeline {
         this.cones.clear();
         for (MatOfPoint contour: this.rawContours) {
             this.tempRect = Imgproc.boundingRect(contour);
-            this.tempPoint = getTop(contour);
+//            this.tempPoint = getTop(contour);
+            this.tempPoint = new Point(Imgproc.boundingRect(contour).x + Imgproc.boundingRect(contour).width *.5,Imgproc.boundingRect(contour).y);
             if (Imgproc.contourArea(contour) >= ConeConfig.coneMinArea && this.tempRect.height > this.tempRect.width) {
                 this.cones.add(new Cone(this.tempRect.size(), new CameraBasedPosition(this.getDistance(this.tempRect.width,CONE_WIDTH), this.getAngle(this.tempPoint), this.camera.position), this.tempPoint));
             }
@@ -135,16 +136,22 @@ public class ConeDetectionFast extends OpenCvPipeline {
             this.conestackGuess = Collections.max(this.cones, Comparator.comparing(cone -> cone.size.height));
         }
         this.cones.clear();
+        Imgproc.cvtColor(input, input, Imgproc.COLOR_HSV2RGB_FULL);
+        input.setTo(new Scalar(0,0,0), this.mask);
+        if (this.perfect != null) {
+            Imgproc.drawMarker(input, this.perfect.top, GREEN, Imgproc.MARKER_STAR);
+            Imgproc.putText(input, String.valueOf(perfect.position.distance), perfect.top, Imgproc.FONT_HERSHEY_COMPLEX, 1, new Scalar(255, 0, 0));
+        }
+        if (this.far != null) {
+            Imgproc.drawMarker(input, this.far.top, PURPLE, Imgproc.MARKER_SQUARE);
+            Imgproc.putText(input, String.valueOf(far.position.distance), far.top, Imgproc.FONT_HERSHEY_COMPLEX, 1, new Scalar(255, 0, 0));
+        }
+        if (this.close != null) {
+            Imgproc.drawMarker(input, this.close.top, ORANGE, Imgproc.MARKER_TILTED_CROSS);
+            Imgproc.putText(input, String.valueOf(close.position.distance), close.top, Imgproc.FONT_HERSHEY_COMPLEX, 1, new Scalar(255, 0, 0));
+        }
 
-//        if (this.perfect != null)
-//            Imgproc.drawMarker(input, this.perfect.top,GREEN, Imgproc.MARKER_STAR);
-//        if (this.far != null)
-//            Imgproc.drawMarker(input, this.far.top,PURPLE, Imgproc.MARKER_SQUARE);
-//        if (this.close != null)
-//            Imgproc.drawMarker(input, this.close.top,ORANGE, Imgproc.MARKER_TILTED_CROSS);
-//        input.setTo(new Scalar(0,0,0), this.mask);
-//        Imgproc.cvtColor(input, input, Imgproc.COLOR_HSV2RGB_FULL);
-        return this.mask;
+        return input;
     }
 
     private static Point getTop(MatOfPoint contour) {

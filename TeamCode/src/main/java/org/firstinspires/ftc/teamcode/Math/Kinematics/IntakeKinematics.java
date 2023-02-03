@@ -4,10 +4,10 @@ package org.firstinspires.ftc.teamcode.Math.Kinematics;
 // All variables and arguments SHOULD BE IN INCHES AND RADIANS
 public class IntakeKinematics {
     // Webcam X offset from the arm pivot point
-    private static double webcamXOffset = 0.0;
+    private static double webcamXOffset = 0.1;
 
     // X (just on the X axis, not slanted) length of arm WHEN IN CONE PICK UP position
-    private static double armXLength = 0.0;
+    private static final double armXLength = 15;
 
     // Given X position of a target relative to the intake webcam's reference frame,
     // return the X position of the target relative to the

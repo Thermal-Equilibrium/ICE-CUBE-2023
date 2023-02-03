@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 public class BackCamera extends Subsystem {
     public Size resolution = Resolution.LOW;
-    public double FOV = Math.toRadians(66);
+    public double FOV = Math.toRadians(70.2);
     public Pose2d position = new Pose2d(0,0, Math.toRadians(0)); // TODO: make this update with slide extension
     private OpenCvPipeline pipeline;
     private OpenCvWebcam cam;
