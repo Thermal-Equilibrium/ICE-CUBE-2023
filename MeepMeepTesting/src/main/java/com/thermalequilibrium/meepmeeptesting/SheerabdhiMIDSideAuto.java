@@ -20,10 +20,10 @@ public class SheerabdhiMIDSideAuto {
 
 		MeepMeep meepMeep = new MeepMeep(800);
 		Vector2d goToPole = new Vector2d(-36, 23);
-		Pose2d rotateFaceMedium = shiftRobotRelative(new Pose2d(-34, 27,Math.toRadians(21.8816732757)),-2,-0.75);
+		Pose2d rotateFaceMedium = shiftRobotRelative(new Pose2d(-34, 27,Math.toRadians(21.8816732757)),-1.2,-0.75);
 
 		Pose2d goToPark1 = new Pose2d(-12.5, 12.5, Math.toRadians(180));
-		Pose2d goToPark3 = new Pose2d(-58, 12.5, Math.toRadians(45));
+		Pose2d goToPark3 = new Pose2d(-58, 12.5, Math.toRadians(0));
 		Pose2d goToPark2 = new Pose2d(-35, 12.5, Math.toRadians(0));
 
 

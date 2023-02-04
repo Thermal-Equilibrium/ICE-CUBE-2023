@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
 import org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.RR_quickstart.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.RR_quickstart.util.BasedMath;
+import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Break.ToggleBreak;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.RoadrunnerHoldPose;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringCommandGroups;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
@@ -44,7 +45,7 @@ public class VanillaLatteAuto extends BaseAuto {
         Pose2d rotateFaceMedium = shiftRobotRelative(new Pose2d(-34, 27,Math.toRadians(21.8816732757)),-3,-2);
 
         Pose2d parkLeft = new Pose2d(-4, 16, Math.toRadians(180));
-        Pose2d parkCenter = new Pose2d(-35, 12.5, Math.toRadians(45));
+        Pose2d parkCenter = new Pose2d(-35, 12.5, Math.toRadians(0));
         Pose2d parkRight = new Pose2d(-58, 12.5, Math.toRadians(0));
 
         HashMap<SleeveDetection.ParkingPosition, Pose2d> parking = new HashMap<>();
@@ -65,11 +66,13 @@ public class VanillaLatteAuto extends BaseAuto {
 
         Command auto = followRR(scoring1).addNext(followRR(scoring2));
         auto.addNext(new RoadrunnerHoldPose(robot,scoring2.end()));
+        auto.addNext(new ToggleBreak(robot.drivetrain));
         for (int i = 0; i < 5; ++i) {
             addCycle(auto,commandGroups);
         }
         auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.MID_POSITION))
                 .addNext(commandGroups.depositCone());
+        auto.addNext(new ToggleBreak(robot.drivetrain));
 
         auto = auto.addNext(followRR(parkTraj));
         return auto;

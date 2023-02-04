@@ -21,7 +21,7 @@ public abstract class BaseAuto extends LinearOpMode {
 	protected Robot robot;
 	protected TrajectoryBuilder trajectoryBuilder;
 
-	protected SleeveDetection.ParkingPosition parkingPosition = SleeveDetection.ParkingPosition.CENTER;
+	protected SleeveDetection.ParkingPosition parkingPosition = SleeveDetection.ParkingPosition.LEFT;
 
 	@Override
 	public void runOpMode() {
