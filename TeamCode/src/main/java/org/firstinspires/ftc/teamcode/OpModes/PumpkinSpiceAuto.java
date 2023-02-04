@@ -2,13 +2,19 @@ package org.firstinspires.ftc.teamcode.OpModes;
 
 import static org.firstinspires.ftc.teamcode.RR_quickstart.util.BasedMath.shiftRobotRelative;
 
+import com.acmerobotics.roadrunner.drive.Drive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.profile.VelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.BaseAuto;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
+import org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants;
+import org.firstinspires.ftc.teamcode.RR_quickstart.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Break.ToggleBreak;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.RoadrunnerHoldPose;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
@@ -19,6 +25,8 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Vertical
 
 @Autonomous
 public class PumpkinSpiceAuto extends BaseAuto {
+
+
 
     Pose2d startPose = new Pose2d(-36, 66.5,Math.toRadians(-90));
     final Pose2d goToPole1 = new Pose2d(-38, 24,Math.toRadians(-100));

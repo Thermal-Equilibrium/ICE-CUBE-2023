@@ -86,7 +86,9 @@ public class HorizontalExtension extends Subsystem {
 	 * @return average encoder position of the slides
 	 */
 	public double getSlidePosition() {
-		return (leftMotor.getCurrentPosition() + rightMotor.getCurrentPosition()) / 2.0;
+		int leftPosition = leftMotor.getCurrentPosition();
+		int rightPosition = rightMotor.getCurrentPosition();
+		return (leftPosition + rightPosition) / 2.0;
 	}
 
 	public double getSlideTargetPosition() {
