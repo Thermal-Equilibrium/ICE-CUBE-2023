@@ -84,6 +84,13 @@ public class ScoringCommandGroups {
 				.addNext(moveTurret(Turret.TurretStates.Slight_LEFT_AUTO))
 				.addNext(new MultipleCommand(moveArmDirect(-0.02 + armConeHeights[currentCone]), openClaw()));
 	}
+	public Command moveToIntakingLeftSideMidAuto() {
+		currentCone--;
+
+		return moveArm(Turret.ArmStates.TRANSFER_SAFE)
+				.addNext(moveTurret(Turret.TurretStates.Slight_RIGHT_AUTO))
+				.addNext(new MultipleCommand(moveArmDirect(-0.02 + armConeHeights[currentCone]), openClaw()));
+	}
 	// very far to the left, in order to place near by
 	public Command moveToIntakingLeftClosePole() {
 		return moveArm(Turret.ArmStates.TRANSFER_SAFE)

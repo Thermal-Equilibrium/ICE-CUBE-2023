@@ -32,8 +32,8 @@ public class PumpkinSpiceAuto extends BaseAuto {
     final Pose2d goToPole1 = new Pose2d(-38, 24,Math.toRadians(-100));
     Pose2d goToPole2 = shiftRobotRelative(
             new Pose2d(-34.714046022304565,10.158013549498268,Math.toRadians(338.11832672430523)),
-            -2.5,
-            -0.5
+            -1.2,
+            -1
     );
 
     final Pose2d parkRight1= new Pose2d(goToPole2.getX() - 1, goToPole2.getY() + 3, goToPole2.getHeading());
@@ -100,6 +100,7 @@ public class PumpkinSpiceAuto extends BaseAuto {
         }
 
         auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION))
+                .addNext(new Delay(0.1))
                 .addNext(commandGroups.depositCone());
 
         auto.addNext(new Delay(0.1).addNext(new ToggleBreak(robot.drivetrain)));

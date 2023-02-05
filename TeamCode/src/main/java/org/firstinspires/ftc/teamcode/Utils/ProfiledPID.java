@@ -83,6 +83,6 @@ public class ProfiledPID implements FeedbackController {
 	}
 
 	public boolean isDone() {
-		return timer.seconds() > m_profile.duration() && Math.abs(m_targetPosition - m_state) < 50;
+		return timer.seconds() > m_profile.duration() && Math.abs(m_targetPosition - m_state) < 20;
 	}
 }
