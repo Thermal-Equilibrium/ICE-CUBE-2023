@@ -52,7 +52,6 @@ public class Robot {
 
 	public void update() {
 		for (LynxModule module: modules) {
-			//module.abandonUnfinishedCommands();
 			module.clearBulkCache();
 		}
 		updateInput();
