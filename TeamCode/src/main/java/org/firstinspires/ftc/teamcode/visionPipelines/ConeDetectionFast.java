@@ -49,6 +49,7 @@ public class ConeDetectionFast extends OpenCvPipeline {
     }
 
     private static final double CONE_WIDTH = 4;
+    private static final double CONE_HEIGHT = 5;
     private static final Scalar GREEN = new Scalar(0,255,0);
     private static final Scalar PURPLE = new Scalar(255,0,255);
     private static final Scalar ORANGE = new Scalar(255,165,0);
@@ -114,7 +115,7 @@ public class ConeDetectionFast extends OpenCvPipeline {
 //            this.tempPoint = getTop(contour);
             this.tempPoint = new Point(Imgproc.boundingRect(contour).x + Imgproc.boundingRect(contour).width *.5,Imgproc.boundingRect(contour).y);
             if (Imgproc.contourArea(contour) >= ConeConfig.coneMinArea && this.tempRect.height > this.tempRect.width) {
-                this.cones.add(new Cone(this.tempRect.size(), new CameraBasedPosition(this.getDistance(this.tempRect.width,CONE_WIDTH), this.getAngle(this.tempPoint), this.camera.position), this.tempPoint));
+                this.cones.add(new Cone(this.tempRect.size(), new CameraBasedPosition((this.getDistance(this.tempRect.width,CONE_WIDTH) + this.getDistanceVertical(this.tempRect.height,CONE_HEIGHT))/2, this.getAngle(this.tempPoint), this.camera.position), this.tempPoint));
             }
         }
         this.rawContours.clear();
@@ -161,10 +162,14 @@ public class ConeDetectionFast extends OpenCvPipeline {
         return new Point(size.width/2, size.height/2);
     }
     private double getDistance(double width, double realWidth) {
-        double occupiedFOV = this.camera.FOV * (width / this.camera.resolution.width);
+        double occupiedFOV = this.camera.HFOV * (width / this.camera.resolution.width);
         return ConeConfig.distanceCorrection * ( (realWidth/2)/Math.tan(occupiedFOV/2) + (realWidth/2) );
     }
+    private double getDistanceVertical(double height, double realHeight) {
+        double occupiedFOV = this.camera.VFOV * (height / this.camera.resolution.width);
+        return ConeConfig.distanceCorrection * ( (realHeight/2)/Math.tan(occupiedFOV/2) + (realHeight/2) );
+    }
     private double getAngle(Point point) {
-        return this.camera.FOV * (point.x / this.camera.resolution.width) - this.camera.FOV/2;
+        return this.camera.HFOV * (point.x / this.camera.resolution.width) - this.camera.HFOV /2;
     }
 }

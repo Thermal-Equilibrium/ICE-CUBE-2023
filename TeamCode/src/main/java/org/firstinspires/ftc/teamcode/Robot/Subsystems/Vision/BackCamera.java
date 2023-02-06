@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Utils.Team;
 import org.firstinspires.ftc.teamcode.VisionUtils.Cone;
 import org.firstinspires.ftc.teamcode.VisionUtils.Resolution;
 import org.firstinspires.ftc.teamcode.visionPipelines.ConeDetectionFast;
+import org.firstinspires.ftc.teamcode.visionPipelines.Save;
 import org.opencv.core.Size;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -24,9 +25,10 @@ import org.openftc.easyopencv.OpenCvWebcam;
 import java.util.concurrent.TimeUnit;
 
 public class BackCamera extends Subsystem {
-    public Size resolution = Resolution.LOW;
-    public double FOV = Math.toRadians(70.2);
-    public Pose2d position = new Pose2d(0,0, Math.toRadians(0)); // TODO: make this update with slide extension
+    public Size resolution = Resolution.HD;
+    public double HFOV = Math.toRadians(67.926);
+    public double VFOV = Math.toRadians(41.509);
+    public Pose2d position = new Pose2d(0,.3, Math.toRadians(0));
     private OpenCvPipeline pipeline;
     private OpenCvWebcam cam;
     private final OpenCvCameraRotation cameraRotation = OpenCvCameraRotation.UPRIGHT;
@@ -38,7 +40,7 @@ public class BackCamera extends Subsystem {
     private Cone tempCone;
 
     public BackCamera(Team team) {
-        pipeline = new ConeDetectionFast(team,this);
+        pipeline = new Save(team,this);
     }
 
     @Override
