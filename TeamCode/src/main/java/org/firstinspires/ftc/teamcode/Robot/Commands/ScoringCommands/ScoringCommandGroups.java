@@ -144,8 +144,8 @@ public class ScoringCommandGroups {
 
 		return depositConeAsync()
 				.addNext(openLatch())
-				.addNext(new Delay(0.45))
 				.addNext(moveHorizontalExtension(autoExtensionDistance))
+				.addNext(new Delay(0.1))
 				.addNext(grabCone())
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
 				.addNext(moveTurret(Turret.TurretStates.TRANSFER))

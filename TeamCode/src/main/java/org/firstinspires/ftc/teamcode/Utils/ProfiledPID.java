@@ -44,9 +44,13 @@ public class ProfiledPID implements FeedbackController {
 //		double power = controller.calculate(m_targetPosition,m_state);
 		double power = controller.calculate(m_targetPosition,m_state);
 		if (power < 0) {
-			power = Range.clip(power, -0.5, 0.5);
+			power = Range.clip(power, -1, 1);
 		}
 		return power;
+	}
+
+	public double calculateNoMotionProfile(double reference, double state) {
+		return controller.calculate(reference,state);
 	}
 
 	protected void generateMotionProfile(double reference, double state) {
@@ -83,6 +87,10 @@ public class ProfiledPID implements FeedbackController {
 	}
 
 	public boolean isDone() {
-		return timer.seconds() > m_profile.duration() && Math.abs(m_targetPosition - m_state) < 20;
+
+		if (m_profile != null) {
+			return timer.seconds() > m_profile.duration() && Math.abs(m_targetPosition - m_state) < 20;
+		}
+		return Math.abs(m_targetPosition - m_state) < 20;
 	}
 }
