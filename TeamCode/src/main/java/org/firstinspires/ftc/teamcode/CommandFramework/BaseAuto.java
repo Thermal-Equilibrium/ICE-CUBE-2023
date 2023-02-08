@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.DelayedCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.RaceAction;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
 import org.firstinspires.ftc.teamcode.Utils.Team;
 import org.firstinspires.ftc.teamcode.visionPipelines.SleeveDetection;
@@ -31,6 +32,7 @@ public abstract class BaseAuto extends LinearOpMode {
 
 		while (!isStopRequested() && !opModeIsActive() && opModeInInit()) {
 			parkingPosition = robot.frontCamera.getParkingPosition();
+			Dashboard.packet.put("current parking position is: ", parkingPosition);
 			telemetry.addData("current parking position is: ", parkingPosition);
 			telemetry.update();
 		}

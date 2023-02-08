@@ -8,7 +8,9 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.BackCamera;
 import org.firstinspires.ftc.teamcode.Utils.Team;
 import org.firstinspires.ftc.teamcode.VisionUtils.Cone;
 import org.firstinspires.ftc.teamcode.VisionUtils.CameraBasedPosition;
+import org.opencv.calib3d.Calib3d;
 import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
@@ -28,6 +30,7 @@ public class ConeDetectionFast extends OpenCvPipeline {
     @Config
     public static class ConeConfig {
         public static double distanceCorrection = .85;
+
         public static int coneMinArea = 600;
 
         public static int RED_MIN_HUE = 161;
@@ -47,6 +50,8 @@ public class ConeDetectionFast extends OpenCvPipeline {
         public static int BLUE_MAX_VALUE = 255;
         public static double perfectDistance = 13.5;
         public static double perfectTolerance = 2.5;
+        public static double MAX_ANGLE_DIST = 0;
+
     }
 
     private static final double CONE_WIDTH = 4;
@@ -73,8 +78,13 @@ public class ConeDetectionFast extends OpenCvPipeline {
     private Rect tempRect;
     private Point tempPoint;
     private Mat mask = new Mat();
+    private Mat undistorted;
 
     private BackCamera camera;
+
+    private Mat camMat;
+    private Mat newCamMat;
+    private Mat dists;
 
     private Scalar redLower = new Scalar(ConeConfig.RED_MIN_HUE, ConeConfig.RED_MIN_SATURATION, ConeConfig.RED_MIN_VALUE);
     private Scalar redUpper = new Scalar(ConeConfig.RED_MAX_HUE, ConeConfig.RED_MAX_SATURATION, ConeConfig.RED_MAX_VALUE);
@@ -86,9 +96,41 @@ public class ConeDetectionFast extends OpenCvPipeline {
         this.team = team;
         this.camera = backCamera;
         this.camCenter = getCenter(this.camera.resolution);
+        this.undistorted = new Mat();
+
+        this.camMat = new Mat(3, 3, CvType.CV_64F, new Scalar(0));
+        this.camMat.put(0, 0, 1425.1540495760205);
+        this.camMat.put(0, 1, 0.0);
+        this.camMat.put(0, 2, 970.468471085862);
+        this.camMat.put(1, 0, 0.0);
+        this.camMat.put(1, 1, 1424.155053359882);
+        this.camMat.put(1, 2, 501.56296758809754);
+        this.camMat.put(2, 0, 0.0);
+        this.camMat.put(2, 1, 0.0);
+        this.camMat.put(2, 2, 1.0);
+
+        this.newCamMat = new Mat(3, 3, CvType.CV_64F, new Scalar(0));
+        this.newCamMat.put(0, 0, 316.2171630859375);
+        this.newCamMat.put(0, 1, 0.0);
+        this.newCamMat.put(0, 2, 217.89658556168433);
+        this.newCamMat.put(1, 0, 0.0);
+        this.newCamMat.put(1, 1, 311.8413391113281);
+        this.newCamMat.put(1, 2, 110.56965838274755);
+        this.newCamMat.put(2, 0, 0.0);
+        this.newCamMat.put(2, 1, 0.0);
+        this.newCamMat.put(2, 2, 1.0);
+
+        this.dists = new Mat(1, 5, CvType.CV_64F, new Scalar(0));
+        this.dists.put(0, 0, 0.044556637596306355);
+        this.dists.put(0, 1, -0.1953025456808677);
+        this.dists.put(0, 2, -0.0013077514011058707);
+        this.dists.put(0, 3, 2.538055016042503e-05);
+        this.dists.put(0, 4, 0.15600849135540265);
     }
     @Override
     public Mat processFrame(Mat input) {
+        Calib3d.undistort(input, this.undistorted, this.newCamMat, this.dists);
+        this.undistorted.copyTo(input);
         this.redLower = new Scalar(ConeConfig.RED_MIN_HUE, ConeConfig.RED_MIN_SATURATION, ConeConfig.RED_MIN_VALUE);
         this.redUpper = new Scalar(ConeConfig.RED_MAX_HUE, ConeConfig.RED_MAX_SATURATION, ConeConfig.RED_MAX_VALUE);
         this.blueLower = new Scalar(ConeConfig.BLUE_MIN_HUE, ConeConfig.BLUE_MIN_SATURATION, ConeConfig.BLUE_MIN_VALUE);
@@ -116,9 +158,11 @@ public class ConeDetectionFast extends OpenCvPipeline {
 //            this.tempPoint = getTop(contour);
             this.tempPoint = new Point(Imgproc.boundingRect(contour).x + Imgproc.boundingRect(contour).width *.5,Imgproc.boundingRect(contour).y);
             if (Imgproc.contourArea(contour) >= ConeConfig.coneMinArea && this.tempRect.height > this.tempRect.width) {
-                Dashboard.packet.put("CONE: from x:",this.getDistance(this.tempRect.width,CONE_WIDTH));
-                Dashboard.packet.put("CONE: from y:",this.getDistanceVertical(this.tempRect.height,CONE_HEIGHT));
-                this.cones.add(new Cone(this.tempRect.size(), new CameraBasedPosition((this.getDistance(this.tempRect.width,CONE_WIDTH) + this.getDistanceVertical(this.tempRect.height,CONE_HEIGHT))/2, this.getAngle(this.tempPoint), this.camera.position), this.tempPoint));
+                double angleDistanceCorrection = ConeConfig.MAX_ANGLE_DIST * Math.abs(Math.toDegrees(this.getAngle(this.tempPoint)))/30;
+                this.cones.add(new Cone(this.tempRect.size(), new CameraBasedPosition((this.getDistance(this.tempRect.width,CONE_WIDTH) + this.getDistanceVertical(this.tempRect.height,CONE_HEIGHT))/2 + angleDistanceCorrection, this.getAngle(this.tempPoint), this.camera.position), this.tempPoint));
+                Dashboard.packet.put("hor",this.getDistance(this.tempRect.width,CONE_WIDTH));
+                Dashboard.packet.put("ver",this.getDistanceVertical(this.tempRect.height,CONE_HEIGHT));
+
             }
         }
         this.rawContours.clear();

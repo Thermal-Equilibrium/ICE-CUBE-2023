@@ -50,8 +50,8 @@ public class InverseKinematicsDemo extends Command {
         } else {
             timer.reset();
         }
-        turret.setArmKinematicPosition(y, z);
-        extension.setExtensionKinematicPosition(x, y, z);
+//        turret.setArmKinematicPosition(y, z);
+//        extension.setExtensionKinematicPosition(x, y, z);
 
     }
 

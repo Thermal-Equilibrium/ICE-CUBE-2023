@@ -49,7 +49,7 @@ public class ScoringCommandGroups {
 		this.backCamera = backCamera;
 	}
 
-	public Command autoPickup() {
+	public Command autoGoToCone() {
 		Cone cone = backCamera.getCone(true,false);
 		if (cone != null) {
 

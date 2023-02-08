@@ -27,8 +27,6 @@ public class FrontCamera extends Subsystem {
     private final OpenCvCameraRotation cameraRotation = OpenCvCameraRotation.UPRIGHT;
     private final ExposureControl.Mode exposureMode = ExposureControl.Mode.Auto;
     private final long exposureMs = 15;
-    private final FocusControl.Mode focusMode = FocusControl.Mode.Fixed;
-    private final double focusLength = 69; //idk what units this is in
     private final int gain = 0;
     private boolean open = false;
 
@@ -38,24 +36,20 @@ public class FrontCamera extends Subsystem {
 
     @Override
     public void initAuto(HardwareMap hwMap) {
-//        cam = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, "Front Webcam"), hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName()));
-//        cam.setViewportRenderer(OpenCvWebcam.ViewportRenderer.GPU_ACCELERATED);
-//        cam.setPipeline(pipeline);
-//        cam.openCameraDeviceAsync(new OpenCvWebcam.AsyncCameraOpenListener() {
-//            @Override public void onOpened() {
-//                open = true;
-//                cam.startStreaming( (int) resolution.width, (int) resolution.height, cameraRotation);
+        cam = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, "Front Webcam"));
+        cam.setViewportRenderer(OpenCvWebcam.ViewportRenderer.GPU_ACCELERATED);
+        cam.setPipeline(pipeline);
+        cam.openCameraDeviceAsync(new OpenCvWebcam.AsyncCameraOpenListener() {
+            @Override public void onOpened() {
+                open = true;
+                cam.startStreaming( (int) resolution.width, (int) resolution.height, cameraRotation);
 //                cam.getExposureControl().setMode(exposureMode);
 //                if (exposureMode == ExposureControl.Mode.Manual) {
 //                    cam.getExposureControl().setExposure(exposureMs, TimeUnit.MILLISECONDS);
 //                }
-//
-//                if (focusMode == FocusControl.Mode.Fixed) {
-//                    //cam.getFocusControl().setFocusLength(focusLength);
-//                }
 //                cam.getGainControl().setGain(gain);
-//            }
-//            @Override public void onError(int errorCode) { }});
+            }
+            @Override public void onError(int errorCode) { }});
     }
 
     @Override
@@ -63,20 +57,19 @@ public class FrontCamera extends Subsystem {
 
     @Override
     public void shutdown() {
-        open = false;
-//        cam.closeCameraDevice();
+        this.close();
     }
     public void close() {
         open = false;
-//        cam.closeCameraDevice();
+        cam.closeCameraDevice();
     }
 
     public SleeveDetection.ParkingPosition getParkingPosition() {
-        return SleeveDetection.ParkingPosition.CENTER;
-//        if (cam.getFrameCount() < 1 || !open) {
-//            return SleeveDetection.ParkingPosition.CENTER;
-//        }
-//        assert pipeline instanceof SleeveDetection;
-//        return ((SleeveDetection) pipeline).getPosition();
+//        return SleeveDetection.ParkingPosition.CENTER;
+        if (cam.getFrameCount() < 1 || !open) {
+            return SleeveDetection.ParkingPosition.CENTER;
+        }
+        assert pipeline instanceof SleeveDetection;
+        return ((SleeveDetection) pipeline).getPosition();
     }
 }

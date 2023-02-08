@@ -41,7 +41,7 @@ public class LEFT_AUTO_MID extends BaseAuto {
 		TrajectoryVelocityConstraint slowVelocity = SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL_slow,DriveConstants.MAX_ANG_VEL_slow, DriveConstants.TRACK_WIDTH);
 		TrajectoryAccelerationConstraint slowAcceleration = SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL_slow);
 
-		ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism,robot.drivetrain);
+		ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism,robot.drivetrain, robot.backCamera);
 
 		Vector2d goToPole = new Vector2d(-36, -23);
 		Pose2d rotateFaceMedium = shiftRobotRelative(new Pose2d(-34, -27,Math.toRadians(-21.8816732757)),-2.2,-2);

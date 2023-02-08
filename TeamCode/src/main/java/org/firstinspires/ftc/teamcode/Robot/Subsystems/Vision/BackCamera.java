@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.Utils.Team;
 import org.firstinspires.ftc.teamcode.VisionUtils.Cone;
 import org.firstinspires.ftc.teamcode.VisionUtils.Resolution;
 import org.firstinspires.ftc.teamcode.visionPipelines.ConeDetectionFast;
+import org.firstinspires.ftc.teamcode.visionPipelines.Save;
 import org.opencv.core.Size;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -40,6 +41,7 @@ public class BackCamera extends Subsystem {
     private Cone tempCone;
 
     public BackCamera(Team team) {
+//        pipeline = new Save(team,this);
         pipeline = new ConeDetectionFast(team,this);
     }
 
