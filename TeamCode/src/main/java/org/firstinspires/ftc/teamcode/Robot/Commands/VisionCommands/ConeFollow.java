@@ -10,22 +10,16 @@ public class ConeFollow extends Command {
     private Turret turret;
     private BackCamera backCamera;
     private Cone target = null;
-    private boolean allowFar;
-    private boolean allowClose;
 
-
-
-    public ConeFollow(Turret turret, BackCamera backCamera, boolean allowFar, boolean allowClose) {
+    public ConeFollow(Turret turret, BackCamera backCamera) {
         super(turret, backCamera);
         this.turret = turret;
         this.backCamera = backCamera;
-        this.allowFar = allowFar;
-        this.allowClose = allowClose;
     }
 
     @Override
     public void init() {
-        this.target = this.backCamera.getCone(this.allowFar, this.allowClose);
+        this.target = this.backCamera.getCone();
         if (this.target != null) {
             this.turret.setBasedTurretPosition(Math.toRadians(360) - this.target.position.angle);
             Dashboard.packet.put("ConeAngle", Math.toDegrees(Math.toRadians(360) - this.target.position.angle));
@@ -34,7 +28,7 @@ public class ConeFollow extends Command {
 
     @Override
     public void periodic() {
-        this.target = this.backCamera.getCone(this.allowFar, this.allowClose);
+        this.target = this.backCamera.getCone();
         if (this.target != null) {
             this.turret.setBasedTurretPosition(Math.toRadians(360) - this.target.position.angle);
             Dashboard.packet.put("ConeAngle", Math.toDegrees(Math.toRadians(360) - this.target.position.angle));

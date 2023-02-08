@@ -15,13 +15,14 @@ import org.firstinspires.ftc.teamcode.Utils.Team;
 import org.firstinspires.ftc.teamcode.VisionUtils.Cone;
 import org.firstinspires.ftc.teamcode.VisionUtils.Resolution;
 import org.firstinspires.ftc.teamcode.visionPipelines.ConeDetectionFast;
-import org.firstinspires.ftc.teamcode.visionPipelines.Save;
 import org.opencv.core.Size;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class BackCamera extends Subsystem {
@@ -38,7 +39,7 @@ public class BackCamera extends Subsystem {
     private final int gain = 100;
     private final FocusControl.Mode focusMode = FocusControl.Mode.Fixed;
     private final double focusLength = 69; //idk what units this is in
-    private Cone tempCone;
+    private List<Cone> tempConeList;
 
     public BackCamera(Team team) {
 //        pipeline = new Save(team,this);
@@ -68,29 +69,23 @@ public class BackCamera extends Subsystem {
     }
 
     @Override
-    public void periodic() {
-        Dashboard.packet.put("Back", cam.getFps());
-    }
+    public void periodic() { Dashboard.packet.put("Back", cam.getFps()); }
 
     @Override
-    public void shutdown() {
-        cam.closeCameraDevice();
-    }
+    public void shutdown() { cam.closeCameraDevice(); }
 
     @Nullable
-    public Cone getCone(boolean allowFar,boolean allowClose) {
+    public Cone getCone() {
         assert pipeline instanceof ConeDetectionFast;
-        tempCone = ((ConeDetectionFast) pipeline).perfect;
-        if (tempCone != null) return tempCone;
-
-        if (allowFar) {
-            tempCone = ((ConeDetectionFast) pipeline).far;
-            if (tempCone != null) return tempCone;
-        }
-        if (allowClose) {
-            tempCone = ((ConeDetectionFast) pipeline).close;
-            if (tempCone != null) return tempCone;
-        }
+        tempConeList = ((ConeDetectionFast) pipeline).getRankedCones();
+        if (tempConeList.size() > 0) return tempConeList.get(0);
+        return null;
+    }
+    @Nullable
+    public Cone getCone(int rank) {
+        assert pipeline instanceof ConeDetectionFast;
+        tempConeList = ((ConeDetectionFast) pipeline).getRankedCones();
+        if (tempConeList.size() >= rank) return tempConeList.get(rank);
         return null;
     }
 
@@ -99,6 +94,5 @@ public class BackCamera extends Subsystem {
         assert pipeline instanceof ConeDetectionFast;
         return ((ConeDetectionFast) pipeline).conestackGuess;
     }
-
 
 }

@@ -13,8 +13,7 @@ public class AutoTurretTestingBLUE extends BaseAuto {
     @Override
     public Command setupAuto(CommandScheduler scheduler) {
         waitForStart();
-        return new ConeFollow(robot.scoringMechanism.turret, robot.backCamera, false, true);
-//        return new NullCommand();
+        return new ConeFollow(robot.scoringMechanism.turret, robot.backCamera);
     }
     @Override
     public Team getTeam() {

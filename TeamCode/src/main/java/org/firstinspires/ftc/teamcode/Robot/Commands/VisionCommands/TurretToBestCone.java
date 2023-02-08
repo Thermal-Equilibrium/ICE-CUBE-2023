@@ -24,7 +24,7 @@ public class TurretToBestCone extends Command {
 
     @Override
     public void init() {
-        this.target = this.backCamera.getCone(this.allowFar, this.allowClose);
+        this.target = this.backCamera.getCone();
         if (this.target != null) {
             this.turret.setBasedTurretPosition(-1*this.target.position.angle + this.target.position.cameraPosition.getHeading());
         }
@@ -32,7 +32,7 @@ public class TurretToBestCone extends Command {
 
     @Override
     public void periodic() {
-        this.target = this.backCamera.getCone(this.allowFar, this.allowClose);
+        this.target = this.backCamera.getCone();
         if (this.target != null) {
             this.turret.setBasedTurretPosition(-1*this.target.position.angle + this.target.position.cameraPosition.getHeading());
         }

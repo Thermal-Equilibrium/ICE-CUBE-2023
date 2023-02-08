@@ -17,9 +17,7 @@ public class AutoTurretTesting extends BaseAuto {
     public Command setupAuto(CommandScheduler scheduler) {
         ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism, robot.drivetrain, robot.backCamera);
         waitForStart();
-//            return commandGroups.autoPickup();
-        return new ConeFollow(robot.scoringMechanism.turret, robot.backCamera, true, true);
-//        return new NullCommand();
+        return new ConeFollow(robot.scoringMechanism.turret, robot.backCamera);
     }
     @Override
     public Team getTeam() {

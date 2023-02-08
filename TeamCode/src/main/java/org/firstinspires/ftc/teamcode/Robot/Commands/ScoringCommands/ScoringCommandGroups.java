@@ -35,11 +35,8 @@ public class ScoringCommandGroups {
 	Turret turret;
 	VerticalExtension verticalExtension;
 	HorizontalExtension horizontalExtension;
-
 	Drivetrain drivetrain;
-
 	Pose2d intakePosition = new Pose2d();
-
 
 	public ScoringCommandGroups(MainScoringMechanism mechanism, Drivetrain drivetrain, BackCamera backCamera) {
 		this.horizontalExtension = mechanism.horizontalExtension;
@@ -50,7 +47,7 @@ public class ScoringCommandGroups {
 	}
 
 	public Command autoGoToCone() {
-		Cone cone = backCamera.getCone(true,false);
+		Cone cone = backCamera.getCone();
 		if (cone != null) {
 
 			double angle = IntakeKinematics.getTurretAngleToTarget(-1*cone.position.dx);
