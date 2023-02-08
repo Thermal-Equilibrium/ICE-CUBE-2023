@@ -43,7 +43,7 @@ public class VanillaLatteAuto extends BaseAuto {
         ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism,robot.drivetrain, robot.backCamera);
 
         Vector2d goToPole = new Vector2d(-36, 23);
-        Pose2d rotateFaceMedium = shiftRobotRelative(new Pose2d(-34, 27,Math.toRadians(21.8816732757)),-1.7,-2);
+        Pose2d rotateFaceMedium = shiftRobotRelative(new Pose2d(-34, 27,Math.toRadians(21.8816732757)),-3.5,-2);
 
         Pose2d parkLeft = new Pose2d(-4, 16, Math.toRadians(180));
         Pose2d parkCenter = new Pose2d(-35, 12.5, Math.toRadians(0));
@@ -84,6 +84,7 @@ public class VanillaLatteAuto extends BaseAuto {
         command.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.MID_POSITION),
                         commandGroups.moveToIntakingLeftAuto(),
                         commandGroups.moveHorizontalExtension(HorizontalExtension.PRE_EMPTIVE_EXTEND)))
+                .addNext(commandGroups.depositConeAsync())
                 .addNext(commandGroups.moveHorizontalExtension(HorizontalExtension.mostlyAutoExtension_MID))
                 .addNext(commandGroups.collectConeAuto(HorizontalExtension.autoExtension_MID));
     }

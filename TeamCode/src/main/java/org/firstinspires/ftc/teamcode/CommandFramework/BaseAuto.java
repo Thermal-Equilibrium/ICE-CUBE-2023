@@ -26,7 +26,7 @@ public abstract class BaseAuto extends LinearOpMode {
 
 	@Override
 	public void runOpMode() {
-		PhotonCore.enable();
+		//PhotonCore.enable();
 		robot = new Robot(hardwareMap, Robot.OpMode.Auto, gamepad1, gamepad2, getTeam());
 		setRobotPosition();
 

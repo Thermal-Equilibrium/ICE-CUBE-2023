@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
@@ -29,6 +30,7 @@ public class VerticalExtension extends Subsystem {
 
 	public final static double IN_POSITION = 5;
 
+	private VoltageSensor batteryVoltageSensor;
 
 	protected double slideTargetPosition = 0;
 
@@ -42,6 +44,7 @@ public class VerticalExtension extends Subsystem {
 		vertical2.setDirection(DcMotorSimple.Direction.REVERSE);
 		vertical1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 		vertical2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+		this.batteryVoltageSensor = hwMap.voltageSensor.iterator().next();
 	}
 	@Override
 	public void initAuto(HardwareMap hwMap) {
@@ -72,10 +75,11 @@ public class VerticalExtension extends Subsystem {
 
 	protected void updatePID() {
 		double measuredPosition = getSlidePosition();
-		double power = controller.calculateNoMotionProfile(slideTargetPosition,measuredPosition) + Kg;
-		if (slideTargetPosition == MID_POSITION) {
-			power = Range.clip(power,-1,1);
-			power *= 0.8;
+		double power = controller.calculateNoMotionProfile(slideTargetPosition,measuredPosition) ;
+		power *= (12/batteryVoltageSensor.getVoltage());
+		power = Range.clip(power,-0.8,0.8);
+		if (slideTargetPosition > MID_POSITION / 2) {
+			power += Kg;
 		}
 		vertical1.setPower(power);
 		vertical2.setPower(power);
