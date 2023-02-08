@@ -20,7 +20,7 @@ public class Teleop extends BaseTeleop {
 	@Override
 	public Command setupTeleop(CommandScheduler scheduler) {
 
-		ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism, robot.drivetrain);
+		ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism, robot.drivetrain, robot.backCamera);
 
 		robot.gamepad1.whenDPadDownPressed(commandGroups.moveToIntakingLeft());
 		robot.gamepad1.whenDPadLeftPressed(commandGroups.moveToIntakingLeftClosePole());

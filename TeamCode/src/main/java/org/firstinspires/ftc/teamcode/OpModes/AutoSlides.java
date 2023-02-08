@@ -12,13 +12,12 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.TurretToBest
 import org.firstinspires.ftc.teamcode.Utils.Team;
 
 @Autonomous
-public class AutoTurretTesting extends BaseAuto {
+public class AutoSlides extends BaseAuto {
     @Override
     public Command setupAuto(CommandScheduler scheduler) {
         ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism, robot.drivetrain, robot.backCamera);
         waitForStart();
-//            return commandGroups.autoPickup();
-        return new ConeFollow(robot.scoringMechanism.turret, robot.backCamera, true, true);
+            return commandGroups.autoPickup();
 //        return new NullCommand();
     }
     @Override

@@ -3,11 +3,11 @@ package org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ServoImpl;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 
 public class Turret extends Subsystem {
 
@@ -115,14 +115,6 @@ public class Turret extends Subsystem {
 
 	public void setBasedTurretPosition(double radians) {
 		radians = Range.clip(radians,0,TAU);
-//		if (radians == 0 || radians == TAU) { // turn to 0/360 degrees the fastest way
-//			double currentPosition = getBasedTurretPosition();
-//			if (currentPosition > Math.PI) { // if current position is closer to 360 than 0, turn to 360
-//				radians = TAU;
-//			} else if (currentPosition < Math.PI) { // if current position is closer to 0 than 360, turn to 0
-//				radians = 0;
-//			}
-//		}
 		setRawTurretPosition(radiansToServo(radians));
 	}
 	public double getBasedTurretPosition() {
@@ -166,7 +158,7 @@ public class Turret extends Subsystem {
 	public void setArm(ArmStates armStates) {
 		switch (armStates) {
 			case TRANSFER:
-				arm1.setPosition(0.17);
+				arm1.setPosition(0.19);
 				break;
 			case TRANSFER_SAFE:
 				arm1.setPosition(armSafe);
@@ -176,7 +168,6 @@ public class Turret extends Subsystem {
 				break;
 			case LOW_SCORING:
 				arm1.setPosition(0.4);
-				break;
 			case FREE_STATE:
 				arm1.setPosition(currentFreeStateValue);
 				break;
@@ -197,7 +188,6 @@ public class Turret extends Subsystem {
 
 	// TODO: Maybe don't average? if we only use 1 servo lol
 	public double getArmPosition() {
-
 		return arm1.getPosition();
 	}
 	public enum ClawStates {
@@ -225,4 +215,5 @@ public class Turret extends Subsystem {
 	public void setCurrentFreeStateValue(double currentFreeStateValue) {
 		this.currentFreeStateValue = currentFreeStateValue;
 	}
+
 }

@@ -37,6 +37,9 @@ public class HorizontalExtension extends Subsystem {
 	public final static double mostlyAutoExtension_MID = autoExtension_MID - 30;
 	protected double targetPosition = IN_POSITION;
 
+	private static final double TICKS_TO_INCH = .03;
+	private static final double INCH_TO_TICKS = 33.3333333333;
+
 	public void commonInit(HardwareMap hwMap) {
 		leftMotor = hwMap.get(DcMotorEx.class, "leftHorizontal");
 		rightMotor = hwMap.get(DcMotorEx.class, "rightHorizontal");
@@ -62,6 +65,8 @@ public class HorizontalExtension extends Subsystem {
 	public void periodic() {
 
 		updatePID();
+		Dashboard.packet.put("horizontal ticks", getSlidePosition());
+		Dashboard.packet.put("horizontal inches", getSlidePositionInches());
 	}
 
 	@Override
@@ -96,5 +101,19 @@ public class HorizontalExtension extends Subsystem {
 	}
 	public boolean isMovementFinished() {
 		return controller.isDone();
+	}
+
+	private double ticksToInches(double ticks) {
+		return (ticks - IN_POSITION) * TICKS_TO_INCH;
+	}
+	private double inchesToTicks(double inches) {
+		return (inches - ticksToInches(IN_POSITION)) * INCH_TO_TICKS;
+	}
+
+	public double getSlidePositionInches() {
+		return ticksToInches(getSlidePosition());
+	}
+	public void setTargetPositionInches(double targetPositionInches) {
+		this.targetPosition = inchesToTicks(targetPositionInches);
 	}
 }

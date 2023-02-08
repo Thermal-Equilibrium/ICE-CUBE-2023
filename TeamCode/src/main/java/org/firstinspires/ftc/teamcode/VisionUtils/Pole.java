@@ -1,21 +1,20 @@
-package org.firstinspires.ftc.teamcode.visionPipelines;
+package org.firstinspires.ftc.teamcode.VisionUtils;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.RotatedRect;
-import org.opencv.core.Size;
 
 public class Pole {
 
     public MatOfPoint contour;
     public RotatedRect rect;
-    public VisionBasedPosition position;
+    public CameraBasedPosition position;
     public Pose2d dEstimate;
     public Point top;
 
-    public Pole(MatOfPoint contour,RotatedRect rect, VisionBasedPosition position, Point top, double cameraAngle){
+    public Pole(MatOfPoint contour, RotatedRect rect, CameraBasedPosition position, Point top, double cameraAngle){
         this.contour = contour;
         this.rect = rect;
         this.position = position;
