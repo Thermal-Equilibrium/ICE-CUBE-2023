@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ConeDetectionFast extends OpenCvPipeline {
@@ -37,22 +38,28 @@ public class ConeDetectionFast extends OpenCvPipeline {
         public static int RED_MIN_HUE = 161;
         public static int RED_MIN_SATURATION = 80;
         public static int RED_MIN_VALUE = 0;
+        public static int RED_MIN_LIGHTNESS = 0;
 
         public static int RED_MAX_HUE = 200;
         public static int RED_MAX_SATURATION = 255;
         public static int RED_MAX_VALUE = 255;
+        public static int RED_MAX_LIGHTNESS= 255;
 
         public static int BLUE_MIN_HUE = 146;
         public static int BLUE_MIN_SATURATION = 55;
         public static int BLUE_MIN_VALUE = 0;
+        public static int BLUE_MIN_LIGHTNESS = 0;
 
         public static int BLUE_MAX_HUE = 196;
         public static int BLUE_MAX_SATURATION = 255;
         public static int BLUE_MAX_VALUE = 255;
+        public static int BLUE_MAX_LIGHTNESS = 255;
+
+
         public static double perfectDistance = 13.5;
         public static double perfectTolerance = 2.5;
-        public static double MAX_ANGLE_DIST = 0;
         public static boolean useVert = false;
+        public static String spectrum = "HSV";
 
     }
     private BackCamera camera;
@@ -92,6 +99,11 @@ public class ConeDetectionFast extends OpenCvPipeline {
     private Mat dists;
     private final Mat hierarchy = new Mat();
 
+    Scalar redLower;
+    Scalar redUpper;
+    Scalar blueLower;
+    Scalar blueUpper;
+
     public ConeDetectionFast(Team team, BackCamera backCamera) {
         this.team = team;
         this.camera = backCamera;
@@ -129,16 +141,27 @@ public class ConeDetectionFast extends OpenCvPipeline {
     public Mat processFrame(Mat input) {
         Calib3d.undistort(input, this.undistorted, this.newCamMat, this.dists);
         this.undistorted.copyTo(input);
-        Scalar redLower = new Scalar(ConeConfig.RED_MIN_HUE, ConeConfig.RED_MIN_SATURATION, ConeConfig.RED_MIN_VALUE);
-        Scalar redUpper = new Scalar(ConeConfig.RED_MAX_HUE, ConeConfig.RED_MAX_SATURATION, ConeConfig.RED_MAX_VALUE);
-        Scalar blueLower = new Scalar(ConeConfig.BLUE_MIN_HUE, ConeConfig.BLUE_MIN_SATURATION, ConeConfig.BLUE_MIN_VALUE);
-        Scalar blueUpper = new Scalar(ConeConfig.BLUE_MAX_HUE, ConeConfig.BLUE_MAX_SATURATION, ConeConfig.BLUE_MAX_VALUE);
+
+        if (Objects.equals(ConeConfig.spectrum, "HSV")) {
+            redLower = new Scalar(ConeConfig.RED_MIN_HUE, ConeConfig.RED_MIN_SATURATION, ConeConfig.RED_MIN_VALUE);
+            redUpper = new Scalar(ConeConfig.RED_MAX_HUE, ConeConfig.RED_MAX_SATURATION, ConeConfig.RED_MAX_VALUE);
+            blueLower = new Scalar(ConeConfig.BLUE_MIN_HUE, ConeConfig.BLUE_MIN_SATURATION, ConeConfig.BLUE_MIN_VALUE);
+            blueUpper = new Scalar(ConeConfig.BLUE_MAX_HUE, ConeConfig.BLUE_MAX_SATURATION, ConeConfig.BLUE_MAX_VALUE);
+        }
+        else if (Objects.equals(ConeConfig.spectrum, "HLS")) {
+            redLower = new Scalar(ConeConfig.RED_MIN_HUE, ConeConfig.RED_MIN_LIGHTNESS, ConeConfig.RED_MIN_SATURATION);
+            redUpper = new Scalar(ConeConfig.RED_MAX_HUE, ConeConfig.RED_MAX_LIGHTNESS, ConeConfig.RED_MAX_SATURATION);
+            blueLower = new Scalar(ConeConfig.BLUE_MIN_HUE, ConeConfig.BLUE_MIN_LIGHTNESS, ConeConfig.BLUE_MIN_SATURATION);
+            blueUpper = new Scalar(ConeConfig.BLUE_MAX_HUE, ConeConfig.BLUE_MAX_LIGHTNESS, ConeConfig.BLUE_MAX_SATURATION);
+        }
 
         if (this.team == Team.RED) {
-            Imgproc.cvtColor(input, input, Imgproc.COLOR_BGR2HSV_FULL);
+            if (Objects.equals(ConeConfig.spectrum, "HSV")) Imgproc.cvtColor(input, input, Imgproc.COLOR_BGR2HSV_FULL);
+            else if (Objects.equals(ConeConfig.spectrum, "HLS")) Imgproc.cvtColor(input, input, Imgproc.COLOR_BGR2HLS_FULL);
             Core.inRange(input, redLower, redUpper, this.mask);
         } else if (this.team == Team.BLUE) {
-            Imgproc.cvtColor(input, input, Imgproc.COLOR_RGB2HSV_FULL);
+            if (Objects.equals(ConeConfig.spectrum, "HSV")) Imgproc.cvtColor(input, input, Imgproc.COLOR_RGB2HSV_FULL);
+            else if (Objects.equals(ConeConfig.spectrum, "HLS")) Imgproc.cvtColor(input, input, Imgproc.COLOR_RGB2HLS_FULL);
             Core.inRange(input, blueLower, blueUpper, this.mask);
         } else { return input; }
 
@@ -160,7 +183,15 @@ public class ConeDetectionFast extends OpenCvPipeline {
 
         this.rawContours.clear();
         this.rank();
-        Imgproc.cvtColor(input, input, Imgproc.COLOR_HSV2RGB_FULL);
+
+        if (this.team == Team.RED) {
+            if (Objects.equals(ConeConfig.spectrum, "HSV")) Imgproc.cvtColor(input, input, Imgproc.COLOR_HSV2BGR_FULL);
+            else if (Objects.equals(ConeConfig.spectrum, "HLS")) Imgproc.cvtColor(input, input, Imgproc.COLOR_HLS2BGR_FULL);
+        } else {
+            if (Objects.equals(ConeConfig.spectrum, "HSV")) Imgproc.cvtColor(input, input, Imgproc.COLOR_HSV2RGB_FULL);
+            else if (Objects.equals(ConeConfig.spectrum, "HLS")) Imgproc.cvtColor(input, input, Imgproc.COLOR_HLS2RGB_FULL);
+        }
+
         input.setTo(new Scalar(0,0,0), this.mask);
 
         for (int i=0;i<this.rankedCones.size();i++) {
