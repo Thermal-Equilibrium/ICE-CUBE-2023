@@ -183,6 +183,9 @@ public class ConeDetectionFast extends OpenCvPipeline {
             }
         }
 
+        for (MatOfPoint p: this.rawContours) {
+            p.release();
+        }
         this.rawContours.clear();
         this.rank();
 

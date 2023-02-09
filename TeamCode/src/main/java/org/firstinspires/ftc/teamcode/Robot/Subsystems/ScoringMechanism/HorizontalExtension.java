@@ -26,7 +26,7 @@ public class HorizontalExtension extends Subsystem {
 	ProfiledPID controller = new ProfiledPID(upConstraint,downConstraint,coefficients);
 
 
-	public final static double IN_POSITION = 5;
+	public final static double IN_POSITION = 6;
 	public final static double SAFE_POSITION = 300;
 	public final static double CLOSE_INTAKE = 100;
 	public final static double EXTENSION1 = 500;

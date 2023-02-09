@@ -1,18 +1,19 @@
 package org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism;
 
 import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 import org.firstinspires.ftc.teamcode.Math.AsymmetricProfile.MotionConstraint;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Utils.ProfiledPID;
 
+@Config
 public class VerticalExtension extends Subsystem {
 
 	MainScoringMechanism.MechanismStates state = MainScoringMechanism.MechanismStates.BEGIN;
@@ -20,15 +21,27 @@ public class VerticalExtension extends Subsystem {
 	DcMotorEx vertical1;
 	DcMotorEx vertical2;
 
-	PIDCoefficients coefficients = new PIDCoefficients(0.005,0,1.3 * Math.sqrt(0.005));
-	MotionConstraint upConstraint = new MotionConstraint(3500,3500,2000);
-	MotionConstraint downConstraint = new MotionConstraint(3500,10000,3000);
+	public static double Kp = 0.2;
+	public static double Kd = 1.3 * Math.sqrt(Kp * 0.0015);
+
+	public static double max_accel = 240;
+	public static double max_velocity = 120;
+
+	static final double PULLEY_CIRCUMFERENCE = 4.409;
+	static final double counts_per_revolution = 145.090909;
+
+
+
+	PIDCoefficients coefficients = new PIDCoefficients(Kp,0,Kd);
+	MotionConstraint upConstraint = new MotionConstraint(max_accel,max_accel,max_velocity);
+	MotionConstraint downConstraint = new MotionConstraint(max_accel,max_accel,max_velocity);
 
 	ProfiledPID controller = new ProfiledPID(upConstraint,downConstraint,coefficients);
-	public final static double HIGH_POSITION = 867;
-	public final static double MID_POSITION = 545;
+	public final static double HIGH_POSITION = 25.8;
 
-	public final static double IN_POSITION = 5;
+	public final static double MID_POSITION = 16;
+
+	public final static double IN_POSITION = 0.1519392231528441;
 
 	private VoltageSensor batteryVoltageSensor;
 
@@ -70,21 +83,21 @@ public class VerticalExtension extends Subsystem {
 
 	@Override
 	public void shutdown() {
+		vertical1.setPower(0);
+		vertical2.setPower(0);
 
 	}
 
 	protected void updatePID() {
 		double measuredPosition = getSlidePosition();
-		double power = controller.calculateNoMotionProfile(slideTargetPosition,measuredPosition) ;
-		power *= (12/batteryVoltageSensor.getVoltage());
-		power = Range.clip(power,-0.8,0.8);
-		if (slideTargetPosition > MID_POSITION / 2) {
+		double power = controller.calculate(slideTargetPosition,measuredPosition) ;
+		if (slideTargetPosition > IN_POSITION * 2) {
 			power += Kg;
 		}
 		vertical1.setPower(power);
 		vertical2.setPower(power);
 		Dashboard.packet.put("measured slide position",measuredPosition);
-		Dashboard.packet.put("target slide position",slideTargetPosition);
+		Dashboard.packet.put("target slide position",controller.getTargetPosition());
 		Dashboard.packet.put("slide power",power);
 	}
 
@@ -93,7 +106,7 @@ public class VerticalExtension extends Subsystem {
 	 * @return average encoder position of the slides
 	 */
 	public double getSlidePosition() {
-		return (vertical1.getCurrentPosition() + vertical2.getCurrentPosition()) / 2.0;
+		return countsToInches((vertical1.getCurrentPosition() + vertical2.getCurrentPosition()) / 2.0);
 	}
 
 	public double getSlideTargetPosition() {
@@ -106,5 +119,9 @@ public class VerticalExtension extends Subsystem {
 
 	public boolean isMovementFinished() {
 		return controller.isDone();
+	}
+
+	public double countsToInches(double counts) {
+		return (counts / counts_per_revolution) * PULLEY_CIRCUMFERENCE;
 	}
 }

@@ -62,7 +62,7 @@ public class BackCamera extends Subsystem {
                     //cam.getFocusControl().setFocusLength(focusLength);
                 }
             }
-            @Override public void onError(int errorCode) { }});
+            @Override public void onError(int errorCode) { shutdown(); }});
         FtcDashboard dashboard = FtcDashboard.getInstance();
         dashboard.startCameraStream(cam, 20);
     }

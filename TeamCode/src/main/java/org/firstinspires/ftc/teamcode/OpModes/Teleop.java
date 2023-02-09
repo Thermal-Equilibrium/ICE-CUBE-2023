@@ -13,7 +13,6 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringComm
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
 
 
-@TeleOp
 public class Teleop extends BaseTeleop {
 
 
@@ -22,12 +21,10 @@ public class Teleop extends BaseTeleop {
 
 		ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism, robot.drivetrain, robot.backCamera);
 
-//		robot.gamepad1.whenDPadDownPressed(commandGroups.moveToIntakingLeft());
-		robot.gamepad1.whenDPadDownPressed(commandGroups.autoGoToCone());
-		robot.gamepad1.whenDPadLeftPressed(commandGroups.moveToIntakingLeftClosePole());
-		robot.gamepad1.whenDPadRightPressed(commandGroups.moveToIntakingRightClosePole());
+		robot.gamepad1.whenDPadDownPressed(commandGroups.moveToIntakingLeft());
+		robot.gamepad1.whenDPadLeftPressed(commandGroups.autoGoToCone());
+		robot.gamepad1.whenDPadRightPressed(commandGroups.autoGoToCone());
 		robot.gamepad1.whenLeftStickButtonPressed(new ToggleBreak(robot.drivetrain));
-//		robot.gamepad1.whenRightBumperPressed(commandGroups.collectCone());
 		robot.gamepad1.whenRightBumperPressed(new RunCommand(commandGroups::collectCone));
 		robot.gamepad1.whenRightTriggerPressed(new RunCommand(commandGroups::moveVerticalExtensionDownOrReleaseClaw));
 		robot.gamepad1.whenSquarePressed(commandGroups.moveVerticalExtension(VerticalExtension.MID_POSITION));

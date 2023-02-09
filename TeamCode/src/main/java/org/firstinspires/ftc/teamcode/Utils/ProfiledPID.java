@@ -16,7 +16,7 @@ public class ProfiledPID implements FeedbackController {
 	MotionConstraint verticalConstraint;
 	MotionConstraint downConstraint;
 	PIDCoefficients coefficients;
-	BasicPID controller;
+	BasicPIDFixed controller;
 
 
 	public ProfiledPID(MotionConstraint verticalConstraint, MotionConstraint downConstraint,
@@ -24,7 +24,7 @@ public class ProfiledPID implements FeedbackController {
 		this.verticalConstraint = verticalConstraint;
 		this.downConstraint = downConstraint;
 		this.coefficients = coefficients;
-		this.controller = new BasicPID(coefficients);
+		this.controller = new BasicPIDFixed(coefficients);
 	}
 
 	ElapsedTime timer = new ElapsedTime();
@@ -41,7 +41,6 @@ public class ProfiledPID implements FeedbackController {
 		generateMotionProfile(reference, state);
 		m_targetPosition = getTargetPosition();
 		m_state = state;
-//		double power = controller.calculate(m_targetPosition,m_state);
 		double power = controller.calculate(m_targetPosition,m_state);
 		if (power < 0) {
 			power = Range.clip(power, -1, 1);
