@@ -69,7 +69,7 @@ public class VanillaLatteAuto extends BaseAuto {
         auto.addNext(new RoadrunnerHoldPose(robot,scoring2.end()));
         auto.addNext(new ToggleBreak(robot.drivetrain));
         for (int i = 0; i < 5; ++i) {
-            addCycle(auto,commandGroups);
+            addCycleFaster(auto,commandGroups);
         }
         auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.MID_POSITION))
                 .addNext(new Delay(0.3))
@@ -78,6 +78,14 @@ public class VanillaLatteAuto extends BaseAuto {
 
         auto = auto.addNext(followRR(parkTraj));
         return auto;
+    }
+
+    public void addCycleFaster(Command command, ScoringCommandGroups commandGroups) {
+        command.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.MID_POSITION).addNext(commandGroups.depositConeAsync()),
+                        commandGroups.moveToIntakingLeftAuto(),
+                        commandGroups.moveHorizontalExtension(HorizontalExtension.PRE_EMPTIVE_EXTEND)))
+                .addNext(commandGroups.moveHorizontalExtension(HorizontalExtension.mostlyAutoExtension_MID))
+                .addNext(commandGroups.collectConeAuto(HorizontalExtension.autoExtension_MID));
     }
 
     public void addCycle(Command command, ScoringCommandGroups commandGroups) {

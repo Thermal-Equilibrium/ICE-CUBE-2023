@@ -34,7 +34,7 @@ public class HorizontalExtension extends Subsystem {
 	public final static double TELE_CYCLE_EXTENSION = 359; // todo figure out our max safe extension
 	public final static double autoExtension = 395;
 	public final static double mostlyAutoExtension = autoExtension - 30;
-	public final static double autoExtension_MID = 425;
+	public final static double autoExtension_MID = 400;
 	public final static double mostlyAutoExtension_MID = autoExtension_MID - 30;
 	protected double targetPosition = IN_POSITION;
 
