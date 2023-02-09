@@ -30,7 +30,7 @@ public class BackCamera extends Subsystem {
     public double HFOV = Math.toRadians(67.9255464975384); //70.428 // 60 //66
     public double VFOV = Math.toRadians(41.50936520321168);
 
-    public Pose2d position = new Pose2d(0,0, Math.toRadians(0)); // TODO: make this update with slide extension
+    public Pose2d position = new Pose2d(0,0, Math.toRadians(0));
     private OpenCvPipeline pipeline;
     private OpenCvWebcam cam;
     private final OpenCvCameraRotation cameraRotation = OpenCvCameraRotation.UPRIGHT;
@@ -61,7 +61,6 @@ public class BackCamera extends Subsystem {
                 if (focusMode == FocusControl.Mode.Fixed) {
                     //cam.getFocusControl().setFocusLength(focusLength);
                 }
-
             }
             @Override public void onError(int errorCode) { }});
         FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -69,7 +68,7 @@ public class BackCamera extends Subsystem {
     }
 
     @Override
-    public void periodic() { Dashboard.packet.put("Back", cam.getFps()); }
+    public void periodic() { Dashboard.packet.put("Back FPS", cam.getFps()); }
 
     @Override
     public void shutdown() { cam.closeCameraDevice(); }

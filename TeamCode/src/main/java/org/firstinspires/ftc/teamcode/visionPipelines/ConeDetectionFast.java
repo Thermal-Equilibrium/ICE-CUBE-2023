@@ -31,7 +31,9 @@ import java.util.stream.Collectors;
 public class ConeDetectionFast extends OpenCvPipeline {
     @Config
     public static class ConeConfig {
-        public static double distanceCorrection = .85;
+        public static double distanceCorrection = .7;//.807;
+        public static double distanceCorrection2 = 0;
+        public static double MAX_DISTANCE_ANGLE_CORRECTION = 2;
 
         public static int coneMinArea = 600;
 
@@ -55,15 +57,13 @@ public class ConeDetectionFast extends OpenCvPipeline {
         public static int BLUE_MAX_VALUE = 255;
         public static int BLUE_MAX_LIGHTNESS = 255;
 
-
         public static double perfectDistance = 13.5;
         public static double perfectTolerance = 2.5;
         public static boolean useVert = false;
         public static String spectrum = "HSV";
-
     }
     private BackCamera camera;
-    public static ConePointMethod conePointMethod = ConePointMethod.MASS;
+    public ConePointMethod conePointMethod;
     private static final double CONE_WIDTH = 4;
     private static final double CONE_HEIGHT = 5;
     private static final Scalar BLANK = new Scalar(0,0,0);
@@ -73,13 +73,12 @@ public class ConeDetectionFast extends OpenCvPipeline {
     private static final Scalar GREEN = new Scalar(0,255,0);
     private static final Scalar BLUE = new Scalar(0,0,255);
     private static final Scalar PURPLE = new Scalar(255,0,255);
-    private static final Scalar BLACK = new Scalar(2,2,2);
+    private static final Scalar BLACK = new Scalar(1,1,1);
     private static final Scalar WHITE = new Scalar(255,255,255);
 
     private final Mat structuringSmall = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(3,3));
     private final Mat structuringMedium = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(5,5));
     private final Mat structuringLarge = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(7,7));
-
 
     private final ArrayList<MatOfPoint> rawContours = new ArrayList<>();
     private final ArrayList<Cone> unrankedCones = new ArrayList<>();
@@ -110,6 +109,7 @@ public class ConeDetectionFast extends OpenCvPipeline {
         this.camCenter = getCenter(this.camera.resolution);
         this.undistorted = new Mat();
         this.mask = new Mat();
+        this.conePointMethod = ConePointMethod.MASS;
         this.camMat = new Mat(3, 3, CvType.CV_64F, new Scalar(0));
         this.camMat.put(0, 0, 1425.1540495760205);
         this.camMat.put(0, 1, 0.0);
@@ -137,6 +137,7 @@ public class ConeDetectionFast extends OpenCvPipeline {
         this.dists.put(0, 3, 2.538055016042503e-05);
         this.dists.put(0, 4, 0.15600849135540265);
     }
+
     @Override
     public Mat processFrame(Mat input) {
         Calib3d.undistort(input, this.undistorted, this.newCamMat, this.dists);
@@ -171,12 +172,13 @@ public class ConeDetectionFast extends OpenCvPipeline {
         this.unrankedCones.clear();
         for (MatOfPoint contour: this.rawContours) {
             this.tempRect = Imgproc.boundingRect(contour);
-            if (conePointMethod == ConePointMethod.MASS) this.tempPoint = new Point(Imgproc.boundingRect(contour).x + Imgproc.boundingRect(contour).width *.5,Imgproc.boundingRect(contour).y);
-            else this.tempPoint = getTop(contour);
+            if (this.conePointMethod == ConePointMethod.MASS) { this.tempPoint = new Point(Imgproc.boundingRect(contour).x + Imgproc.boundingRect(contour).width *.5,Imgproc.boundingRect(contour).y); }
+            else if (this.conePointMethod == ConePointMethod.TOP){this.tempPoint = getTop(contour); }
             if (Imgproc.contourArea(contour) >= ConeConfig.coneMinArea && this.tempRect.height > this.tempRect.width) {
                 double dist;
+                double angleDistanceCorrection =  ConeConfig.MAX_DISTANCE_ANGLE_CORRECTION * Math.abs(this.getAngle(this.tempPoint) / Math.toRadians(30));
                 if (ConeConfig.useVert) { dist = (this.getDistance(this.tempRect.width, CONE_WIDTH) + this.getDistanceVertical(this.tempRect.height, CONE_HEIGHT)) / 2; }
-                else { dist = (this.getDistance(this.tempRect.width, CONE_WIDTH)); }
+                else { dist = angleDistanceCorrection + (this.getDistance(this.tempRect.width, CONE_WIDTH)); }
                 this.unrankedCones.add(new Cone(this.tempRect.size(), new CameraBasedPosition(dist, this.getAngle(this.tempPoint), this.camera.position), this.tempPoint, this.getDistance(this.tempRect.width,CONE_WIDTH), this.getDistanceVertical(this.tempRect.height,CONE_HEIGHT)));
             }
         }
@@ -192,38 +194,35 @@ public class ConeDetectionFast extends OpenCvPipeline {
             else if (Objects.equals(ConeConfig.spectrum, "HLS")) Imgproc.cvtColor(input, input, Imgproc.COLOR_HLS2RGB_FULL);
         }
 
-        input.setTo(new Scalar(0,0,0), this.mask);
+        input.setTo(BLACK, this.mask);
 
         for (int i=0;i<this.rankedCones.size();i++) {
             Cone cone = this.rankedCones.get(i);
-            if (i==0) {
-                markerOutlined(input, cone.top, new Point(0,0), GREEN, Imgproc.MARKER_STAR,10,2);
-            }
-            if (i==1) {
-                markerOutlined(input, cone.top, new Point(0,0), ORANGE, Imgproc.MARKER_STAR,10,2);
-            }
-            textOutlined(input, String.valueOf(i), cone.top,new Point(0,-20), .7, WHITE, 2);
+            if (i==0) { markerOutlined(input, cone.top, new Point(0,0), GREEN, Imgproc.MARKER_STAR,10,2); }
+            if (i==1) { markerOutlined(input, cone.top, new Point(0,0), ORANGE, Imgproc.MARKER_STAR,10,2); }
+            textOutlined(input, String.valueOf(i), cone.top,new Point(-4,-16), .7, WHITE, 2);
         }
 
         for (Cone cone: this.unrankedCones) {
             textOutlined(input, String.valueOf(new Size(cone.position.dx,cone.position.dy)), cone.top,new Point(0,20),.7, WHITE, 2);
-            textOutlined(input, cone.hd + "," + cone.vd, cone.top,new Point(0,-50),.7, WHITE, 2);
             if (cone.classification == Cone.Classification.CLOSE) {
-                markerOutlined(input, cone.top, new Point(0,0), RED, Imgproc.MARKER_TILTED_CROSS,-20,3);
+                markerOutlined(input, cone.top, new Point(0,0), RED, Imgproc.MARKER_TILTED_CROSS,40,3);
                 textOutlined(input, "CLOSE", cone.top,new Point(0,20), .7, RED, 2);
             } else if (cone.classification == Cone.Classification.FAR) {
-                markerOutlined(input, cone.top, new Point(0,0), RED, Imgproc.MARKER_TILTED_CROSS,-20,3);
+                markerOutlined(input, cone.top, new Point(0,0), RED, Imgproc.MARKER_TILTED_CROSS,40,3);
                 textOutlined(input, "FAR", cone.top,new Point(0,20), .7, RED, 2);
             }
         }
         return input;
     }
+
     private void textOutlined(Mat input, String text, Point point, Point offset, double scale, Scalar color, int thickness) {
         Point pos = new Point(point.x+offset.x, point.y+ offset.y);
         int font = Imgproc.FONT_HERSHEY_COMPLEX;
         Imgproc.putText(input, text, pos, font, scale, BLACK,thickness+2);
         Imgproc.putText(input, text, pos, font, scale, color,thickness);
     }
+
     private void markerOutlined(Mat input,Point point, Point offset, Scalar color,int marker, int size, int thickness) {
         Point pos = new Point(point.x + offset.x, point.y + offset.y);
         Imgproc.drawMarker(input, pos, BLACK, marker, size, thickness+3);
@@ -235,23 +234,23 @@ public class ConeDetectionFast extends OpenCvPipeline {
         if (this.unrankedCones.size() > 0) {
             this.usableCones = this.unrankedCones.stream().filter(cone -> cone.classification == Cone.Classification.GOOD && !cone.deadzoned).collect(Collectors.toList());
             this.rankedCones = this.usableCones.stream().sorted(Comparator.comparing(cone -> cone.score)).collect(Collectors.toList());
+            Collections.reverse(this.rankedCones);
             this.conestackGuess = Collections.max(this.unrankedCones, Comparator.comparing(cone -> cone.size.height));
         } else {
             this.rankedCones.clear();
             this.usableCones.clear();
         }
-        this.unrankedCones.clear();
     }
 
     private static Point getTop(MatOfPoint contour) { return Collections.min(contour.toList(), Comparator.comparing(h -> h.y)); }
     private static Point getCenter(Size size) { return new Point(size.width/2, size.height/2); }
     private double getDistance(double width, double realWidth) {
         double occupiedFOV = this.camera.HFOV * (width / this.camera.resolution.width);
-        return ConeConfig.distanceCorrection * ( (realWidth/2)/Math.tan(occupiedFOV/2) + (realWidth/2) );
+        return ConeConfig.distanceCorrection2 + ConeConfig.distanceCorrection * ( (realWidth/2)/Math.tan(occupiedFOV/2) + (realWidth/2) );
     }
     private double getDistanceVertical(double height, double realHeight) {
         double occupiedFOV = this.camera.VFOV * (height / this.camera.resolution.height);
-        return ConeConfig.distanceCorrection * ( (realHeight/2)/Math.tan(occupiedFOV/2) + (realHeight/2) );
+        return ConeConfig.distanceCorrection2 + ConeConfig.distanceCorrection * ( (realHeight/2)/Math.tan(occupiedFOV/2) + (realHeight/2) );
     }
     private double getAngle(Point point) {
         return this.camera.HFOV * (point.x / this.camera.resolution.width) - this.camera.HFOV /2;
