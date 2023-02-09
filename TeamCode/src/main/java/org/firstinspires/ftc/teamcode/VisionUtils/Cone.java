@@ -2,9 +2,9 @@ package org.firstinspires.ftc.teamcode.VisionUtils;
 
 import com.acmerobotics.dashboard.config.Config;
 
-import org.firstinspires.ftc.teamcode.Math.Geometry.Pose2d;
 import org.firstinspires.ftc.teamcode.visionPipelines.ConeDetectionFast;
 import org.opencv.core.Point;
+import org.opencv.core.RotatedRect;
 import org.opencv.core.Size;
 
 public class Cone {
@@ -19,6 +19,7 @@ public class Cone {
     public Point top;
     public Classification classification;
     public boolean deadzoned;
+    public RotatedRect rotatedRect;
 
     @Config
     public static class Ranking {
@@ -29,6 +30,13 @@ public class Cone {
 
     public double score = 0;
 
+    public Cone(Size size, CameraBasedPosition position, Point top, RotatedRect rotatedRect){
+        this.size = size;
+        this.position = position;
+        this.top = top;
+        this.rotatedRect = rotatedRect;
+        this.classify();
+    }
     public Cone(Size size, CameraBasedPosition position, Point top){
         this.size = size;
         this.position = position;
@@ -37,7 +45,7 @@ public class Cone {
     }
     private void classify() {
         this.deadzoned = false;//!(this.position.angle <= Turret.MAX_SERVO_RADIANS) || !(this.position.angle >= Turret.MIN_SERVO_RADIANS);
-        if (this.position.distance < ConeDetectionFast.ConeConfig.perfectDistance - ConeDetectionFast.ConeConfig.perfectTolerance) {
+        if (this.position.distance < ConeDetectionFast.ConeDetectionConfig.perfectDistance - ConeDetectionFast.ConeDetectionConfig.perfectTolerance) {
             this.classification = Classification.CLOSE;
         }
         else if (this.position.distance > 40) {

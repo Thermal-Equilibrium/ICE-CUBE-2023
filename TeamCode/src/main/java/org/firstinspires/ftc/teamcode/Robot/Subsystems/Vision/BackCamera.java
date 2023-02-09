@@ -21,7 +21,6 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -81,14 +80,14 @@ public class BackCamera extends Subsystem {
     @Nullable
     public Cone getCone() {
         assert pipeline instanceof ConeDetectionFast;
-        tempConeList = ((ConeDetectionFast) pipeline).getRankedCones();
+        tempConeList = ((ConeDetectionFast) pipeline).getCones();
         if (tempConeList.size() > 0) return tempConeList.get(0);
         return null;
     }
     @Nullable
     public Cone getCone(int rank) {
         assert pipeline instanceof ConeDetectionFast;
-        tempConeList = ((ConeDetectionFast) pipeline).getRankedCones();
+        tempConeList = ((ConeDetectionFast) pipeline).getCones();
         if (tempConeList.size() >= rank) return tempConeList.get(rank);
         return null;
     }

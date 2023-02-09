@@ -48,7 +48,7 @@ public class DrPepperDetection extends OpenCvPipeline {
 
         public static String spectrum = "HSV";
     }
-    private static final double DrPepperGirth = 4;
+    private static final double DrPepperGirth = 2.5;
 
     private static final Scalar BLANK = new Scalar(0,0,0);
     private static final Scalar RED = new Scalar(255,0,0);
