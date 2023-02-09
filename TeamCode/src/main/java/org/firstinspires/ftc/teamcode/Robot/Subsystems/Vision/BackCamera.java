@@ -27,8 +27,11 @@ import java.util.concurrent.TimeUnit;
 
 public class BackCamera extends Subsystem {
     public Size resolution = Resolution.LOW;
-    public double HFOV = Math.toRadians(67.9255464975384); //70.428 // 60 //66
-    public double VFOV = Math.toRadians(41.50936520321168);
+    public Size nativeResolution = new Size(1920,1080);
+    public double HFOV = Math.toRadians(67.8727791718758);//68.67
+    public double VFOV = Math.toRadians(41.473850212095506);//42.07
+//    public double HFOV = Math.toRadians(67.9255464975384);
+//    public double VFOV = Math.toRadians(41.50936520321168);
 
     public Pose2d position = new Pose2d(0,0, Math.toRadians(0));
     private OpenCvPipeline pipeline;
@@ -59,10 +62,12 @@ public class BackCamera extends Subsystem {
                 cam.getGainControl().setGain(gain);
                 cam.getFocusControl().setMode(focusMode);
                 if (focusMode == FocusControl.Mode.Fixed) {
-                    //cam.getFocusControl().setFocusLength(focusLength);
+                    cam.getFocusControl().setFocusLength(focusLength);
                 }
             }
-            @Override public void onError(int errorCode) { shutdown(); }});
+            @Override public void onError(int errorCode) {
+                shutdown();
+            }});
         FtcDashboard dashboard = FtcDashboard.getInstance();
         dashboard.startCameraStream(cam, 20);
     }

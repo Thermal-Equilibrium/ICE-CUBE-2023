@@ -20,25 +20,20 @@ public class Cone {
     public Classification classification;
     public boolean deadzoned;
 
-    public double hd;
-    public double vd;
-
     @Config
     public static class Ranking {
         private static double DX_WEIGHT = 2;
         private static double MAX_DX = 15;
-        private static double MAX_DY = 35;
+        private static double MAX_DY = 30;
     }
 
     public double score = 0;
 
-    public Cone(Size size, CameraBasedPosition position, Point top, double hd, double vd){
+    public Cone(Size size, CameraBasedPosition position, Point top){
         this.size = size;
         this.position = position;
         this.top = top;
         this.classify();
-        this.hd = hd;
-        this.vd = vd;
     }
     private void classify() {
         this.deadzoned = false;//!(this.position.angle <= Turret.MAX_SERVO_RADIANS) || !(this.position.angle >= Turret.MIN_SERVO_RADIANS);
