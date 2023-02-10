@@ -81,6 +81,7 @@ public class BackCamera extends Subsystem {
     public Cone getCone() {
         assert pipeline instanceof ConeDetectionFast;
         tempConeList = ((ConeDetectionFast) pipeline).getCones();
+        Dashboard.packet.put("actual cones", tempConeList.size());
         if (tempConeList.size() > 0) return tempConeList.get(0);
         return null;
     }

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.visionPipelines;
 
 import com.acmerobotics.dashboard.config.Config;
 
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.BackCamera;
 import org.firstinspires.ftc.teamcode.Utils.Team;
 import org.firstinspires.ftc.teamcode.VisionUtils.Cone;
@@ -33,9 +34,10 @@ public class ConeDetectionFast extends OpenCvPipeline {
     @Config
     public static class ConeDetectionConfig {
         public static boolean updateColors = true;
-        public static double distanceCorrectionMult = .7;//.807;
+        public static double distanceCorrectionMult = 1.05;//.807;
         public static double distanceCorrectionAdd = 0;
-        public static double MAX_DISTANCE_ANGLE_CORRECTION = 2;
+        public static double MAX_DISTANCE_ANGLE_CORRECTION_ADD = 1;
+        public static double MAX_DISTANCE_ANGLE_CORRECTION_ADD_MULT = .13;
 
         public static int coneMinArea = 600;
 
@@ -81,7 +83,7 @@ public class ConeDetectionFast extends OpenCvPipeline {
     private final Mat structuringMedium = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(5,5));
     private final Mat structuringLarge = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(7,7));
 
-    public volatile Cone conestackGuess = null;
+
     private Point camCenter;
     private Team team;
 
@@ -94,7 +96,8 @@ public class ConeDetectionFast extends OpenCvPipeline {
     Scalar blueLower;
     Scalar blueUpper;
 
-    List<Cone> cones;
+    public volatile Cone conestackGuess = null;
+    private volatile List<Cone> cones = new ArrayList<>();
 
     public ConeDetectionFast(Team team, BackCamera backCamera) {
         this.team = team;
@@ -159,24 +162,22 @@ public class ConeDetectionFast extends OpenCvPipeline {
             }
         }
 
-        this.undistort(frame);
+//        this.undistort(frame);
         Mat mask = new Mat();
         this.filter(frame, mask);
         this.morphology(mask);
         frame.setTo(BLACK, mask);
         ArrayList<Cone> unrankedCones = new ArrayList<>();
         this.findCones(mask, unrankedCones);
-        List<Cone> rankedCones = this.rank(unrankedCones);
-        this.hud(frame, unrankedCones, rankedCones);
-        this.cones = rankedCones;
-        unrankedCones.clear();
-        rankedCones.clear();
+        this.rank(unrankedCones);
+        this.hud(frame, unrankedCones);
+//        Dashboard.packet.put("cones", this.cones.size());
         return frame;
     }
 
-    private void hud(Mat frame, ArrayList<Cone>unrankedCones, List<Cone> rankedCones) {
-        for (int i=0;i<rankedCones.size();i++) {
-            Cone cone = rankedCones.get(i);
+    private void hud(Mat frame, ArrayList<Cone>unrankedCones) {
+        for (int i=0;i<this.cones.size();i++) {
+            Cone cone = this.cones.get(i);
             if (i==0) { markerOutlined(frame, cone.top, new Point(0,0), GREEN, Imgproc.MARKER_STAR,10,2); }
             if (i==1) { markerOutlined(frame, cone.top, new Point(0,0), ORANGE, Imgproc.MARKER_STAR,10,2); }
             textOutlined(frame, String.valueOf(i), cone.top,new Point(-4,-16), .7, WHITE, 2);
@@ -207,11 +208,11 @@ public class ConeDetectionFast extends OpenCvPipeline {
         if (this.team == Team.RED) {
             if (Objects.equals(ConeDetectionConfig.spectrum, "HSV")) Imgproc.cvtColor(frame, HLS, Imgproc.COLOR_BGR2HSV_FULL);
             else if (Objects.equals(ConeDetectionConfig.spectrum, "HLS")) Imgproc.cvtColor(frame, HLS, Imgproc.COLOR_BGR2HLS_FULL);
-            Core.inRange(frame, redLower, redUpper, mask);
+            Core.inRange(HLS, redLower, redUpper, mask);
         } else if (this.team == Team.BLUE) {
             if (Objects.equals(ConeDetectionConfig.spectrum, "HSV")) Imgproc.cvtColor(frame, HLS, Imgproc.COLOR_RGB2HSV_FULL);
             else if (Objects.equals(ConeDetectionConfig.spectrum, "HLS")) Imgproc.cvtColor(frame, HLS, Imgproc.COLOR_RGB2HLS_FULL);
-            Core.inRange(frame, blueLower, blueUpper, mask);
+            Core.inRange(HLS, blueLower, blueUpper, mask);
         }
         HLS.release();
     }
@@ -224,11 +225,9 @@ public class ConeDetectionFast extends OpenCvPipeline {
     private void findCones(Mat mask, ArrayList<Cone> unrankedCones) {
 
         ArrayList<MatOfPoint> rawContours = new ArrayList<>();
-
         Mat hierarchy = new Mat();
         Imgproc.findContours(mask, rawContours, hierarchy, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
         hierarchy.release();
-
         mask.release();
 
         for (MatOfPoint contour: rawContours) {
@@ -239,9 +238,13 @@ public class ConeDetectionFast extends OpenCvPipeline {
             if (Imgproc.contourArea(contour) >= ConeDetectionConfig.coneMinArea && rect.height > rect.width) {
                 MatOfPoint2f contour2f = new MatOfPoint2f(contour.toArray());
                 RotatedRect rotatedRect = Imgproc.minAreaRect(contour2f);
-                double angleDistanceCorrection =  ConeDetectionConfig.MAX_DISTANCE_ANGLE_CORRECTION * Math.abs(this.getAngle(point) / Math.toRadians(30));
-                double dist = angleDistanceCorrection + (this.getDistance(rect.width, CONE_WIDTH));
-                unrankedCones.add(new Cone(rect.size(), new CameraBasedPosition(dist, this.getAngle(point), this.camera.position), point, rotatedRect));
+                if (rotatedRect.size.height > rotatedRect.size.width) {
+                    rotatedRect.size = new Size(rotatedRect.size.height ,rotatedRect.size.width); // <- don't listen to android studio its supposed to be like this
+                }
+                double angleDistanceCorrection =  ConeDetectionConfig.MAX_DISTANCE_ANGLE_CORRECTION_ADD * Math.abs(this.getAngle(point) / Math.toRadians(30));
+                double angleDistanceCorrectionMult =  1 + ConeDetectionConfig.MAX_DISTANCE_ANGLE_CORRECTION_ADD_MULT * Math.abs(this.getAngle(point) / Math.toRadians(30));
+                double dist = angleDistanceCorrection +  angleDistanceCorrectionMult * (this.getDistance(rotatedRect.size.width, CONE_WIDTH));
+                unrankedCones.add(new Cone(rotatedRect.size, new CameraBasedPosition(dist, this.getAngle(point), this.camera.position), point, rotatedRect));
                 contour.release();
                 contour2f.release();
             }
@@ -260,19 +263,18 @@ public class ConeDetectionFast extends OpenCvPipeline {
         Imgproc.drawMarker(frame, pos, color, marker, size, thickness);
     }
 
-    private List<Cone> rank(ArrayList<Cone> unrankedCones) {
+    private void rank(ArrayList<Cone> unrankedCones) {
         this.conestackGuess = null;
         if (unrankedCones.size() > 0) {
-            List<Cone> rankedCones = unrankedCones.stream()
+            this.cones.clear();
+            this.cones = unrankedCones.stream()
                     .filter(cone -> cone.classification == Cone.Classification.GOOD && !cone.deadzoned)
                     .collect(Collectors.toList())
                     .stream().sorted(Comparator.comparing(cone -> cone.score))
                     .collect(Collectors.toList());
-            Collections.reverse(rankedCones);
+            Collections.reverse(this.cones);
             this.conestackGuess = Collections.max(unrankedCones, Comparator.comparing(cone -> cone.size.height));
-            return rankedCones;
         }
-        return new ArrayList<>();
     }
 
     private static Point getTop(MatOfPoint contour) { return Collections.min(contour.toList(), Comparator.comparing(h -> h.y)); }

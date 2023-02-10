@@ -14,7 +14,7 @@ public class AutoSlides extends BaseAuto {
     public Command setupAuto(CommandScheduler scheduler) {
         ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism, robot.drivetrain, robot.backCamera);
         waitForStart();
-            return commandGroups.autoGoToCone();
+            return commandGroups.autoGoToConeTesting();
 //        return new NullCommand();
     }
     @Override

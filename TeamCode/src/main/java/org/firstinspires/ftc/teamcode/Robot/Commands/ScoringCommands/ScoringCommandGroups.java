@@ -66,6 +66,24 @@ public class ScoringCommandGroups {
 			} else return new NullCommand();
 		});
 	}
+	public Command autoGoToConeTesting() {
+		Cone cone = backCamera.getCone();
+		if (cone != null) {
+
+			double angle = IntakeKinematics.getTurretAngleToTarget(-1*cone.position.dx);
+			double extendDistance = IntakeKinematics.getHorizontalSlideExtensionToTarget(cone.position.dy,-1*cone.position.dx,horizontalExtension.getSlidePositionInches());
+			Dashboard.packet.put("THE dx", cone.position.dx);
+			Dashboard.packet.put("THE dy", cone.position.dy);
+			Dashboard.packet.put("THE angle", Math.toDegrees(angle));
+			Dashboard.packet.put("THE extendDist", extendDistance);
+			if(extendDistance<=17) {
+				if (angle < 0) {angle += Math.PI*2;}
+				return openClaw().addNext(new MoveTurretDirect(turret, angle).addNext(new MoveHorizontalExtensionInches(horizontalExtension, extendDistance)).addNext(moveArm(Turret.ArmStates.DOWN)));
+			}
+			else return new NullCommand();
+
+		} else return new NullCommand();
+	}
 
 	// near straight but tilted to the left
 	public Command moveToIntakingLeft() {

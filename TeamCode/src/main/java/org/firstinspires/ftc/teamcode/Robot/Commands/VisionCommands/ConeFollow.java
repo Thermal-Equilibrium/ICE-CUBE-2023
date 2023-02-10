@@ -36,7 +36,7 @@ public class ConeFollow extends Command {
     }
 
     @Override
-    public boolean completed() { return false; }
+    public boolean completed() { return true; }
 
     @Override
     public void shutdown() {

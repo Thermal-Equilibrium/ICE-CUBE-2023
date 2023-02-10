@@ -15,7 +15,11 @@ public class AutoIntake extends BaseAuto {
     public Command setupAuto(CommandScheduler scheduler) {
         ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism, robot.drivetrain, robot.backCamera);
         waitForStart();
-        return commandGroups.autoGoToCone().addNext(new Delay(.08)).addNext(commandGroups.grabCone()).addNext(commandGroups.openLatch()).addNext(new Delay(.08)).addNext(commandGroups.collectCone()).addNext(commandGroups.closeLatch());
+        return commandGroups.autoGoToConeTesting().addNext(new Delay(.08))
+                .addNext(commandGroups.grabCone())
+                .addNext(commandGroups.openLatch())
+                .addNext(commandGroups.collectCone())
+                .addNext(commandGroups.closeLatch());
     }
     @Override
     public Team getTeam() {
