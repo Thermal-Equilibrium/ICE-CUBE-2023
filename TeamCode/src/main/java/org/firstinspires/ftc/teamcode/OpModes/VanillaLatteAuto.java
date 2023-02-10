@@ -21,6 +21,7 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringCommandGroups;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
+import org.firstinspires.ftc.teamcode.Utils.Team;
 import org.firstinspires.ftc.teamcode.visionPipelines.SleeveDetection;
 
 import java.util.HashMap;
@@ -35,6 +36,7 @@ public class VanillaLatteAuto extends BaseAuto {
         robot.drivetrain.setPose(startPose);
     }
 
+
     @Override
     public Command setupAuto(CommandScheduler scheduler) {
         TrajectoryVelocityConstraint slowVelocity = SampleMecanumDrive.getVelocityConstraint(DriveConstants.MAX_VEL_slow,DriveConstants.MAX_ANG_VEL_slow, DriveConstants.TRACK_WIDTH);
@@ -43,7 +45,7 @@ public class VanillaLatteAuto extends BaseAuto {
         ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism,robot.drivetrain, robot.backCamera);
 
         Vector2d goToPole = new Vector2d(-36, 23);
-        Pose2d rotateFaceMedium = shiftRobotRelative(new Pose2d(-34, 27,Math.toRadians(21.8816732757)),-3.5,-2);
+        Pose2d rotateFaceMedium = shiftRobotRelative(new Pose2d(-34, 27,Math.toRadians(21.8816732757)),-3,-2);
 
         Pose2d parkLeft = new Pose2d(-4, 16, Math.toRadians(180));
         Pose2d parkCenter = new Pose2d(-35, 12.5, Math.toRadians(0));

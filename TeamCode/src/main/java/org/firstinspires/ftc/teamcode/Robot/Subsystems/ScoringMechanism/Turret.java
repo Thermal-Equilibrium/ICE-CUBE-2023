@@ -20,15 +20,15 @@ public class Turret extends Subsystem {
 	Servo claw;
 	double clawTransferPosition = 0.34;
 	double armSafe = 0.4;
-	private static final double turretTransfer = Math.toRadians(177);//3.05;
+	private static final double turretTransfer = Math.toRadians(180);//3.05;
 	private static final double MIN_RAW_SERVO_ANGLE = 0;
 	private static final double MAX_RAW_SERVO_ANGLE = 1;
 	private static final double TAU = Math.PI * 2;
 	double currentFreeStateValue = 0;
 	Servo latch;
 
-	int MIN_PWM_RANGE = 500;
-	int MAX_PWM_RANGE = 2500;
+	int MIN_PWM_RANGE = 501;
+	int MAX_PWM_RANGE = 2499;
 
 	double latch_open = 0.48;
 	double latch_closed = 0.2;
@@ -94,7 +94,7 @@ public class Turret extends Subsystem {
 				setBasedTurretPosition(Math.toRadians(15));
 				break;
 			case Slight_LEFT:
-				setBasedTurretPosition(Math.toRadians(350));
+				setBasedTurretPosition(Math.toRadians(345 ));
 				break;
 			case Slight_LEFT_AUTO:
 				setBasedTurretPosition(Math.toRadians(330));
@@ -168,6 +168,7 @@ public class Turret extends Subsystem {
 				break;
 			case LOW_SCORING:
 				arm1.setPosition(0.4);
+				break;
 			case FREE_STATE:
 				arm1.setPosition(currentFreeStateValue);
 				break;

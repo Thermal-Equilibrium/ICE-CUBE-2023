@@ -170,10 +170,7 @@ public class ScoringCommandGroups {
 			// if this is the case, dont put out the extension, just put out the vertical extension
 			return moveVerticalExtension(VerticalExtension.HIGH_POSITION);
 		}
-		return new MultipleCommand(moveHorizontalExtension(HorizontalExtension.CLOSE_INTAKE), moveVerticalExtension(VerticalExtension.HIGH_POSITION))
-				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
-				.addNext(moveTurret(Turret.TurretStates.Slight_LEFT))
-				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
+		return new MultipleCommand(autoGoToCone(), moveVerticalExtension(VerticalExtension.HIGH_POSITION));
 	}
 	public Command moveToIntakingRight() {
 		return moveHorizontalExtension(HorizontalExtension.EXTENSION1)

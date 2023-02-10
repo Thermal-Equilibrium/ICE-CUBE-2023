@@ -22,10 +22,16 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.NullCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringCommandGroups;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
+import org.firstinspires.ftc.teamcode.Utils.Team;
 
 @Autonomous
 public class PumpkinSpiceAuto extends BaseAuto {
 
+
+    @Override
+    public Team getTeam() {
+        return Team.BLUE;
+    }
 
 
     Pose2d startPose = new Pose2d(-36, 66.5,Math.toRadians(-90));

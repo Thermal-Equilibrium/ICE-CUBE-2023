@@ -20,8 +20,8 @@ public class HorizontalExtension extends Subsystem {
 	DcMotorEx rightMotor;
 
 	PIDCoefficients coefficients = new PIDCoefficients(0.013,0,0);
-	MotionConstraint upConstraint = new MotionConstraint(6000,5000,2000);
-	MotionConstraint downConstraint = new MotionConstraint(6000,5000,2000);
+	MotionConstraint upConstraint = new MotionConstraint(4000,5000,1800);
+	MotionConstraint downConstraint = new MotionConstraint(4000,5000,1800);
 
 	ProfiledPID controller = new ProfiledPID(upConstraint,downConstraint,coefficients);
 
@@ -79,6 +79,9 @@ public class HorizontalExtension extends Subsystem {
 	protected void updatePID() {
 		double measuredPosition = getSlidePosition();
 		double power = controller.calculate(targetPosition,measuredPosition);
+		Dashboard.packet.put("measured horizontal position",measuredPosition);
+		Dashboard.packet.put("target horizontal position",controller.getTargetPosition());
+
 		leftMotor.setPower(power);
 		rightMotor.setPower(power);
 	}

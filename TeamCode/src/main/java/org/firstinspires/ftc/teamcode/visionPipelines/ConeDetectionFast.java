@@ -34,7 +34,7 @@ public class ConeDetectionFast extends OpenCvPipeline {
     @Config
     public static class ConeDetectionConfig {
         public static boolean updateColors = true;
-        public static double distanceCorrectionMult = 1; //1.05
+        public static double distanceCorrectionMult = 1.05;
         public static double distanceCorrectionAdd = 0;
         public static double MAX_DISTANCE_ANGLE_CORRECTION_ADD = 1;
         public static double MAX_DISTANCE_ANGLE_CORRECTION_ADD_MULT = .13;
@@ -205,6 +205,10 @@ public class ConeDetectionFast extends OpenCvPipeline {
 
     private void filter(Mat frame, Mat mask) {
         Mat HLS = new Mat();
+        if (this.team == null || this.team.equals(Team.NOT_ASSIGNED)) {
+            this.team = Team.BLUE;
+        }
+
         if (this.team == Team.RED) {
             if (Objects.equals(ConeDetectionConfig.spectrum, "HSV")) Imgproc.cvtColor(frame, HLS, Imgproc.COLOR_BGR2HSV_FULL);
             else if (Objects.equals(ConeDetectionConfig.spectrum, "HLS")) Imgproc.cvtColor(frame, HLS, Imgproc.COLOR_BGR2HLS_FULL);
