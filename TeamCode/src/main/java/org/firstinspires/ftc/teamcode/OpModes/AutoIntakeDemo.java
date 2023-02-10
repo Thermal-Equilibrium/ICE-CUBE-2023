@@ -10,12 +10,12 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringComm
 import org.firstinspires.ftc.teamcode.Utils.Team;
 
 @Autonomous
-public class AutoIntake extends BaseAuto {
+public class AutoIntakeDemo extends BaseAuto {
     @Override
     public Command setupAuto(CommandScheduler scheduler) {
         ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism, robot.drivetrain, robot.backCamera);
         waitForStart();
-        return commandGroups.autoIntakeCmd();
+        return commandGroups.autoIntakeCmd().addNext(new Delay(.5)).addNext(commandGroups.autoIntakeCmd()).addNext(new Delay(.5)).addNext(commandGroups.autoIntakeCmd());
     }
     @Override
     public Team getTeam() {

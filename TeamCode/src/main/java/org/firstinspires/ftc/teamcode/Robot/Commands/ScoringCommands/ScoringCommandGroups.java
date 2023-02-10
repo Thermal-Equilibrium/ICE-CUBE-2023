@@ -66,6 +66,77 @@ public class ScoringCommandGroups {
 			} else return new NullCommand();
 		});
 	}
+	public Command autoIntakeCmd() {
+		return new RunCommand(() -> {
+			Cone cone = backCamera.getCone();
+			if (cone != null) {
+
+				double angle = IntakeKinematics.getTurretAngleToTarget(-1*cone.position.dx);
+				double extendDistance = IntakeKinematics.getHorizontalSlideExtensionToTarget(cone.position.dy,-1*cone.position.dx,horizontalExtension.getSlidePositionInches());
+				if(extendDistance<=15) {
+					if (angle < 0) {angle += Math.PI*2;}
+					return openClaw()
+							.addNext(new MoveTurretDirect(turret, angle))
+							.addNext(new MoveHorizontalExtensionInches(horizontalExtension, extendDistance))
+							.addNext(moveArm(Turret.ArmStates.DOWN))
+							.addNext(new Delay(.08))
+							.addNext(grabCone())
+							.addNext(openLatch())
+							.addNext(collectCone())
+							.addNext(closeLatch());
+				}
+				else return new NullCommand();
+
+			} else return new NullCommand();
+		});
+	}
+	public Command autoIntakeCmdMulti() {
+		return new RunCommand(() -> {
+			Cone cone = backCamera.getCone();
+			if (cone != null) {
+
+				double angle = IntakeKinematics.getTurretAngleToTarget(-1*cone.position.dx);
+				double extendDistance = IntakeKinematics.getHorizontalSlideExtensionToTarget(cone.position.dy,-1*cone.position.dx,horizontalExtension.getSlidePositionInches());
+				if(extendDistance<=15) {
+					if (angle < 0) {angle += Math.PI*2;}
+					return openClaw()
+							.addNext(new MoveTurretDirect(turret, angle))
+							.addNext(new MoveHorizontalExtensionInches(horizontalExtension, extendDistance))
+							.addNext(moveArm(Turret.ArmStates.DOWN))
+							.addNext(new Delay(.08))
+							.addNext(grabCone())
+							.addNext(openLatch())
+							.addNext(collectCone())
+							.addNext(closeLatch())
+
+							.addNext(new Delay(.5))
+							.addNext(openClaw())
+							.addNext(new MoveTurretDirect(turret, angle))
+							.addNext(new MoveHorizontalExtensionInches(horizontalExtension, extendDistance))
+							.addNext(moveArm(Turret.ArmStates.DOWN))
+							.addNext(new Delay(.08))
+							.addNext(grabCone())
+							.addNext(openLatch())
+							.addNext(collectCone())
+							.addNext(closeLatch())
+
+							.addNext(new Delay(.5))
+							.addNext(openClaw())
+							.addNext(new MoveTurretDirect(turret, angle))
+							.addNext(new MoveHorizontalExtensionInches(horizontalExtension, extendDistance))
+							.addNext(moveArm(Turret.ArmStates.DOWN))
+							.addNext(new Delay(.08))
+							.addNext(grabCone())
+							.addNext(openLatch())
+							.addNext(collectCone())
+							.addNext(closeLatch());
+
+				}
+				else return new NullCommand();
+
+			} else return new NullCommand();
+		});
+	}
 	public Command autoGoToConeTesting() {
 		Cone cone = backCamera.getCone();
 		if (cone != null) {

@@ -34,7 +34,7 @@ public class ConeDetectionFast extends OpenCvPipeline {
     @Config
     public static class ConeDetectionConfig {
         public static boolean updateColors = true;
-        public static double distanceCorrectionMult = 1.05;//.807;
+        public static double distanceCorrectionMult = 1; //1.05
         public static double distanceCorrectionAdd = 0;
         public static double MAX_DISTANCE_ANGLE_CORRECTION_ADD = 1;
         public static double MAX_DISTANCE_ANGLE_CORRECTION_ADD_MULT = .13;
