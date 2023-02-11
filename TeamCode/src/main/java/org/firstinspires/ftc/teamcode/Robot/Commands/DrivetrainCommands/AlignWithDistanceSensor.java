@@ -16,10 +16,9 @@ import java.util.function.BooleanSupplier;
 
 public class AlignWithDistanceSensor extends Command {
 
+	protected BasicPID controller = new BasicPID(controllerCoefficientsDistance);
 	Drivetrain drivetrain;
 	DistanceSensor distanceSensor;
-
-	protected BasicPID controller = new BasicPID(controllerCoefficientsDistance);
 	BooleanSupplier keepRunning;
 
 
@@ -38,7 +37,7 @@ public class AlignWithDistanceSensor extends Command {
 	public void periodic() {
 
 		double power = controller.calculate(referenceDistanceSensor, distanceSensor.getDistance_in());
-		drivetrain.robotRelative(new Pose2d(-power,0,0));
+		drivetrain.robotRelative(new Pose2d(-power, 0, 0));
 	}
 
 	@Override
@@ -51,6 +50,6 @@ public class AlignWithDistanceSensor extends Command {
 
 	@Override
 	public void shutdown() {
-		drivetrain.robotRelative(new Pose2d(0,0,0));
+		drivetrain.robotRelative(new Pose2d(0, 0, 0));
 	}
 }

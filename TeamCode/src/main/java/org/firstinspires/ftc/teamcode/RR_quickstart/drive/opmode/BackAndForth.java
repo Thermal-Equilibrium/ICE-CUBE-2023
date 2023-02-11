@@ -4,12 +4,10 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.BaseAuto;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
-import org.firstinspires.ftc.teamcode.RR_quickstart.drive.SampleMecanumDrive;
 
 /*
  * Op mode for preliminary tuning of the follower PID coefficients (located in the drive base
@@ -31,20 +29,20 @@ import org.firstinspires.ftc.teamcode.RR_quickstart.drive.SampleMecanumDrive;
 @Autonomous(group = "drive")
 public class BackAndForth extends BaseAuto {
 
-    public static double DISTANCE = 50;
+	public static double DISTANCE = 50;
 
-    @Override
-    public Command setupAuto(CommandScheduler scheduler) {
+	@Override
+	public Command setupAuto(CommandScheduler scheduler) {
 
-        Trajectory trajectoryForward = robot.drivetrain.getBuilder().trajectoryBuilder(new Pose2d())
-                .forward(DISTANCE)
-                .build();
+		Trajectory trajectoryForward = robot.drivetrain.getBuilder().trajectoryBuilder(new Pose2d())
+				.forward(DISTANCE)
+				.build();
 
-        Trajectory trajectoryBackward = robot.drivetrain.getBuilder().trajectoryBuilder(trajectoryForward.end())
-                .back(DISTANCE)
-                .build();
+		Trajectory trajectoryBackward = robot.drivetrain.getBuilder().trajectoryBuilder(trajectoryForward.end())
+				.back(DISTANCE)
+				.build();
 
-        return followRR(trajectoryForward)
-                .addNext(followRR(trajectoryBackward));
-    }
+		return followRR(trajectoryForward)
+				.addNext(followRR(trajectoryBackward));
+	}
 }

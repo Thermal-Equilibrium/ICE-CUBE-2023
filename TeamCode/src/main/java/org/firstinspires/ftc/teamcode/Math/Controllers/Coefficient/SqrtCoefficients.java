@@ -3,14 +3,12 @@ package org.firstinspires.ftc.teamcode.Math.Controllers.Coefficient;
 
 /**
  * feedback controller that uses sqrt as a nonlinear way to counteract friction
- *
+ * <p>
  * is also coupled with a hysteresis
- *
+ * <p>
  * https://www.desmos.com/calculator/qiqimyikle
  */
 public class SqrtCoefficients {
-
-
 
 
 	public double K;
@@ -19,12 +17,11 @@ public class SqrtCoefficients {
 
 	/**
 	 * Sqrt feedback controller
-	 *
-		 * Take a look at: https://www.desmos.com/calculator/qiqimyikle before use
+	 * <p>
+	 * Take a look at: https://www.desmos.com/calculator/qiqimyikle before use
 	 *
 	 * @param K 'proportional' constant
 	 * @param H hysteresis or minimum power
-	 *
 	 */
 	public SqrtCoefficients(double K, double Kd, double H) {
 		this.K = K;

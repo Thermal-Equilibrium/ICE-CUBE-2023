@@ -1,10 +1,9 @@
 package org.firstinspires.ftc.teamcode.Math.AsymmetricProfile;
 
 
-
 /**
  * Asymmetric motion profile
- *
+ * <p>
  * Traditional motion profiles in FTC simply mirror the acceleration phase to obtain the deceleration
  * this approach is suboptimal because we can generally accelerate faster than we can decelerate
  * So this approach uses a modified version of the roadrunner algorithm to allow for asymmetric constraints
@@ -38,7 +37,6 @@ public class MotionProfileDebug {
 	protected double dt3;
 	/**
 	 * the total duration of the motion profile
-	 *
 	 */
 	protected double profileDuration;
 
@@ -51,12 +49,13 @@ public class MotionProfileDebug {
 
 	/**
 	 * construct the asymmetric motion profile object
+	 *
 	 * @param initialPosition the starting position
-	 * @param finalPosition the desired end position
-	 * @param constraints the motion constraints we want to respect between the two positions
+	 * @param finalPosition   the desired end position
+	 * @param constraints     the motion constraints we want to respect between the two positions
 	 */
 	public MotionProfileDebug(double initialPosition, double finalPosition,
-								   MotionConstraint constraints) {
+							  MotionConstraint constraints) {
 		this.initialPosition = initialPosition;
 		this.finalPosition = finalPosition;
 		this.constraints = constraints;
@@ -97,13 +96,12 @@ public class MotionProfileDebug {
 			// and then sets it to the lower to make it symmetrical and respect the minimum constraints of the plant
 			if (Math.abs(this.constraints.max_acceleration) > Math.abs(constraints.max_deceleration)) {
 				constraints.max_acceleration = Math.abs(Math.abs(constraints.max_deceleration));
-			}
-			else {
+			} else {
 				constraints.max_deceleration = Math.abs(Math.abs(constraints.max_acceleration));
 			}
 			// after finding out
-			this.dt1 = Math.sqrt(Math.abs(distance)/Math.abs(constraints.max_acceleration));
-			this.dt3 = Math.sqrt(Math.abs(distance)/Math.abs(constraints.max_deceleration));
+			this.dt1 = Math.sqrt(Math.abs(distance) / Math.abs(constraints.max_acceleration));
+			this.dt3 = Math.sqrt(Math.abs(distance) / Math.abs(constraints.max_deceleration));
 		}
 		// the length of the motion profile is as simple as summing each period together
 		this.profileDuration = this.dt1 + this.dt2 + this.dt3;
@@ -115,10 +113,9 @@ public class MotionProfileDebug {
 	 *
 	 * @param seconds the current time stamp, recommended to use {@link com.qualcomm.robotcore.util.ElapsedTime} to perform this
 	 * @return the motion state (desired position, velocity, acceleration) at that given point in time
-	 *
+	 * <p>
 	 * For usage it is recommended to index the motion profile and then take the desired states of
 	 * the motion state and put them into a feedback / feedforward controller(s)
-	 *
 	 */
 	public MotionState calculate(double seconds) {
 		// the current acceleration
@@ -171,7 +168,6 @@ public class MotionProfileDebug {
 			velocity = 0;
 			position = distance;
 		}
-
 
 
 		// construct the motion state object.  We take the signum of the distance to accurately describe the direction of travel.

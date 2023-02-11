@@ -6,8 +6,8 @@ public class TestMotionProfile {
 
 	public static void main(String[] args) {
 		double desiredPosition = 0;
-		MotionConstraint slide_constraints = new MotionConstraint(2500,2500,750);
-		AsymmetricMotionProfile profile = new AsymmetricMotionProfile(400,0,slide_constraints);
+		MotionConstraint slide_constraints = new MotionConstraint(2500, 2500, 750);
+		AsymmetricMotionProfile profile = new AsymmetricMotionProfile(400, 0, slide_constraints);
 		ElapsedTime timer = new ElapsedTime();
 		double state = profile.calculate(timer.seconds()).getX();
 		while (state > desiredPosition) {

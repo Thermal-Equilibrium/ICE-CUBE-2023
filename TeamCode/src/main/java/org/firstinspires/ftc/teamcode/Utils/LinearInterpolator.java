@@ -1,10 +1,7 @@
 package org.firstinspires.ftc.teamcode.Utils;
 
-import android.os.Build;
-
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 
 public class LinearInterpolator {
@@ -19,10 +16,9 @@ public class LinearInterpolator {
 		this.y = y;
 
 
-
 		map = new HashMap<>();
 		for (int i = 0; i < x.size(); ++i) {
-			map.put(x.get(i),y.get(i));
+			map.put(x.get(i), y.get(i));
 		}
 
 		Collections.sort(this.x);
@@ -50,7 +46,7 @@ public class LinearInterpolator {
 		}
 
 		for (int i = 1; i < x.size(); ++i) {
-			if (x.get(i) < key){
+			if (x.get(i) < key) {
 				currentLowerBound = x.get(i);
 			}
 			if (x.get(i) > key) {
@@ -65,8 +61,6 @@ public class LinearInterpolator {
 		double xDifferenceTerm = (currentUpperBound - key) / (currentUpperBound - currentLowerBound);
 
 		return lowerY * xDifferenceTerm + upperY * xDifferenceTerm;
-
-
 
 
 	}

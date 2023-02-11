@@ -25,7 +25,7 @@ public class ClawAngleTester extends LinearOpMode {
 			}
 
 			claw.setPosition(angle);
-			telemetry.addData("claw angle: ",angle);
+			telemetry.addData("claw angle: ", angle);
 			telemetry.update();
 		}
 	}

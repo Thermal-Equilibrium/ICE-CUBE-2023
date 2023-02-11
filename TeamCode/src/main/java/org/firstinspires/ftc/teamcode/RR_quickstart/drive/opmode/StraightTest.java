@@ -16,30 +16,30 @@ import org.firstinspires.ftc.teamcode.RR_quickstart.drive.SampleMecanumDrive;
 @Config
 @Autonomous(group = "drive")
 public class StraightTest extends LinearOpMode {
-    public static double DISTANCE = 30; // in
+	public static double DISTANCE = 30; // in
 
-    @Override
-    public void runOpMode() throws InterruptedException {
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+	@Override
+	public void runOpMode() throws InterruptedException {
+		telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+		SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        Trajectory trajectory = drive.trajectoryBuilder(new Pose2d())
-                .forward(DISTANCE)
-                .build();
+		Trajectory trajectory = drive.trajectoryBuilder(new Pose2d())
+				.forward(DISTANCE)
+				.build();
 
-        waitForStart();
+		waitForStart();
 
-        if (isStopRequested()) return;
+		if (isStopRequested()) return;
 
-        drive.followTrajectory(trajectory);
+		drive.followTrajectory(trajectory);
 
-        Pose2d poseEstimate = drive.getPoseEstimate();
-        telemetry.addData("finalX", poseEstimate.getX());
-        telemetry.addData("finalY", poseEstimate.getY());
-        telemetry.addData("finalHeading", poseEstimate.getHeading());
-        telemetry.update();
+		Pose2d poseEstimate = drive.getPoseEstimate();
+		telemetry.addData("finalX", poseEstimate.getX());
+		telemetry.addData("finalY", poseEstimate.getY());
+		telemetry.addData("finalHeading", poseEstimate.getHeading());
+		telemetry.update();
 
-        while (!isStopRequested() && opModeIsActive()) ;
-    }
+		while (!isStopRequested() && opModeIsActive()) ;
+	}
 }

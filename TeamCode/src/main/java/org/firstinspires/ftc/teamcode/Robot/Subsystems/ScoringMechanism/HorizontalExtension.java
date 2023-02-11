@@ -14,18 +14,6 @@ import org.firstinspires.ftc.teamcode.Utils.ProfiledPID;
 public class HorizontalExtension extends Subsystem {
 
 
-	MainScoringMechanism.MechanismStates state = MainScoringMechanism.MechanismStates.BEGIN;
-
-	DcMotorEx leftMotor;
-	DcMotorEx rightMotor;
-
-	PIDCoefficients coefficients = new PIDCoefficients(0.013,0,0);
-	MotionConstraint upConstraint = new MotionConstraint(4000,5000,1800);
-	MotionConstraint downConstraint = new MotionConstraint(4000,5000,1800);
-
-	ProfiledPID controller = new ProfiledPID(upConstraint,downConstraint,coefficients);
-
-
 	public final static double IN_POSITION = 6;
 	public final static double SAFE_POSITION = 300;
 	public final static double CLOSE_INTAKE = 100;
@@ -34,12 +22,18 @@ public class HorizontalExtension extends Subsystem {
 	public final static double TELE_CYCLE_EXTENSION = 359; // todo figure out our max safe extension
 	public final static double autoExtension = 395;
 	public final static double mostlyAutoExtension = autoExtension - 30;
-	public final static double autoExtension_MID = 400;
+	public final static double autoExtension_MID = 420;
 	public final static double mostlyAutoExtension_MID = autoExtension_MID - 30;
-	protected double targetPosition = IN_POSITION;
-
 	private static final double TICKS_TO_INCH = .03;
 	private static final double INCH_TO_TICKS = 33.3333333333;
+	protected double targetPosition = IN_POSITION;
+	MainScoringMechanism.MechanismStates state = MainScoringMechanism.MechanismStates.BEGIN;
+	DcMotorEx leftMotor;
+	DcMotorEx rightMotor;
+	PIDCoefficients coefficients = new PIDCoefficients(0.013, 0, 0);
+	MotionConstraint upConstraint = new MotionConstraint(4000, 5000, 1800);
+	MotionConstraint downConstraint = new MotionConstraint(4000, 5000, 1800);
+	ProfiledPID controller = new ProfiledPID(upConstraint, downConstraint, coefficients);
 
 	public void commonInit(HardwareMap hwMap) {
 		leftMotor = hwMap.get(DcMotorEx.class, "leftHorizontal");
@@ -47,6 +41,7 @@ public class HorizontalExtension extends Subsystem {
 		// TODO, set direction
 		rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 	}
+
 	@Override
 	public void initAuto(HardwareMap hwMap) {
 		commonInit(hwMap);
@@ -55,6 +50,7 @@ public class HorizontalExtension extends Subsystem {
 		leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 		rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 	}
+
 	@Override
 	public void initTeleop(HardwareMap hwMap) {
 		commonInit(hwMap);
@@ -78,9 +74,9 @@ public class HorizontalExtension extends Subsystem {
 
 	protected void updatePID() {
 		double measuredPosition = getSlidePosition();
-		double power = controller.calculate(targetPosition,measuredPosition);
-		Dashboard.packet.put("measured horizontal position",measuredPosition);
-		Dashboard.packet.put("target horizontal position",controller.getTargetPosition());
+		double power = controller.calculate(targetPosition, measuredPosition);
+		Dashboard.packet.put("measured horizontal position", measuredPosition);
+		Dashboard.packet.put("target horizontal position", controller.getTargetPosition());
 
 		leftMotor.setPower(power);
 		rightMotor.setPower(power);
@@ -92,6 +88,7 @@ public class HorizontalExtension extends Subsystem {
 
 	/**
 	 * get position of the linear slides
+	 *
 	 * @return average encoder position of the slides
 	 */
 	public double getSlidePosition() {
@@ -103,6 +100,7 @@ public class HorizontalExtension extends Subsystem {
 	public double getSlideTargetPosition() {
 		return targetPosition;
 	}
+
 	public boolean isMovementFinished() {
 		return controller.isDone();
 	}
@@ -110,6 +108,7 @@ public class HorizontalExtension extends Subsystem {
 	private double ticksToInches(double ticks) {
 		return (ticks - IN_POSITION) * TICKS_TO_INCH;
 	}
+
 	private double inchesToTicks(double inches) {
 		return (inches - ticksToInches(IN_POSITION)) * INCH_TO_TICKS;
 	}
@@ -117,6 +116,7 @@ public class HorizontalExtension extends Subsystem {
 	public double getSlidePositionInches() {
 		return ticksToInches(getSlidePosition());
 	}
+
 	public void setTargetPositionInches(double targetPositionInches) {
 		this.targetPosition = inchesToTicks(targetPositionInches);
 	}

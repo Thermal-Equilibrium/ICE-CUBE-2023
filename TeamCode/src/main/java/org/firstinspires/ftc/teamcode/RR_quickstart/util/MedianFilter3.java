@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.RR_quickstart.util;
 
 
-public class MedianFilter3{
+public class MedianFilter3 {
 
 	public double m1 = 0;
 	public double m2 = 0;
@@ -15,7 +15,7 @@ public class MedianFilter3{
 		m3 = m4;
 		m4 = m5;
 		m5 = measurement;
-		double[] data = {m1, m2, m3,m4,m5};
+		double[] data = {m1, m2, m3, m4, m5};
 
 		for (int i = 0; i < data.length; ++i) {
 			for (int j = 0; j < data.length; ++j) {

@@ -9,8 +9,8 @@ import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
 @Autonomous
 public class InverseKinematicsDemo extends BaseAuto {
 
-    @Override
-    public Command setupAuto(CommandScheduler scheduler) {
-        return null;
-    }
+	@Override
+	public Command setupAuto(CommandScheduler scheduler) {
+		return null;
+	}
 }

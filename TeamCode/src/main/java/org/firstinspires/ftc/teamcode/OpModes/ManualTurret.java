@@ -11,13 +11,14 @@ import org.firstinspires.ftc.teamcode.Utils.Team;
 @Autonomous
 public class ManualTurret extends BaseAuto {
 
-    @Override
-    public Command setupAuto(CommandScheduler scheduler) {
-        waitForStart();
-        return new ManualTurretTesting(robot.scoringMechanism.turret);
-    }
-    @Override
-    public Team getTeam() {
-        return Team.RED;
-    }
+	@Override
+	public Command setupAuto(CommandScheduler scheduler) {
+		waitForStart();
+		return new ManualTurretTesting(robot.scoringMechanism.turret);
+	}
+
+	@Override
+	public Team getTeam() {
+		return Team.RED;
+	}
 }

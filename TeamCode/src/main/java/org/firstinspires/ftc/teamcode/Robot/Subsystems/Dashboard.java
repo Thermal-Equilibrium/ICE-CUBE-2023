@@ -26,13 +26,13 @@ public class Dashboard extends Subsystem {
 	public void periodic() {
 		dashboard.sendTelemetryPacket(packet);
 		packet = new TelemetryPacket();
-		packet.put("Loop time",dashboardTimer.milliseconds());
+		packet.put("Loop time", dashboardTimer.milliseconds());
 		dashboardTimer.reset();
 	}
 
 
 	public void startCameraStream(CameraStreamSource source, int maxFps) {
-		dashboard.startCameraStream(source,maxFps);
+		dashboard.startCameraStream(source, maxFps);
 	}
 
 	@Override

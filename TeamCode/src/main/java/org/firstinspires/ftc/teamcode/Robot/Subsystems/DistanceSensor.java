@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Robot.Subsystems;
 
-import com.ThermalEquilibrium.homeostasis.Filters.FilterAlgorithms.KalmanFilter;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -12,13 +11,10 @@ import org.firstinspires.ftc.teamcode.Utils.LimitedSizeQueue;
 
 public class DistanceSensor extends Subsystem {
 
-//	KalmanFilter filter = new KalmanFilter(0.3,0.1,3);
-	double constant = (1 / 0.003388888889);
-
-	AnalogInput distance2;
-
 	protected double distance_in = 0;
-
+	//	KalmanFilter filter = new KalmanFilter(0.3,0.1,3);
+	double constant = (1 / 0.003388888889);
+	AnalogInput distance2;
 	int QueueSize = 10;
 
 	LimitedSizeQueue<Double> queue = new LimitedSizeQueue<>(QueueSize);
@@ -51,9 +47,9 @@ public class DistanceSensor extends Subsystem {
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
 			BallerFilter filter = new BallerFilter(queue.toArray());
 			distance_in = sensor_inches; //filter.computeResult();  //filter.estimate(sensor_inches);
-			Dashboard.packet.put("DistanceKF",distance_in);
-			Dashboard.packet.put("Sensor_Inches_raw",sensor_inches);
-			ExtraUtils.drawPole(polePositionInContext,Dashboard.packet);
+			Dashboard.packet.put("DistanceKF", distance_in);
+			Dashboard.packet.put("Sensor_Inches_raw", sensor_inches);
+			ExtraUtils.drawPole(polePositionInContext, Dashboard.packet);
 			queue.add(distance_in);
 			System.out.println(queue);
 		}
@@ -72,7 +68,7 @@ public class DistanceSensor extends Subsystem {
 	public void calculatePolePositionInContext() {
 		Pose2d robotPose = drivetrain.getPose();
 
-		double distance = getDistance_in()+ 4; // +4 is the approximate distance from the center of the robot.
+		double distance = getDistance_in() + 4; // +4 is the approximate distance from the center of the robot.
 		double Px = robotPose.getX() + Math.cos(robotPose.getHeading()) * distance;
 		double Py = robotPose.getY() + Math.sin(robotPose.getHeading()) * distance;
 		if (isValueBad()) {
@@ -80,7 +76,7 @@ public class DistanceSensor extends Subsystem {
 			return;
 
 		}
-		polePositionInContext = new Pose2d(Px,Py,0);
+		polePositionInContext = new Pose2d(Px, Py, 0);
 		System.out.println("calculate context pole position success at distance: " + distance);
 
 	}
@@ -94,7 +90,7 @@ public class DistanceSensor extends Subsystem {
 		double distance = getDistance_in() + 4; // +4 is the approximate distance from the center of the robot.
 		double rX = polePositionInContext.getX() - Math.cos(robotPose.getHeading()) * distance;
 		double rY = polePositionInContext.getY() - Math.sin(robotPose.getHeading()) * distance;
-		drivetrain.setPose(new Pose2d(rX,rY,robotPose.getHeading()));
+		drivetrain.setPose(new Pose2d(rX, rY, robotPose.getHeading()));
 		System.out.println("Back Calculate Successful");
 
 	}

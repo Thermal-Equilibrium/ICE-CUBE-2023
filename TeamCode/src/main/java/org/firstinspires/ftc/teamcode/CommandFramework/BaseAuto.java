@@ -4,7 +4,6 @@ package org.firstinspires.ftc.teamcode.CommandFramework;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
-import com.outoftheboxrobotics.photoncore.PhotonCore;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.RoadrunnerTrajectoryFollower;
@@ -23,6 +22,12 @@ public abstract class BaseAuto extends LinearOpMode {
 	protected TrajectoryBuilder trajectoryBuilder;
 
 	protected SleeveDetection.ParkingPosition parkingPosition = SleeveDetection.ParkingPosition.LEFT;
+
+	public static double calculateTangent(Pose2d initialPosition, Pose2d finalPosition) {
+		double xd = initialPosition.getX() - finalPosition.getX();
+		double yd = initialPosition.getY() - finalPosition.getY();
+		return Math.atan2(yd, xd) - Math.PI;
+	}
 
 	@Override
 	public void runOpMode() {
@@ -48,7 +53,6 @@ public abstract class BaseAuto extends LinearOpMode {
 
 	}
 
-
 	public abstract Command setupAuto(CommandScheduler scheduler);
 
 	public RoadrunnerTrajectoryFollower followRR(Trajectory trajectory) {
@@ -56,37 +60,28 @@ public abstract class BaseAuto extends LinearOpMode {
 	}
 
 	public DelayedCommand delayCommand(double time, Command command) {
-		return new DelayedCommand(time,command);
+		return new DelayedCommand(time, command);
 	}
 
 	public MultipleCommand multiCommand(Command... commands) {
 		return new MultipleCommand(commands);
 	}
 
-
-
 	public Delay wait(double seconds) {
 		return new Delay(seconds);
 	}
-
 
 	public RaceAction raceCommand(Command... commands) {
 		return new RaceAction(commands);
 	}
 
-
-
 	public void setRobotPosition() {
 
 	}
 
-	public static double calculateTangent(Pose2d initialPosition, Pose2d finalPosition) {
-		double xd = initialPosition.getX() - finalPosition.getX();
-		double yd = initialPosition.getY() - finalPosition.getY();
-		return Math.atan2(yd,xd) - Math.PI;
+	public Team getTeam() {
+		return Team.NOT_ASSIGNED;
 	}
-
-	public Team getTeam() { return Team.NOT_ASSIGNED; }
 
 
 }

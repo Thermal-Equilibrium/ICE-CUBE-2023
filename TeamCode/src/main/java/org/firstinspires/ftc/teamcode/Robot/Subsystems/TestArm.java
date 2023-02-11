@@ -21,12 +21,9 @@ public class TestArm extends Subsystem {
 
 	protected double bottom_setpoint = 0;
 	protected double mid_setpoint = 0;
-
+	protected ArmStates state = ArmStates.IN;
 	FeedbackController bottom_controller = new NoFeedback();
 	FeedbackController middle_controller = new NoFeedback();
-
-	protected ArmStates state = ArmStates.IN;
-
 	HashMap<ArmStates, Double> bottom_map = new HashMap<>();
 	HashMap<ArmStates, Double> mid_map = new HashMap<>();
 	HashMap<ArmStates, Double> top_map = new HashMap<>();
@@ -39,40 +36,40 @@ public class TestArm extends Subsystem {
 	public TestArm() {
 
 		// hashmap for bottoms
-		bottom_map.put(ArmStates.IN,0.0);
-		bottom_map.put(ArmStates.CARRY,0.0);
-		bottom_map.put(ArmStates.LOW,0.0);
-		bottom_map.put(ArmStates.TOP,0.0);
-		bottom_map.put(ArmStates.COLLECT,0.0);
-		bottom_map.put(ArmStates.TOP_PLACE,0.0);
-		bottom_map.put(ArmStates.LOW_PLACE,0.0);
+		bottom_map.put(ArmStates.IN, 0.0);
+		bottom_map.put(ArmStates.CARRY, 0.0);
+		bottom_map.put(ArmStates.LOW, 0.0);
+		bottom_map.put(ArmStates.TOP, 0.0);
+		bottom_map.put(ArmStates.COLLECT, 0.0);
+		bottom_map.put(ArmStates.TOP_PLACE, 0.0);
+		bottom_map.put(ArmStates.LOW_PLACE, 0.0);
 
 		// mid hashmap
-		mid_map.put(ArmStates.IN,0.0);
-		mid_map.put(ArmStates.CARRY,0.0);
-		mid_map.put(ArmStates.LOW,0.0);
-		mid_map.put(ArmStates.TOP,0.0);
-		mid_map.put(ArmStates.COLLECT,0.0);
-		mid_map.put(ArmStates.TOP_PLACE,0.0);
-		mid_map.put(ArmStates.LOW_PLACE,0.0);
+		mid_map.put(ArmStates.IN, 0.0);
+		mid_map.put(ArmStates.CARRY, 0.0);
+		mid_map.put(ArmStates.LOW, 0.0);
+		mid_map.put(ArmStates.TOP, 0.0);
+		mid_map.put(ArmStates.COLLECT, 0.0);
+		mid_map.put(ArmStates.TOP_PLACE, 0.0);
+		mid_map.put(ArmStates.LOW_PLACE, 0.0);
 
 		// maps for top
-		top_map.put(ArmStates.IN,0.0);
-		top_map.put(ArmStates.CARRY,0.0);
-		top_map.put(ArmStates.LOW,0.0);
-		top_map.put(ArmStates.TOP,0.0);
-		top_map.put(ArmStates.COLLECT,0.0);
-		top_map.put(ArmStates.TOP_PLACE,0.0);
-		top_map.put(ArmStates.LOW_PLACE,0.0);
+		top_map.put(ArmStates.IN, 0.0);
+		top_map.put(ArmStates.CARRY, 0.0);
+		top_map.put(ArmStates.LOW, 0.0);
+		top_map.put(ArmStates.TOP, 0.0);
+		top_map.put(ArmStates.COLLECT, 0.0);
+		top_map.put(ArmStates.TOP_PLACE, 0.0);
+		top_map.put(ArmStates.LOW_PLACE, 0.0);
 
 		// maps for claw
-		claw_map.put(ArmStates.IN,0.0);
-		claw_map.put(ArmStates.CARRY,0.0);
-		claw_map.put(ArmStates.LOW,0.0);
-		claw_map.put(ArmStates.TOP,0.0);
-		claw_map.put(ArmStates.COLLECT,0.0);
-		claw_map.put(ArmStates.TOP_PLACE,0.0);
-		claw_map.put(ArmStates.LOW_PLACE,0.0);
+		claw_map.put(ArmStates.IN, 0.0);
+		claw_map.put(ArmStates.CARRY, 0.0);
+		claw_map.put(ArmStates.LOW, 0.0);
+		claw_map.put(ArmStates.TOP, 0.0);
+		claw_map.put(ArmStates.COLLECT, 0.0);
+		claw_map.put(ArmStates.TOP_PLACE, 0.0);
+		claw_map.put(ArmStates.LOW_PLACE, 0.0);
 
 
 	}
@@ -90,7 +87,7 @@ public class TestArm extends Subsystem {
 		basic_init(hwMap);
 		bottom_lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		middle_lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		top_lift.setPosition(fixNull(top_map.get(ArmStates.IN),"set position in init for top_lift"));
+		top_lift.setPosition(fixNull(top_map.get(ArmStates.IN), "set position in init for top_lift"));
 		claw.setPosition(fixNull(claw_map.get(ArmStates.IN), "set position in init for claw"));
 	}
 
@@ -137,20 +134,8 @@ public class TestArm extends Subsystem {
 
 	}
 
-
-	public enum ArmStates {
-		IN,
-		DEPLOY,
-		CARRY,
-		COLLECT,
-		LOW,
-		TOP,
-		LOW_PLACE,
-		TOP_PLACE
-	}
-
 	private void setPositions(ArmStates current_state) {
-		claw.setPosition(fixNull(claw_map.get(current_state),"claw"));
+		claw.setPosition(fixNull(claw_map.get(current_state), "claw"));
 		top_lift.setPosition(fixNull(top_map.get(current_state), "top of arm"));
 		bottom_setpoint = fixNull(bottom_map.get(current_state), "bottom of arm");
 		mid_setpoint = fixNull(mid_map.get(current_state), "middle of arm");
@@ -165,5 +150,16 @@ public class TestArm extends Subsystem {
 			return 0;
 		}
 		return value;
+	}
+
+	public enum ArmStates {
+		IN,
+		DEPLOY,
+		CARRY,
+		COLLECT,
+		LOW,
+		TOP,
+		LOW_PLACE,
+		TOP_PLACE
 	}
 }

@@ -48,6 +48,10 @@ public class MainScoringMechanism extends Subsystem {
 		// TODO: logic for moving states
 	}
 
+	public MechanismStates getState() {
+		return state;
+	}
+
 	public enum MechanismStates {
 		BEGIN,// everything in 18 inches, for match start
 		CollectingTeleop,
@@ -64,10 +68,6 @@ public class MainScoringMechanism extends Subsystem {
 		MID, // slide MID
 		GO_TO_LOW, // pickup cone from platform since our slides cannot on low or ground, we must just use the claw
 		LOW, // in position on
-	}
-
-	public MechanismStates getState() {
-		return state;
 	}
 
 

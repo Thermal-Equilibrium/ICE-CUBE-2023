@@ -4,37 +4,40 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public abstract class Command {
-    protected Command nextCommand = null;
+	protected Command nextCommand = null;
+	protected ArrayList<Subsystem> dependencies = new ArrayList<>();
 
-    public void setNext(Command command) { nextCommand = command; }
+	public Command(Subsystem... subsystems) {
+		Collections.addAll(dependencies, subsystems);
+	}
 
-    public Command getNext() { return nextCommand; }
+	public Command getNext() {
+		return nextCommand;
+	}
 
-    public Command addNext(Command command) {
-        Command commandNode = this;
-        while (commandNode.getNext() != null)
-            commandNode = commandNode.getNext();
+	public void setNext(Command command) {
+		nextCommand = command;
+	}
 
-        commandNode.setNext(command);
+	public Command addNext(Command command) {
+		Command commandNode = this;
+		while (commandNode.getNext() != null)
+			commandNode = commandNode.getNext();
 
-        return this;
-    }
+		commandNode.setNext(command);
 
-    protected ArrayList<Subsystem> dependencies = new ArrayList<>();
+		return this;
+	}
 
-    public ArrayList<Subsystem> getDependencies() {
-        return dependencies;
-    }
+	public ArrayList<Subsystem> getDependencies() {
+		return dependencies;
+	}
 
-    public Command(Subsystem ...subsystems) {
-        Collections.addAll(dependencies, subsystems);
-    }
+	public abstract void init();
 
-    public abstract void init();
+	public abstract void periodic();
 
-    public abstract void periodic();
+	public abstract boolean completed();
 
-    public abstract boolean completed();
-
-    public abstract void shutdown();
+	public abstract void shutdown();
 }

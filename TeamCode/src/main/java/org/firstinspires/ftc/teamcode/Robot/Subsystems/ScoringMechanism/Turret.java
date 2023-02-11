@@ -7,23 +7,20 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 
 public class Turret extends Subsystem {
 
+	private static final double turretTransfer = Math.toRadians(180);//3.05;
+	private static final double MIN_RAW_SERVO_ANGLE = 0;
+	private static final double MAX_RAW_SERVO_ANGLE = 1;
+	private static final double TAU = Math.PI * 2;
 	public double armDown = 0.06;
-
 	MainScoringMechanism.MechanismStates state = MainScoringMechanism.MechanismStates.BEGIN;
-
 	ServoImplEx turret;
 	Servo arm1;
 	Servo claw;
 	double clawTransferPosition = 0.34;
 	double armSafe = 0.4;
-	private static final double turretTransfer = Math.toRadians(180);//3.05;
-	private static final double MIN_RAW_SERVO_ANGLE = 0;
-	private static final double MAX_RAW_SERVO_ANGLE = 1;
-	private static final double TAU = Math.PI * 2;
 	double currentFreeStateValue = 0;
 	Servo latch;
 
@@ -34,22 +31,21 @@ public class Turret extends Subsystem {
 	double latch_closed = 0.2;
 
 
-
 	@Override
 	public void initAuto(HardwareMap hwMap) {
 
 		turret = hwMap.get(ServoImplEx.class, "turret");
-		turret.setPwmRange(new PwmControl.PwmRange(MIN_PWM_RANGE,MAX_PWM_RANGE));
+		turret.setPwmRange(new PwmControl.PwmRange(MIN_PWM_RANGE, MAX_PWM_RANGE));
 		setBasedTurretPosition(turretTransfer);
 
 
-		arm1 = hwMap.get(Servo.class,"arm");
+		arm1 = hwMap.get(Servo.class, "arm");
 		arm1.setDirection(Servo.Direction.REVERSE);
 		arm1.setPosition(armSafe);
 		claw = hwMap.get(Servo.class, "claw");
 		claw.setDirection(Servo.Direction.FORWARD);
 		claw.setPosition(0.5);
-		latch = hwMap.get(Servo.class,"latch");
+		latch = hwMap.get(Servo.class, "latch");
 		latch.setPosition(latch_closed);
 
 	}
@@ -57,16 +53,16 @@ public class Turret extends Subsystem {
 	@Override
 	public void initTeleop(HardwareMap hwMap) {
 		turret = hwMap.get(ServoImplEx.class, "turret");
-		turret.setPwmRange(new PwmControl.PwmRange(MIN_PWM_RANGE,MAX_PWM_RANGE));
+		turret.setPwmRange(new PwmControl.PwmRange(MIN_PWM_RANGE, MAX_PWM_RANGE));
 		setBasedTurretPosition(turretTransfer);
 
-		arm1 = hwMap.get(Servo.class,"arm");
+		arm1 = hwMap.get(Servo.class, "arm");
 		arm1.setDirection(Servo.Direction.REVERSE);
 		arm1.setPosition(armSafe);
 		claw = hwMap.get(Servo.class, "claw");
 		claw.setDirection(Servo.Direction.FORWARD);
 		claw.setPosition(0.5);
-		latch = hwMap.get(Servo.class,"latch");
+		latch = hwMap.get(Servo.class, "latch");
 		latch.setPosition(latch_open);
 	}
 
@@ -79,6 +75,7 @@ public class Turret extends Subsystem {
 	public void shutdown() {
 
 	}
+
 	public void setTurret(TurretStates turretStates) {
 		switch (turretStates) {
 			case TRANSFER:
@@ -94,7 +91,7 @@ public class Turret extends Subsystem {
 				setBasedTurretPosition(Math.toRadians(15));
 				break;
 			case Slight_LEFT:
-				setBasedTurretPosition(Math.toRadians(345 ));
+				setBasedTurretPosition(Math.toRadians(345));
 				break;
 			case Slight_LEFT_AUTO:
 				setBasedTurretPosition(Math.toRadians(330));
@@ -105,37 +102,30 @@ public class Turret extends Subsystem {
 		}
 	}
 
-	private void setRawTurretPosition(double position) {
-		position = Range.clip(position, MIN_RAW_SERVO_ANGLE, MAX_RAW_SERVO_ANGLE);
-		turret.setPosition(position);
-	}
 	private double getRawTurretPosition() { //TODO make private or protected
 		return turret.getPosition();
 	}
 
-	public void setBasedTurretPosition(double radians) {
-		radians = Range.clip(radians,0,TAU);
-		setRawTurretPosition(radiansToServo(radians));
+	private void setRawTurretPosition(double position) {
+		position = Range.clip(position, MIN_RAW_SERVO_ANGLE, MAX_RAW_SERVO_ANGLE);
+		turret.setPosition(position);
 	}
+
 	public double getBasedTurretPosition() {
 		return servoToRadians(getRawTurretPosition());
 	}
 
+	public void setBasedTurretPosition(double radians) {
+		radians = Range.clip(radians, 0, TAU);
+		setRawTurretPosition(radiansToServo(radians));
+	}
+
 	private double radiansToServo(double radians) {
-		return Range.scale(radians,0,Math.PI * 2, MIN_RAW_SERVO_ANGLE, MAX_RAW_SERVO_ANGLE);
+		return Range.scale(radians, 0, Math.PI * 2, MIN_RAW_SERVO_ANGLE, MAX_RAW_SERVO_ANGLE);
 	}
 
 	private double servoToRadians(double servoAngle) {
-		return Range.scale(servoAngle, MIN_RAW_SERVO_ANGLE, MAX_RAW_SERVO_ANGLE,0,TAU);
-	}
-	public enum TurretStates {
-		TRANSFER,
-		Slight_LEFT,
-		Slight_RIGHT,
-		Slight_RIGHT_AUTO,
-		Slight_LEFT_AUTO,
-		FAR_LEFT, // me
-		FAR_RIGHT
+		return Range.scale(servoAngle, MIN_RAW_SERVO_ANGLE, MAX_RAW_SERVO_ANGLE, 0, TAU);
 	}
 
 	public void setClawGrabbing(ClawStates clawState) {
@@ -158,7 +148,7 @@ public class Turret extends Subsystem {
 	public void setArm(ArmStates armStates) {
 		switch (armStates) {
 			case TRANSFER:
-				arm1.setPosition(0.19);
+				arm1.setPosition(0.18);
 				break;
 			case TRANSFER_SAFE:
 				arm1.setPosition(armSafe);
@@ -182,7 +172,7 @@ public class Turret extends Subsystem {
 
 	public void setArmPositionSync(double position) {
 		// TODO: Adjust the min and max here to appropriate soft stops
-		position = Range.clip(position,-1,1);
+		position = Range.clip(position, -1, 1);
 		arm1.setPosition(position);
 //		arm2.setPosition(1 - position); uncomment once second servo is connected
 	}
@@ -190,19 +180,6 @@ public class Turret extends Subsystem {
 	// TODO: Maybe don't average? if we only use 1 servo lol
 	public double getArmPosition() {
 		return arm1.getPosition();
-	}
-	public enum ClawStates {
-		Open,
-		Transfer,
-		Closed
-	}
-
-	public enum ArmStates {
-		TRANSFER,
-		TRANSFER_SAFE,
-		DOWN,
-		LOW_SCORING,
-		FREE_STATE
 	}
 
 	public void close_latch() {
@@ -215,6 +192,30 @@ public class Turret extends Subsystem {
 
 	public void setCurrentFreeStateValue(double currentFreeStateValue) {
 		this.currentFreeStateValue = currentFreeStateValue;
+	}
+
+	public enum TurretStates {
+		TRANSFER,
+		Slight_LEFT,
+		Slight_RIGHT,
+		Slight_RIGHT_AUTO,
+		Slight_LEFT_AUTO,
+		FAR_LEFT, // me
+		FAR_RIGHT
+	}
+
+	public enum ClawStates {
+		Open,
+		Transfer,
+		Closed
+	}
+
+	public enum ArmStates {
+		TRANSFER,
+		TRANSFER_SAFE,
+		DOWN,
+		LOW_SCORING,
+		FREE_STATE
 	}
 
 }

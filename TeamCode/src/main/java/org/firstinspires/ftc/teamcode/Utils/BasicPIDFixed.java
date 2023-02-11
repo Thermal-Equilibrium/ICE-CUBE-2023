@@ -7,6 +7,7 @@ public class BasicPIDFixed extends BasicPID {
 	public BasicPIDFixed(PIDCoefficients coefficients) {
 		super(coefficients);
 	}
+
 	@Override
 	public double getDT() {
 		double dt = timer.currentTime();

@@ -13,7 +13,6 @@ public class Input extends Subsystem {
 	public double TRIGGER_DETECTION_THRESHOLD = 0.35;
 
 	protected CommandScheduler scheduler;
-	Gamepad gamepad;
 	protected boolean cross = false;
 	protected boolean square = false;
 	protected boolean triangle = false;
@@ -42,9 +41,8 @@ public class Input extends Subsystem {
 	protected boolean touchpad_finger_2 = false;
 	protected double touchpad_finger_1_x = 0;
 	protected double touchpad_finger_1_y = 0;
-	protected double touchpad_finger_2_x= 0;
+	protected double touchpad_finger_2_x = 0;
 	protected double touchpad_finger_2_y = 0;
-
 	// previous value for each
 	protected boolean cross_prev = false;
 	protected boolean square_prev = false;
@@ -76,7 +74,6 @@ public class Input extends Subsystem {
 	protected double touchpad_finger_1_y_prev = 0;
 	protected double touchpad_finger_2_x_prev = 0;
 	protected double touchpad_finger_2_y_prev = 0;
-
 	// Command handler for each
 	protected Command cross_handler = null;
 	protected Command square_handler = null;
@@ -94,34 +91,86 @@ public class Input extends Subsystem {
 	protected Command left_bumper_handler = null;
 	protected Command right_bumper_handler = null;
 	protected Command left_trigger_press_handler = null;
-	protected Command right_trigger_press_handler = null;	
+	protected Command right_trigger_press_handler = null;
+	Gamepad gamepad;
 
-	// Command handler setter for each
-	public void whenCrossPressed(Command handler) { cross_handler = handler; }
-	public void whenSquarePressed(Command handler) { square_handler = handler; }
-	public void whenTrianglePressed(Command handler) { triangle_handler = handler; }
-	public void whenCirclePressed(Command handler) { circle_handler = handler; }
-	public void whenLeftStickButtonPressed(Command handler) { left_stick_button_handler = handler; }
-	public void whenRightStickButtonPressed(Command handler) { right_stick_button_handler = handler; }
-	public void whenDPadUpPressed(Command handler) { dpad_up_handler = handler; }
-	public void whenDPadLeftPressed(Command handler) { dpad_left_handler = handler; }
-	public void whenDPadDownPressed(Command handler) { dpad_down_handler = handler; }
-	public void whenDPadRightPressed(Command handler) { dpad_right_handler = handler; }
-	public void whenShareButtonPressed(Command handler) { share_button_handler = handler; }
-	public void whenOptionsPressed(Command handler) { options_handler = handler; }
-	public void whenPSButtonPressed(Command handler) { ps_button_handler = handler; }
-	public void whenLeftBumperPressed(Command handler) { left_bumper_handler = handler; }
-	public void whenRightBumperPressed(Command handler) { right_bumper_handler = handler; }
-	public void whenLeftTriggerPressed(Command handler) { left_trigger_press_handler = handler; }
-	public void whenRightTriggerPressed(Command handler) { right_trigger_press_handler = handler; }
-
-	public Input(Gamepad gamepad1, CommandScheduler scheduler) { 
-		this.gamepad = gamepad1; 
+	public Input(Gamepad gamepad1, CommandScheduler scheduler) {
+		this.gamepad = gamepad1;
 		this.scheduler = scheduler;
 	}
 
+	// Command handler setter for each
+	public void whenCrossPressed(Command handler) {
+		cross_handler = handler;
+	}
+
+	public void whenSquarePressed(Command handler) {
+		square_handler = handler;
+	}
+
+	public void whenTrianglePressed(Command handler) {
+		triangle_handler = handler;
+	}
+
+	public void whenCirclePressed(Command handler) {
+		circle_handler = handler;
+	}
+
+	public void whenLeftStickButtonPressed(Command handler) {
+		left_stick_button_handler = handler;
+	}
+
+	public void whenRightStickButtonPressed(Command handler) {
+		right_stick_button_handler = handler;
+	}
+
+	public void whenDPadUpPressed(Command handler) {
+		dpad_up_handler = handler;
+	}
+
+	public void whenDPadLeftPressed(Command handler) {
+		dpad_left_handler = handler;
+	}
+
+	public void whenDPadDownPressed(Command handler) {
+		dpad_down_handler = handler;
+	}
+
+	public void whenDPadRightPressed(Command handler) {
+		dpad_right_handler = handler;
+	}
+
+	public void whenShareButtonPressed(Command handler) {
+		share_button_handler = handler;
+	}
+
+	public void whenOptionsPressed(Command handler) {
+		options_handler = handler;
+	}
+
+	public void whenPSButtonPressed(Command handler) {
+		ps_button_handler = handler;
+	}
+
+	public void whenLeftBumperPressed(Command handler) {
+		left_bumper_handler = handler;
+	}
+
+	public void whenRightBumperPressed(Command handler) {
+		right_bumper_handler = handler;
+	}
+
+	public void whenLeftTriggerPressed(Command handler) {
+		left_trigger_press_handler = handler;
+	}
+
+	public void whenRightTriggerPressed(Command handler) {
+		right_trigger_press_handler = handler;
+	}
+
 	@Override
-	public void initAuto(HardwareMap hwMap) { }
+	public void initAuto(HardwareMap hwMap) {
+	}
 
 	@Override
 	public void periodic() {
@@ -131,7 +180,8 @@ public class Input extends Subsystem {
 	}
 
 	@Override
-	public void shutdown() {}
+	public void shutdown() {
+	}
 
 
 	protected void readGamepad() {
@@ -369,7 +419,6 @@ public class Input extends Subsystem {
 	}
 
 
-
 	public double getForwardJoystick() {
 		return -getLeft_stick_y();
 	}
@@ -381,6 +430,7 @@ public class Input extends Subsystem {
 	public double getTurnJoystick() {
 		return -getRight_stick_x();
 	}
+
 	public boolean isCrossPressed() {
 		return cross && !cross_prev;
 	}
@@ -524,33 +574,43 @@ public class Input extends Subsystem {
 	public boolean isTouchpadReleased() {
 		return !touchpad && touchpad_prev;
 	}
+
 	public boolean isTouchpadFinger1Released() {
 		return !touchpad_finger_1 && touchpad_finger_1_prev;
 	}
+
 	public boolean isTouchpadFinger2Released() {
 		return !touchpad_finger_2 && touchpad_finger_2_prev;
 	}
+
 	public boolean isTouchpadFinger1XReleased() {
 		return touchpad_finger_1_x == touchpad_finger_1_x_prev;
 	}
+
 	public boolean isTouchpadFinger1YReleased() {
 		return touchpad_finger_1_y == touchpad_finger_1_y_prev;
 	}
+
 	public boolean isTouchpadFinger2XReleased() {
 		return touchpad_finger_2_x == touchpad_finger_2_x_prev;
 	}
+
 	public boolean isTouchpadFinger2YReleased() {
 		return touchpad_finger_2_y == touchpad_finger_2_y_prev;
 	}
+
 	public boolean isTouchpadFinger1XReleased(int threshold) {
 		return Math.abs(touchpad_finger_1_x - touchpad_finger_1_x_prev) < threshold;
 	}
+
 	public boolean isTouchpadFinger1YReleased(int threshold) {
 		return Math.abs(touchpad_finger_1_y - touchpad_finger_1_y_prev) < threshold;
 	}
+
 	public boolean isTouchpadFinger2XReleased(int threshold) {
 		return Math.abs(touchpad_finger_2_x - touchpad_finger_2_x_prev) < threshold;
 	}
+
 	public boolean isTouchpadFinger2YReleased(int threshold) {
 		return Math.abs(touchpad_finger_2_y - touchpad_finger_2_y_prev) < threshold;
 	}
@@ -558,12 +618,15 @@ public class Input extends Subsystem {
 	public boolean isCrossReleased() {
 		return !cross && cross_prev;
 	}
+
 	public boolean isCircleReleased() {
 		return !circle && circle_prev;
 	}
+
 	public boolean isSquareReleased() {
 		return !square && square_prev;
 	}
+
 	public boolean isTriangleReleased() {
 		return !triangle && triangle_prev;
 	}
@@ -571,46 +634,50 @@ public class Input extends Subsystem {
 	public boolean isShareReleased() {
 		return !share_button && share_button_prev;
 	}
+
 	public boolean isOptionsReleased() {
 		return !options && options_prev;
 	}
+
 	public boolean isLeftBumperReleased() {
 		return !left_bumper && left_bumper_prev;
 	}
+
 	public boolean isRightBumperReleased() {
 		return !right_bumper && right_bumper_prev;
 	}
+
 	public boolean isLeftStickXReleased() {
 		return left_stick_x == left_stick_x_prev;
 	}
+
 	public boolean isLeftStickYReleased() {
 		return left_stick_y == left_stick_y_prev;
 	}
+
 	public boolean isRightStickXReleased() {
 		return right_stick_x == right_stick_x_prev;
 	}
+
 	public boolean isRightStickYReleased() {
 		return right_stick_y == right_stick_y_prev;
 	}
+
 	public boolean isLeftStickXReleased(int threshold) {
 		return Math.abs(left_stick_x - left_stick_x_prev) < threshold;
 	}
+
 	public boolean isLeftStickYReleased(int threshold) {
 		return Math.abs(left_stick_y - left_stick_y_prev) < threshold;
 	}
+
 	public boolean isRightStickXReleased(int threshold) {
 		return Math.abs(right_stick_x - right_stick_x_prev) < threshold;
 	}
+
 	public boolean isRightStickYReleased(int threshold) {
 		return Math.abs(right_stick_y - right_stick_y_prev) < threshold;
 	}
-
-
-
-
-
-
-
 
 
 }

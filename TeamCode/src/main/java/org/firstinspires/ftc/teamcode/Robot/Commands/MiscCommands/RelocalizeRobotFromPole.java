@@ -10,7 +10,7 @@ public class RelocalizeRobotFromPole extends Command {
 
 	public RelocalizeRobotFromPole(DistanceSensor distanceSensor) {
 		super(distanceSensor);
-		this.distanceSensor =  distanceSensor;
+		this.distanceSensor = distanceSensor;
 	}
 
 	@Override

@@ -8,7 +8,8 @@ public class BasedMath {
 
 	/**
 	 * given a global pose, offset it by robot relative positions
-	 * @param poseGlobal global pose
+	 *
+	 * @param poseGlobal     global pose
 	 * @param robotRelativeX forward direction relative to the robot
 	 * @param robotRelativeY side direction relative to the robot. (+) left (-) right
 	 * @return shifted pose.
@@ -18,7 +19,7 @@ public class BasedMath {
 		Vector2d globalVec = poseGlobal.vec();
 		Vector2d globalVecUnit = poseGlobal.headingVec();
 		// orthogonal vec
-		Vector2d orthogonalVec = new Vector2d(-globalVecUnit.getY(),globalVecUnit.getX());
+		Vector2d orthogonalVec = new Vector2d(-globalVecUnit.getY(), globalVecUnit.getX());
 
 		Vector2d combinedVector = globalVec.plus(globalVecUnit.times(robotRelativeX))
 				.plus(orthogonalVec.times(robotRelativeY));

@@ -10,7 +10,7 @@ public class SetPoleContext extends Command {
 
 	public SetPoleContext(DistanceSensor distanceSensor) {
 		super(distanceSensor);
-		this.distanceSensor =  distanceSensor;
+		this.distanceSensor = distanceSensor;
 	}
 
 	@Override

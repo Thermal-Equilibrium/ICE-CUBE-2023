@@ -13,7 +13,7 @@ public class MoveTurret extends Command {
 
 	ElapsedTime timer = new ElapsedTime();
 
-	public MoveTurret (Turret turret, Turret.TurretStates turretStates) {
+	public MoveTurret(Turret turret, Turret.TurretStates turretStates) {
 		this.turret = turret;
 		this.turretStates = turretStates;
 	}

@@ -26,10 +26,10 @@ public class UGLqrPoseStabilization extends Command {
 
 	@Override
 	public void periodic() {
-		Pose2d driveSignal = controller.goToPosition(targetPose,drivetrain.getPose());
+		Pose2d driveSignal = controller.goToPosition(targetPose, drivetrain.getPose());
 		drivetrain.fieldRelative(driveSignal);
-		Dashboard.packet.put("x power",driveSignal.getX());
-		Dashboard.packet.put("y power",driveSignal.getY());
+		Dashboard.packet.put("x power", driveSignal.getX());
+		Dashboard.packet.put("y power", driveSignal.getY());
 		Dashboard.packet.put("x error", controller.getPoseError().getX());
 		Dashboard.packet.put("y error", controller.getPoseError().getY());
 		Dashboard.packet.put("heading error", controller.getPoseError().getHeading());
@@ -38,17 +38,18 @@ public class UGLqrPoseStabilization extends Command {
 
 	@Override
 	public boolean completed() {
-		return  (controller.errorMag() < 1.2
+		return (controller.errorMag() < 1.2
 				&& controller.headingErrorMag() < Math.toRadians(2)
 				&& controller.getErrorMagDeriv() < 1
 				&& Math.abs(drivetrain.getVelocity().getHeading()) < Math.toRadians(3))
 				|| (
 				Math.abs(drivetrain.getVelocity().getHeading()) < Math.toRadians(0.5)
 						&& controller.getErrorMagDeriv() < 0.2 && controller.errorMag() < 4 // might die for short paths
-		);	}
+		);
+	}
 
 	@Override
 	public void shutdown() {
-		drivetrain.robotRelative(new Pose2d(0,0,0));
+		drivetrain.robotRelative(new Pose2d(0, 0, 0));
 	}
 }

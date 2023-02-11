@@ -23,7 +23,7 @@ public class FollowPath extends Command {
 
 	public FollowPath(Drivetrain drivetrain, Pose2d... pose2ds) {
 		this.drivetrain = drivetrain;
-		Collections.addAll(positions,pose2ds);
+		Collections.addAll(positions, pose2ds);
 	}
 
 
@@ -55,14 +55,14 @@ public class FollowPath extends Command {
 	}
 
 	protected boolean isDoneWithPoint() {
-		return  (controller.errorMag() < 1.2
+		return (controller.errorMag() < 1.2
 				&& controller.headingErrorMag() < Math.toRadians(2)
 				&& controller.getErrorMagDeriv() < 1
 				&& Math.abs(drivetrain.getVelocity().getHeading()) < Math.toRadians(3))
 				|| (
 				Math.abs(drivetrain.getVelocity().getHeading()) < Math.toRadians(3)
-				&& controller.getErrorMagDeriv() < 0.2 && controller.errorMag() < 4 // might die for short paths
-			);
+						&& controller.getErrorMagDeriv() < 0.2 && controller.errorMag() < 4 // might die for short paths
+		);
 
 	}
 

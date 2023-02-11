@@ -6,10 +6,10 @@ import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 
 public class DelayedCommand extends Command {
 
+	public boolean hasRunInit = false;
 	Command targetCommand;
 	double timeUntilStartS;
 	ElapsedTime timer = new ElapsedTime();
-	public boolean hasRunInit = false;
 
 	public DelayedCommand(double timeUntilStartS, Command targetCommand) {
 		this.timeUntilStartS = timeUntilStartS;

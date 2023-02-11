@@ -1,21 +1,24 @@
-package org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Break;
+package org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Brake;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Drivetrain;
 
-public class ToggleBreak extends Command {
+public class SetDrivetrainBrake extends Command {
+
 	Drivetrain drivetrain;
+	Drivetrain.BrakeStates brakeState;
 	boolean isComplete = false;
 
-	public ToggleBreak(Drivetrain drivetrain) {
+	public SetDrivetrainBrake(Drivetrain drivetrain, Drivetrain.BrakeStates brakeState) {
 		super(drivetrain);
 		this.drivetrain = drivetrain;
+		this.brakeState = brakeState;
 	}
 
 	@Override
 	public void init() {
 		isComplete = true;
-		drivetrain.toggleBreakState();
+		drivetrain.setBrakeState(brakeState);
 	}
 
 	@Override
@@ -32,5 +35,4 @@ public class ToggleBreak extends Command {
 	public void shutdown() {
 
 	}
-
 }

@@ -6,15 +6,15 @@ import java.util.ArrayList;
 
 public class LimitedSizeQueue<K> extends ArrayList<K> {
 
-	private int maxSize;
+	private final int maxSize;
 
-	public LimitedSizeQueue(int size){
+	public LimitedSizeQueue(int size) {
 		this.maxSize = size;
 	}
 
-	public boolean add(K k){
+	public boolean add(K k) {
 		boolean r = super.add(k);
-		if (size() > maxSize){
+		if (size() > maxSize) {
 			while (size() > maxSize) {
 				this.remove(getYoungest());
 			}
@@ -43,7 +43,7 @@ public class LimitedSizeQueue<K> extends ArrayList<K> {
 	@Override
 	public String toString() {
 		StringBuilder BaseString = new StringBuilder("limited size Queue: ");
-		for (Object o: this){
+		for (Object o : this) {
 			BaseString.append(o);
 		}
 		return BaseString.toString();

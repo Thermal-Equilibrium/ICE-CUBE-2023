@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Utils;
 
 
-
 //detected Pole: Pole{xPixel=352.0, width=109.0, isValidPole=true}0,0
 
 import java.util.ArrayList;
@@ -15,27 +14,22 @@ import java.util.ArrayList;
 public class TestLinearInterpolator {
 
 
-
 	public static void main(String[] args) throws Exception {
 
-		double [] xs = {0,2.5,-1.8,-1.8024541968487422,-1.0340386610282355,2.7879328083329105};
+		double[] xs = {0, 2.5, -1.8, -1.8024541968487422, -1.0340386610282355, 2.7879328083329105};
 		ArrayList<Double> Positions = new ArrayList<>();
-		for (double d: xs) {
+		for (double d : xs) {
 			Positions.add(d);
 		}
 
-		double [] x2s = {352, 92.0,562.0, 555.0, 434.0, 89.0};
+		double[] x2s = {352, 92.0, 562.0, 555.0, 434.0, 89.0};
 		ArrayList<Double> xPixels = new ArrayList<>();
-		for (double d: x2s) {
+		for (double d : x2s) {
 			xPixels.add(d);
 		}
 
-		LinearInterpolator interpolator = new LinearInterpolator(xPixels,Positions);
+		LinearInterpolator interpolator = new LinearInterpolator(xPixels, Positions);
 		System.out.println("value is " + interpolator.getValue(94));
-
-
-
-
 
 
 	}

@@ -14,7 +14,7 @@ public class MoveClaw extends Command {
 
 	ElapsedTime timer = new ElapsedTime();
 
-	public MoveClaw (Turret turret, Turret.ClawStates clawState) {
+	public MoveClaw(Turret turret, Turret.ClawStates clawState) {
 		this.turret = turret;
 		this.clawState = clawState;
 	}

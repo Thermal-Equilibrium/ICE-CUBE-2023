@@ -30,13 +30,14 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.BackCamera;
 import org.firstinspires.ftc.teamcode.VisionUtils.Cone;
 
 public class ScoringCommandGroups {
+	public int currentCone = 5;
 	BackCamera backCamera;
-
 	Turret turret;
 	VerticalExtension verticalExtension;
 	HorizontalExtension horizontalExtension;
 	Drivetrain drivetrain;
 	Pose2d intakePosition = new Pose2d();
+	double[] armConeHeights = {0.08, 0.11, 0.1357, 0.1632, 0.1800};
 
 	public ScoringCommandGroups(MainScoringMechanism mechanism, Drivetrain drivetrain, BackCamera backCamera) {
 		this.horizontalExtension = mechanism.horizontalExtension;
@@ -51,30 +52,34 @@ public class ScoringCommandGroups {
 			Cone cone = backCamera.getCone();
 			if (cone != null) {
 
-				double angle = IntakeKinematics.getTurretAngleToTarget(-1*cone.position.dx);
-				double extendDistance = IntakeKinematics.getHorizontalSlideExtensionToTarget(cone.position.dy,-1*cone.position.dx,horizontalExtension.getSlidePositionInches());
+				double angle = IntakeKinematics.getTurretAngleToTarget(-1 * cone.position.dx);
+				double extendDistance = IntakeKinematics.getHorizontalSlideExtensionToTarget(cone.position.dy, -1 * cone.position.dx, horizontalExtension.getSlidePositionInches());
 				Dashboard.packet.put("THE dx", cone.position.dx);
 				Dashboard.packet.put("THE dy", cone.position.dy);
 				Dashboard.packet.put("THE angle", Math.toDegrees(angle));
 				Dashboard.packet.put("THE extendDist", extendDistance);
-				if(extendDistance<=15) {
-					if (angle < 0) {angle += Math.PI*2;}
+				if (extendDistance <= 15) {
+					if (angle < 0) {
+						angle += Math.PI * 2;
+					}
 					return openClaw().addNext(new MoveTurretDirect(turret, angle).addNext(new MoveHorizontalExtensionInches(horizontalExtension, extendDistance)).addNext(moveArm(Turret.ArmStates.DOWN)));
-				}
-				else return new NullCommand();
+				} else return new NullCommand();
 
 			} else return new NullCommand();
 		});
 	}
+
 	public Command autoIntakeCmd() {
 		return new RunCommand(() -> {
 			Cone cone = backCamera.getCone();
 			if (cone != null) {
 
-				double angle = IntakeKinematics.getTurretAngleToTarget(-1*cone.position.dx);
-				double extendDistance = IntakeKinematics.getHorizontalSlideExtensionToTarget(cone.position.dy,-1*cone.position.dx,horizontalExtension.getSlidePositionInches());
-				if(extendDistance<=15) {
-					if (angle < 0) {angle += Math.PI*2;}
+				double angle = IntakeKinematics.getTurretAngleToTarget(-1 * cone.position.dx);
+				double extendDistance = IntakeKinematics.getHorizontalSlideExtensionToTarget(cone.position.dy, -1 * cone.position.dx, horizontalExtension.getSlidePositionInches());
+				if (extendDistance <= 15) {
+					if (angle < 0) {
+						angle += Math.PI * 2;
+					}
 					return openClaw()
 							.addNext(new MoveTurretDirect(turret, angle))
 							.addNext(new MoveHorizontalExtensionInches(horizontalExtension, extendDistance))
@@ -84,21 +89,23 @@ public class ScoringCommandGroups {
 							.addNext(openLatch())
 							.addNext(collectCone())
 							.addNext(closeLatch());
-				}
-				else return new NullCommand();
+				} else return new NullCommand();
 
 			} else return new NullCommand();
 		});
 	}
+
 	public Command autoIntakeCmdMulti() {
 		return new RunCommand(() -> {
 			Cone cone = backCamera.getCone();
 			if (cone != null) {
 
-				double angle = IntakeKinematics.getTurretAngleToTarget(-1*cone.position.dx);
-				double extendDistance = IntakeKinematics.getHorizontalSlideExtensionToTarget(cone.position.dy,-1*cone.position.dx,horizontalExtension.getSlidePositionInches());
-				if(extendDistance<=15) {
-					if (angle < 0) {angle += Math.PI*2;}
+				double angle = IntakeKinematics.getTurretAngleToTarget(-1 * cone.position.dx);
+				double extendDistance = IntakeKinematics.getHorizontalSlideExtensionToTarget(cone.position.dy, -1 * cone.position.dx, horizontalExtension.getSlidePositionInches());
+				if (extendDistance <= 15) {
+					if (angle < 0) {
+						angle += Math.PI * 2;
+					}
 					return openClaw()
 							.addNext(new MoveTurretDirect(turret, angle))
 							.addNext(new MoveHorizontalExtensionInches(horizontalExtension, extendDistance))
@@ -131,27 +138,28 @@ public class ScoringCommandGroups {
 							.addNext(collectCone())
 							.addNext(closeLatch());
 
-				}
-				else return new NullCommand();
+				} else return new NullCommand();
 
 			} else return new NullCommand();
 		});
 	}
+
 	public Command autoGoToConeTesting() {
 		Cone cone = backCamera.getCone();
 		if (cone != null) {
 
-			double angle = IntakeKinematics.getTurretAngleToTarget(-1*cone.position.dx);
-			double extendDistance = IntakeKinematics.getHorizontalSlideExtensionToTarget(cone.position.dy,-1*cone.position.dx,horizontalExtension.getSlidePositionInches());
+			double angle = IntakeKinematics.getTurretAngleToTarget(-1 * cone.position.dx);
+			double extendDistance = IntakeKinematics.getHorizontalSlideExtensionToTarget(cone.position.dy, -1 * cone.position.dx, horizontalExtension.getSlidePositionInches());
 			Dashboard.packet.put("THE dx", cone.position.dx);
 			Dashboard.packet.put("THE dy", cone.position.dy);
 			Dashboard.packet.put("THE angle", Math.toDegrees(angle));
 			Dashboard.packet.put("THE extendDist", extendDistance);
-			if(extendDistance<=17) {
-				if (angle < 0) {angle += Math.PI*2;}
+			if (extendDistance <= 17) {
+				if (angle < 0) {
+					angle += Math.PI * 2;
+				}
 				return openClaw().addNext(new MoveTurretDirect(turret, angle).addNext(new MoveHorizontalExtensionInches(horizontalExtension, extendDistance)).addNext(moveArm(Turret.ArmStates.DOWN)));
-			}
-			else return new NullCommand();
+			} else return new NullCommand();
 
 		} else return new NullCommand();
 	}
@@ -172,15 +180,13 @@ public class ScoringCommandGroups {
 		}
 		return new MultipleCommand(autoGoToCone(), moveVerticalExtension(VerticalExtension.HIGH_POSITION));
 	}
+
 	public Command moveToIntakingRight() {
 		return moveHorizontalExtension(HorizontalExtension.EXTENSION1)
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
 				.addNext(moveTurret(Turret.TurretStates.Slight_RIGHT_AUTO))
 				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
 	}
-
-	public int currentCone = 5;
-	double[] armConeHeights = {0.08, 0.11, 0.1357, 0.1632, 0.1800};
 
 	public Command moveToIntakingRightAuto() {
 		currentCone--;
@@ -189,6 +195,7 @@ public class ScoringCommandGroups {
 				.addNext(moveTurret(Turret.TurretStates.Slight_RIGHT_AUTO))
 				.addNext(new MultipleCommand(moveArmDirect(-0.02 + armConeHeights[currentCone]), openClaw()));
 	}
+
 	public Command moveToIntakingLeftAuto() {
 		currentCone--;
 
@@ -196,6 +203,7 @@ public class ScoringCommandGroups {
 				.addNext(moveTurret(Turret.TurretStates.Slight_LEFT_AUTO))
 				.addNext(new MultipleCommand(moveArmDirect(-0.02 + armConeHeights[currentCone]), openClaw()));
 	}
+
 	public Command moveToIntakingLeftSideMidAuto() {
 		currentCone--;
 
@@ -203,6 +211,7 @@ public class ScoringCommandGroups {
 				.addNext(moveTurret(Turret.TurretStates.Slight_RIGHT_AUTO))
 				.addNext(new MultipleCommand(moveArmDirect(-0.02 + armConeHeights[currentCone]), openClaw()));
 	}
+
 	// very far to the left, in order to place near by
 	public Command moveToIntakingLeftClosePole() {
 		return moveArm(Turret.ArmStates.TRANSFER_SAFE)
@@ -300,34 +309,41 @@ public class ScoringCommandGroups {
 
 
 	public Command asyncMoveVerticalExtension(double position) {
-		return new AsyncMoveVerticalExtension(verticalExtension,drivetrain,position);
+		return new AsyncMoveVerticalExtension(verticalExtension, drivetrain, position);
 	}
 
 	public MoveArm moveArm(Turret.ArmStates armStates) {
-		return new MoveArm(turret,armStates);
+		return new MoveArm(turret, armStates);
 	}
+
 	public MoveArmDirect moveArmDirect(double position) {
 		return new MoveArmDirect(turret, position);
 	}
+
 	public MoveClaw moveClaw(Turret.ClawStates clawStates) {
-		return new MoveClaw(turret,clawStates);
+		return new MoveClaw(turret, clawStates);
 	}
+
 	public MoveTurret moveTurret(Turret.TurretStates turretStates) {
-		return new MoveTurret(turret,turretStates);
+		return new MoveTurret(turret, turretStates);
 	}
+
 	public MoveTurret moveTurretAsync(Turret.TurretStates turretStates) {
-		return new MoveTurretAsync(turret,turretStates);
+		return new MoveTurretAsync(turret, turretStates);
 	}
+
 	public MoveHorizontalExtension moveHorizontalExtension(double position) {
-		return new MoveHorizontalExtension(horizontalExtension,position);
+		return new MoveHorizontalExtension(horizontalExtension, position);
 	}
+
 	public MoveVerticalExtension moveVerticalExtension(double position) {
-		return new MoveVerticalExtension(verticalExtension,position,drivetrain);
+		return new MoveVerticalExtension(verticalExtension, position, drivetrain);
 	}
 
 	public Command depositCone() {
 		return openLatch().addNext(moveVerticalExtension(VerticalExtension.IN_POSITION));
 	}
+
 	public Command depositConeAsync() {
 		return openLatch().addNext(asyncMoveVerticalExtension(VerticalExtension.IN_POSITION));
 	}
@@ -335,6 +351,7 @@ public class ScoringCommandGroups {
 	public CloseLatch closeLatch() {
 		return new CloseLatch(turret);
 	}
+
 	public OpenLatch openLatch() {
 		return new OpenLatch(turret);
 	}

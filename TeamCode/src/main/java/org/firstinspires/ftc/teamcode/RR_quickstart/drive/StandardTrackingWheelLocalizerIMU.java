@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.RR_quickstart.drive;
 
 import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.StandardTrackingWheelLocalizer.FORWARD_OFFSET;
 import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.StandardTrackingWheelLocalizer.LATERAL_DISTANCE;
+import static java.lang.Math.toRadians;
 
 import androidx.annotation.NonNull;
 
@@ -17,14 +18,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.RR_quickstart.util.AxisDirection;
 import org.firstinspires.ftc.teamcode.RR_quickstart.util.BNO055IMUUtil;
 import org.firstinspires.ftc.teamcode.RR_quickstart.util.Encoder;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import static java.lang.Math.toRadians;
 
 /*
  * Sample tracking wheel localizer implementation assuming the standard configuration:
@@ -46,7 +44,7 @@ public class StandardTrackingWheelLocalizerIMU extends ThreeTrackingWheelLocaliz
 	public static double FRONT_ENCODER_MULTIPLIER = 1.0;
 
 	public static double TICKS_PER_REV = 8192;
-	public static double WHEEL_RADIUS = 35.0/2.0/25.4; // in
+	public static double WHEEL_RADIUS = 35.0 / 2.0 / 25.4; // in
 	public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
 
@@ -54,18 +52,20 @@ public class StandardTrackingWheelLocalizerIMU extends ThreeTrackingWheelLocaliz
 	public static double MIN_STABLE_HEADING_TIME = 0.2;
 	public static double HEADING_EPSILON = toRadians(0.05);
 
-	private BNO055IMU imu;
+	private final BNO055IMU imu;
 	private double baseExtHeading;
-	private double previousHeading = 0;
+	private final double previousHeading = 0;
 
-	private ElapsedTime lastIMUUpdateTimer = new ElapsedTime();
-	private ElapsedTime stableHeadingTimer = new ElapsedTime();
+	private final ElapsedTime lastIMUUpdateTimer = new ElapsedTime();
+	private final ElapsedTime stableHeadingTimer = new ElapsedTime();
 	private double stableCheckHeading;
 
 	private List<Double> cachedWheelPositions = Collections.emptyList();
-	private boolean useCachedWheelPositions = false;
+	private final boolean useCachedWheelPositions = false;
 
-	private Encoder leftEncoder, rightEncoder, frontEncoder;
+	private final Encoder leftEncoder;
+	private final Encoder rightEncoder;
+	private final Encoder frontEncoder;
 
 	public StandardTrackingWheelLocalizerIMU(HardwareMap hardwareMap) {
 		super(Arrays.asList(

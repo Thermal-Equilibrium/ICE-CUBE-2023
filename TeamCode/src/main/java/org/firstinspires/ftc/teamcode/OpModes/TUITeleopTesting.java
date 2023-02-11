@@ -13,17 +13,17 @@ import org.firstinspires.ftc.teamcode.Utils.VirtualField;
 @TeleOp
 public class TUITeleopTesting extends BaseTeleop {
 
-    VirtualField virtualField;
+	VirtualField virtualField;
 
-    @Override
-    public Command setupTeleop(CommandScheduler scheduler) {
-        virtualField = new VirtualField(telemetry);
-        robot.gamepad2.whenDPadUpPressed(new MoveFieldCursor(0, -1, virtualField));
-        robot.gamepad2.whenDPadDownPressed(new MoveFieldCursor(0, 1, virtualField));
-        robot.gamepad2.whenDPadLeftPressed(new MoveFieldCursor(-1, 0, virtualField));
-        robot.gamepad2.whenDPadRightPressed(new MoveFieldCursor(1, 0, virtualField));
+	@Override
+	public Command setupTeleop(CommandScheduler scheduler) {
+		virtualField = new VirtualField(telemetry);
+		robot.gamepad2.whenDPadUpPressed(new MoveFieldCursor(0, -1, virtualField));
+		robot.gamepad2.whenDPadDownPressed(new MoveFieldCursor(0, 1, virtualField));
+		robot.gamepad2.whenDPadLeftPressed(new MoveFieldCursor(-1, 0, virtualField));
+		robot.gamepad2.whenDPadRightPressed(new MoveFieldCursor(1, 0, virtualField));
 
-        return new RobotRelative(robot, robot.gamepad1);
+		return new RobotRelative(robot, robot.gamepad1);
 
-    }
+	}
 }

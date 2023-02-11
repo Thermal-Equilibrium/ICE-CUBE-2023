@@ -13,26 +13,26 @@ import org.firstinspires.ftc.teamcode.RR_quickstart.drive.SampleMecanumDrive;
  */
 @Autonomous(group = "drive")
 public class SplineTest extends LinearOpMode {
-    @Override
-    public void runOpMode() throws InterruptedException {
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+	@Override
+	public void runOpMode() throws InterruptedException {
+		SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        waitForStart();
+		waitForStart();
 
-        if (isStopRequested()) return;
+		if (isStopRequested()) return;
 
-        Trajectory traj = drive.trajectoryBuilder(new Pose2d())
-                .splineToLinearHeading(new Pose2d(48, 12, Math.toRadians(90)), 0)
-                .build();
+		Trajectory traj = drive.trajectoryBuilder(new Pose2d())
+				.splineToLinearHeading(new Pose2d(48, 12, Math.toRadians(90)), 0)
+				.build();
 
-        drive.followTrajectory(traj);
+		drive.followTrajectory(traj);
 
-        sleep(2000);
+		sleep(2000);
 
-        drive.followTrajectory(
-                drive.trajectoryBuilder(traj.end(), true)
-                        .splineTo(new Vector2d(0,0),Math.toRadians(-180))
-                        .build()
-        );
-    }
+		drive.followTrajectory(
+				drive.trajectoryBuilder(traj.end(), true)
+						.splineTo(new Vector2d(0, 0), Math.toRadians(-180))
+						.build()
+		);
+	}
 }

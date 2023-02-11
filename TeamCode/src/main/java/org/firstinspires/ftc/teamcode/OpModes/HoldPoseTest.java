@@ -12,6 +12,6 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Roadrunn
 public class HoldPoseTest extends BaseAuto {
 	@Override
 	public Command setupAuto(CommandScheduler scheduler) {
-		return new RoadrunnerHoldPose(robot,new Pose2d(0,0,0));
+		return new RoadrunnerHoldPose(robot, new Pose2d(0, 0, 0));
 	}
 }

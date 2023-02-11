@@ -16,27 +16,19 @@ import java.util.ArrayList;
 public class Robot {
 
 
-	public enum OpMode {
-		Auto,
-		Teleop
-	}
-
 	public Dashboard dashboard = new Dashboard();
 	public Input gamepad1;
 	public Input gamepad2;
 	public Drivetrain drivetrain = new Drivetrain();
 	public MainScoringMechanism scoringMechanism = new MainScoringMechanism();
 	public FieldMap field = new FieldMap();
-
 	public FrontCamera frontCamera;
 	public BackCamera backCamera;
-
 	// print subsystem for testing
 	public PrintSubsystem1 print = new PrintSubsystem1();
-
 	protected CommandScheduler scheduler;
+	ArrayList<LynxModule> modules = new ArrayList<>();
 
-	ArrayList<LynxModule> modules = new ArrayList<>() ;
 	public Robot(HardwareMap hwMap, OpMode opMode, Gamepad gamepad1, Gamepad gamepad2, Team team) {
 		frontCamera = new FrontCamera();
 		backCamera = new BackCamera(team);
@@ -56,7 +48,7 @@ public class Robot {
 	}
 
 	public void update() {
-		for (LynxModule module: modules) {
+		for (LynxModule module : modules) {
 			module.clearBulkCache();
 		}
 		updateInput();
@@ -64,10 +56,10 @@ public class Robot {
 		Dashboard.packet.put("Dash Delay", dashboard.getDelayLength());
 		Dashboard.packet.put("game1 Delay", gamepad1.getDelayLength());
 		Dashboard.packet.put("game2 Delay", gamepad2.getDelayLength());
-		Dashboard.packet.put("drivetrain Delay",drivetrain.getDelayLength());
-		Dashboard.packet.put("scoring Delay",scoringMechanism.getDelayLength());
-		Dashboard.packet.put("distanceSensor Delay",scoringMechanism.getDelayLength());
-		Dashboard.packet.put("field delay",field.getDelayLength());
+		Dashboard.packet.put("drivetrain Delay", drivetrain.getDelayLength());
+		Dashboard.packet.put("scoring Delay", scoringMechanism.getDelayLength());
+		Dashboard.packet.put("distanceSensor Delay", scoringMechanism.getDelayLength());
+		Dashboard.packet.put("field delay", field.getDelayLength());
 	}
 
 	public void shutdown() {
@@ -81,5 +73,10 @@ public class Robot {
 
 	public CommandScheduler getScheduler() {
 		return scheduler;
+	}
+
+	public enum OpMode {
+		Auto,
+		Teleop
 	}
 }

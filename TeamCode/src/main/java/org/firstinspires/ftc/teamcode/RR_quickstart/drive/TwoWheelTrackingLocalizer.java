@@ -9,7 +9,6 @@ import com.acmerobotics.roadrunner.localization.TwoTrackingWheelLocalizer;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-
 import org.firstinspires.ftc.teamcode.RR_quickstart.util.Encoder;
 
 import java.util.Arrays;
@@ -53,9 +52,10 @@ public class TwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
 	// Parallel/Perpendicular to the forward axis
 	// Parallel wheel is parallel to the forward axis
 	// Perpendicular is perpendicular to the forward axis
-	private Encoder parallelEncoder, perpendicularEncoder;
+	private final Encoder parallelEncoder;
+	private final Encoder perpendicularEncoder;
 
-	private SampleMecanumDrive drive;
+	private final SampleMecanumDrive drive;
 
 	public TwoWheelTrackingLocalizer(HardwareMap hardwareMap, SampleMecanumDrive drive) {
 		super(Arrays.asList(

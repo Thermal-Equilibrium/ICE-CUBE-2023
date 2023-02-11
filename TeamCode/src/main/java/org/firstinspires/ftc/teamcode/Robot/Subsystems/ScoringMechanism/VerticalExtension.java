@@ -16,39 +16,25 @@ import org.firstinspires.ftc.teamcode.Utils.ProfiledPID;
 @Config
 public class VerticalExtension extends Subsystem {
 
-	MainScoringMechanism.MechanismStates state = MainScoringMechanism.MechanismStates.BEGIN;
-
-	DcMotorEx vertical1;
-	DcMotorEx vertical2;
-
-	public static double Kp = 0.2;
-	public static double Kd = 1.3 * Math.sqrt(Kp * 0.0015);
-
-	public static double max_accel = 240;
-	public static double max_velocity = 120;
-
+	public final static double HIGH_POSITION = 25.8;
+	public final static double MID_POSITION = 16.1;
+	public final static double IN_POSITION = 0.1519392231528441;
 	static final double PULLEY_CIRCUMFERENCE = 4.409;
 	static final double counts_per_revolution = 145.090909;
-
-
-
-	PIDCoefficients coefficients = new PIDCoefficients(Kp,0,Kd);
-	MotionConstraint upConstraint = new MotionConstraint(max_accel,max_accel,max_velocity);
-	MotionConstraint downConstraint = new MotionConstraint(max_accel,max_accel,max_velocity);
-
-	ProfiledPID controller = new ProfiledPID(upConstraint,downConstraint,coefficients);
-	public final static double HIGH_POSITION = 25.8;
-
-	public final static double MID_POSITION = 16;
-
-	public final static double IN_POSITION = 0.1519392231528441;
-
-	private VoltageSensor batteryVoltageSensor;
-
+	public static double Kp = 0.2;
+	public static double Kd = 1.3 * Math.sqrt(Kp * 0.0015);
+	public static double max_accel = 190;
+	public static double max_velocity = 120;
 	protected double slideTargetPosition = 0;
-
 	protected double Kg = 0.09499;
-
+	MainScoringMechanism.MechanismStates state = MainScoringMechanism.MechanismStates.BEGIN;
+	DcMotorEx vertical1;
+	DcMotorEx vertical2;
+	PIDCoefficients coefficients = new PIDCoefficients(Kp, 0, Kd);
+	MotionConstraint upConstraint = new MotionConstraint(max_accel, max_accel, max_velocity);
+	MotionConstraint downConstraint = new MotionConstraint(max_accel, max_accel, max_velocity);
+	ProfiledPID controller = new ProfiledPID(upConstraint, downConstraint, coefficients);
+	private VoltageSensor batteryVoltageSensor;
 
 	public void commonInit(HardwareMap hwMap) {
 		vertical1 = hwMap.get(DcMotorEx.class, "vertical1");
@@ -59,6 +45,7 @@ public class VerticalExtension extends Subsystem {
 		vertical2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 		this.batteryVoltageSensor = hwMap.voltageSensor.iterator().next();
 	}
+
 	@Override
 	public void initAuto(HardwareMap hwMap) {
 		commonInit(hwMap);
@@ -67,6 +54,7 @@ public class VerticalExtension extends Subsystem {
 		vertical1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 		vertical2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 	}
+
 	@Override
 	public void initTeleop(HardwareMap hwMap) {
 		commonInit(hwMap);
@@ -90,19 +78,20 @@ public class VerticalExtension extends Subsystem {
 
 	protected void updatePID() {
 		double measuredPosition = getSlidePosition();
-		double power = controller.calculate(slideTargetPosition,measuredPosition) ;
+		double power = controller.calculate(slideTargetPosition, measuredPosition);
 		if (slideTargetPosition > IN_POSITION * 2) {
 			power += Kg;
 		}
 		vertical1.setPower(power);
 		vertical2.setPower(power);
-		Dashboard.packet.put("measured slide position",measuredPosition);
-		Dashboard.packet.put("target slide position",controller.getTargetPosition());
-		Dashboard.packet.put("slide power",power);
+		Dashboard.packet.put("measured slide position", measuredPosition);
+		Dashboard.packet.put("target slide position", controller.getTargetPosition());
+		Dashboard.packet.put("slide power", power);
 	}
 
 	/**
 	 * get position of the linear slides
+	 *
 	 * @return average encoder position of the slides
 	 */
 	public double getSlidePosition() {

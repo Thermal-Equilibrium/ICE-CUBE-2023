@@ -12,25 +12,19 @@ public class OneDimensionalLQRController {
 
 	// output gain scalar
 	protected double outputGain = 1;
-
-	private double integral_sum = 0;
-
-	private double Ki = 0;
-
-	private double last_setpoint = 0;
-
 	double state_error = 0;
-
 	double kd = 0.12627 * 0.05;
-
 	double last_error = 0;
 	double error = 0;
-
-
 	ElapsedTime timer = new ElapsedTime();
+	private double integral_sum = 0;
+	private double Ki = 0;
+	private double last_setpoint = 0;
+
 	/**
 	 * constructor pogg
-	 * @param K gain K
+	 *
+	 * @param K  gain K
 	 * @param Kr signal scaling
 	 */
 	public OneDimensionalLQRController(double K, double Kr, double Ki) {
@@ -42,8 +36,9 @@ public class OneDimensionalLQRController {
 
 	/**
 	 * constructor with output scaling pogg
-	 * @param K gain K
-	 * @param Kr signal scaling
+	 *
+	 * @param K          gain K
+	 * @param Kr         signal scaling
 	 * @param outputGain
 	 */
 	public OneDimensionalLQRController(double K, double Kr, double outputGain, double Ki) {
@@ -52,10 +47,12 @@ public class OneDimensionalLQRController {
 		this.outputGain = outputGain;
 		this.Ki = Ki;
 	}
+
 	/**
 	 * outputs the signal from the LQR controller
+	 *
 	 * @param reference the state we want to achieve
-	 * @param state the state we are at
+	 * @param state     the state we are at
 	 * @return the command to send to the motor
 	 */
 	public double outputLQR(double reference, double state) {
@@ -87,7 +84,7 @@ public class OneDimensionalLQRController {
 		last_setpoint = reference;
 
 		timer.reset();
-		return (error * outputGain) + (integral_sum * Ki) + (derivative *kd);
+		return (error * outputGain) + (integral_sum * Ki) + (derivative * kd);
 
 	}
 
@@ -99,21 +96,20 @@ public class OneDimensionalLQRController {
 		return K;
 	}
 
-	public double getKr() {
-		return Kr;
-	}
-
-	public double getOutputGain() {
-		return outputGain;
-	}
-
-
 	public void setK(double k) {
 		K = k;
 	}
 
+	public double getKr() {
+		return Kr;
+	}
+
 	public void setKr(double kr) {
 		Kr = kr;
+	}
+
+	public double getOutputGain() {
+		return outputGain;
 	}
 
 	public void setOutputGain(double outputGain) {
@@ -122,7 +118,6 @@ public class OneDimensionalLQRController {
 
 
 	/**
-	 *
 	 * @return if the error has crossed zero, indicating it is wise to zero the integral count.
 	 */
 	protected boolean ZeroCrossOccured() {

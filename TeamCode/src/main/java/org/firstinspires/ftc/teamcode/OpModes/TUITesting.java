@@ -10,8 +10,8 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.TUI;
 @Autonomous
 public class TUITesting extends BaseAuto {
 
-    @Override
-    public Command setupAuto(CommandScheduler scheduler) {
-        return new TUI(telemetry);
-    }
+	@Override
+	public Command setupAuto(CommandScheduler scheduler) {
+		return new TUI(telemetry);
+	}
 }

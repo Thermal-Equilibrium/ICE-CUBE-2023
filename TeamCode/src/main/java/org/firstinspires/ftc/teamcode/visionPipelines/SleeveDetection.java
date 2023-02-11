@@ -7,7 +7,6 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
@@ -19,25 +18,16 @@ public class SleeveDetection extends OpenCvPipeline {
     MAGENTA = Parking Right
      */
 
-	public enum ParkingPosition {
-		LEFT,
-		CENTER,
-		RIGHT
-	}
-
 	// TOPLEFT anchor point for the bounding box
 	public static Point SLEEVE_TOPLEFT_ANCHOR_POINT = new Point(120, 160);
-
 	// Width and height for the bounding box
 	public static int REGION_WIDTH = 60;
 	public static int REGION_HEIGHT = 50;
-
 	// Color definitions
 	private final Scalar
-			YELLOW  = new Scalar(255, 255, 0),
-			CYAN    = new Scalar(0, 255, 255),
+			YELLOW = new Scalar(255, 255, 0),
+			CYAN = new Scalar(0, 255, 255),
 			MAGENTA = new Scalar(255, 0, 255);
-
 	// Anchor point definitions
 	Point sleeve_pointA = new Point(
 			SLEEVE_TOPLEFT_ANCHOR_POINT.x,
@@ -45,7 +35,6 @@ public class SleeveDetection extends OpenCvPipeline {
 	Point sleeve_pointB = new Point(
 			SLEEVE_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
 			SLEEVE_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
-
 	// Running variable storing the parking position
 	private volatile ParkingPosition position = ParkingPosition.LEFT;
 
@@ -96,5 +85,11 @@ public class SleeveDetection extends OpenCvPipeline {
 	// Returns an enum being the current position where the robot will park
 	public ParkingPosition getPosition() {
 		return position;
+	}
+
+	public enum ParkingPosition {
+		LEFT,
+		CENTER,
+		RIGHT
 	}
 }

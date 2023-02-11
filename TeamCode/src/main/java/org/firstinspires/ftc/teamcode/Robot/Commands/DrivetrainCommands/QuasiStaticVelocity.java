@@ -27,16 +27,16 @@ public class QuasiStaticVelocity extends Command {
 	@Override
 	public void init() {
 		timer.reset();
-		drivetrain.robotRelative(new Pose2d(0,0,0));
+		drivetrain.robotRelative(new Pose2d(0, 0, 0));
 	}
 
 	@Override
 	public void periodic() {
 		double position = drivetrain.getPose().getX();
 		double velocity = drivetrain.getVelocity().getX();
-		double newPower = Range.clip(timer.seconds() * rampRate,0.00,1);
+		double newPower = Range.clip(timer.seconds() * rampRate, 0.00, 1);
 
-		drivetrain.robotRelative(new Pose2d(newPower,0,0));
+		drivetrain.robotRelative(new Pose2d(newPower, 0, 0));
 
 		RobotLog.ii("SysID (P/V/u/t): ", position + " , " + velocity + " , " + newPower + " , " + timer.seconds());
 	}
@@ -48,7 +48,7 @@ public class QuasiStaticVelocity extends Command {
 
 	@Override
 	public void shutdown() {
-		drivetrain.robotRelative(new Pose2d(0,0,0));
+		drivetrain.robotRelative(new Pose2d(0, 0, 0));
 	}
 }
 

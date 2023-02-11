@@ -10,15 +10,16 @@ import org.firstinspires.ftc.teamcode.Utils.Team;
 
 @Autonomous
 public class AutoSlides extends BaseAuto {
-    @Override
-    public Command setupAuto(CommandScheduler scheduler) {
-        ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism, robot.drivetrain, robot.backCamera);
-        waitForStart();
-            return commandGroups.autoGoToConeTesting();
+	@Override
+	public Command setupAuto(CommandScheduler scheduler) {
+		ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism, robot.drivetrain, robot.backCamera);
+		waitForStart();
+		return commandGroups.autoGoToConeTesting();
 //        return new NullCommand();
-    }
-    @Override
-    public Team getTeam() {
-        return Team.RED;
-    }
+	}
+
+	@Override
+	public Team getTeam() {
+		return Team.RED;
+	}
 }

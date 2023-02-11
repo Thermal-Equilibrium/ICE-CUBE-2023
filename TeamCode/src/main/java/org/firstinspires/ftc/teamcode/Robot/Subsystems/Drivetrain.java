@@ -7,8 +7,8 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.RR_quickstart.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
+import org.firstinspires.ftc.teamcode.RR_quickstart.drive.SampleMecanumDrive;
 
 public class Drivetrain extends Subsystem {
 	protected HardwareMap hwMap;
@@ -16,42 +16,43 @@ public class Drivetrain extends Subsystem {
 	protected double leftPower = 0;
 	protected double rightPower = 0;
 	SampleMecanumDrive drive;
-	Servo aBreak;
-	double breakActive = 0.5;
-	double breakReleased = 0.7;
-	BreakStates breakState = BreakStates.FREE;
+	Servo aBrake;
+	double brakeActive = 0.5;
+	double brakeReleased = 0.7;
+	BrakeStates brakeState = BrakeStates.FREE;
 
 	@Override
 	public void initAuto(HardwareMap hwMap) {
 		this.hwMap = hwMap;
 		drive = new SampleMecanumDrive(hwMap);
-		aBreak = hwMap.get(Servo.class, "break");
-		aBreak.setPosition(breakReleased);
+		aBrake = hwMap.get(Servo.class, "break");
+		aBrake.setPosition(brakeReleased);
 	}
+
 	@Override
 	public void periodic() {
 		drive.update();
-		switch (breakState) {
+		switch (brakeState) {
 			case FREE:
-				aBreak.setPosition(breakReleased);
+				aBrake.setPosition(brakeReleased);
 				break;
 			case ACTIVATED:
-				aBreak.setPosition(breakActive);
+				aBrake.setPosition(brakeActive);
 				break;
 		}
 
 	}
 
 
-	public void  robotRelative(Pose2d powers) {
+	public void robotRelative(Pose2d powers) {
 		drive.setWeightedDrivePower(powers);
 	}
 
 	public void fieldRelative(Pose2d powers) {
-		Vector2d vec = new Vector2d(powers.getX(),-powers.getY());
+		Vector2d vec = new Vector2d(powers.getX(), -powers.getY());
 
 		vec = vec.rotated(drive.getPoseEstimate().getHeading());
-		powers = new Pose2d(vec.getX(),-vec.getY(),powers.getHeading());
+		powers = new Pose2d(vec.getX(), -vec.getY(), powers.getHeading());
 		robotRelative(powers);
 	}
 
@@ -61,7 +62,7 @@ public class Drivetrain extends Subsystem {
 
 	@Override
 	public void shutdown() {
-		drive.setMotorPowers(0,0,0,0);
+		drive.setMotorPowers(0, 0, 0, 0);
 	}
 
 	public double getLeftPower() {
@@ -76,6 +77,10 @@ public class Drivetrain extends Subsystem {
 		return drive.getPoseEstimate();
 	}
 
+	public void setPose(Pose2d pose) {
+		drive.setPoseEstimate(pose);
+	}
+
 	public boolean isBusy() {
 		return drive.isBusy();
 	}
@@ -88,30 +93,20 @@ public class Drivetrain extends Subsystem {
 		return drive.getPoseVelocity();
 	}
 
-	public void setPose(Pose2d pose) {
-		drive.setPoseEstimate(pose);
+	public BrakeStates getBrakeState() {
+		return brakeState;
 	}
 
-
-	public void setBreakState(BreakStates breakState) {
-		this.breakState = breakState;
+	public void setBrakeState(BrakeStates brakeState) {
+		this.brakeState = brakeState;
 	}
 
-	public BreakStates getBreakState() {
-		return breakState;
-	}
-
-	public void toggleBreakState() {
-		if (breakState.equals(BreakStates.ACTIVATED)) {
-			breakState = BreakStates.FREE;
+	public void toggleBrakeState() {
+		if (brakeState.equals(BrakeStates.ACTIVATED)) {
+			brakeState = BrakeStates.FREE;
 		} else {
-			breakState = BreakStates.ACTIVATED;
+			brakeState = BrakeStates.ACTIVATED;
 		}
-	}
-
-	public enum BreakStates {
-		FREE,
-		ACTIVATED
 	}
 
 	public void setTrajectoryTracking(boolean shouldTrajectoryTrackNotStablilize) {
@@ -120,6 +115,11 @@ public class Drivetrain extends Subsystem {
 
 	public void setHoldingPose(Pose2d pose) {
 		drive.holdingPose = pose;
+	}
+
+	public enum BrakeStates {
+		FREE,
+		ACTIVATED
 	}
 
 

@@ -12,6 +12,7 @@ public class CloseLatch extends Command {
 	public CloseLatch(Turret turret) {
 		this.turret = turret;
 	}
+
 	@Override
 	public void init() {
 		turret.close_latch();

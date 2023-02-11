@@ -8,32 +8,30 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
-import org.firstinspires.ftc.teamcode.Math.AsymmetricProfile.AsymmetricMotionProfile;
 import org.firstinspires.ftc.teamcode.Math.AsymmetricProfile.MotionConstraint;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 
 public class ProfiledServo extends Subsystem {
 	public Servo servo_right;
 	public Servo servo_left;
+	public MotionProfile profile_m;
+	public MotionConstraint forwardConstraint;
+	public MotionConstraint backwardContraint;
+	public ElapsedTime timer = new ElapsedTime();
 	protected double endPosition;
 	protected double previousEndPosition;
 	protected double currentPosition;
 	protected String name;
 
-	public MotionProfile profile_m;
-	public MotionConstraint forwardConstraint;
-	public MotionConstraint backwardContraint;
-	public ElapsedTime timer = new ElapsedTime();
-
 	public ProfiledServo(HardwareMap hwmap, String name1, String name2, double Forwardvelo, double Forwardaccel, double BackwardVelo, double BackwardAccel, double initialPosition) {
 		servo_left = hwmap.get(Servo.class, name1);
-		servo_right = hwmap.get(Servo.class,name2);
+		servo_right = hwmap.get(Servo.class, name2);
 		this.name = name1 + " " + name2 + " ";
 		this.endPosition = initialPosition;
 		this.currentPosition = initialPosition;
 		this.previousEndPosition = initialPosition + 100; // just guarantee that they are not equal
- 		this.forwardConstraint = new MotionConstraint(Forwardvelo,Forwardaccel,Forwardaccel);
-	 	this.backwardContraint = new MotionConstraint(BackwardVelo,BackwardAccel, BackwardAccel);
+		this.forwardConstraint = new MotionConstraint(Forwardvelo, Forwardaccel, Forwardaccel);
+		this.backwardContraint = new MotionConstraint(BackwardVelo, BackwardAccel, BackwardAccel);
 		setPositionsSynced(initialPosition);
 	}
 

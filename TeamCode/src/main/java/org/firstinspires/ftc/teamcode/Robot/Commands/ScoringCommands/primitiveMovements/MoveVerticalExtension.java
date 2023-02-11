@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
-import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.AlignViaPole;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
 

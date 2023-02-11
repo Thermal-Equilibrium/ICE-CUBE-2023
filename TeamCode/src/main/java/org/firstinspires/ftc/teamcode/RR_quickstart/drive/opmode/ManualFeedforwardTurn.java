@@ -1,6 +1,15 @@
 package org.firstinspires.ftc.teamcode.RR_quickstart.drive.opmode;
 
 
+import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.MAX_ANG_ACCEL;
+import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.MAX_ANG_VEL;
+import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.TRACK_WIDTH;
+import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.gyrationConstant;
+import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.kA;
+import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.kStatic;
+import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.kV;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -10,7 +19,6 @@ import com.acmerobotics.roadrunner.profile.MotionProfile;
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
 import com.acmerobotics.roadrunner.util.NanoClock;
-import com.qualcomm.hardware.lynx.LynxVoltageSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -18,19 +26,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.RR_quickstart.drive.SampleMecanumDrive;
 
-import java.util.Iterator;
 import java.util.Objects;
-
-import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.MAX_ACCEL;
-import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.MAX_ANG_ACCEL;
-import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.MAX_ANG_VEL;
-import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.MAX_VEL;
-import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.TRACK_WIDTH;
-import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.gyrationConstant;
-import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.kA;
-import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.kStatic;
-import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.kV;
 
 /*
  * This routine is designed to tune the open-loop feedforward coefficients. Although it may seem unnecessary,
@@ -53,15 +49,9 @@ public class ManualFeedforwardTurn extends LinearOpMode {
 	public static double DISTANCE = Math.toRadians(360 * 5); // in
 	public VoltageSensor batterVoltageSensor;
 
-	private FtcDashboard dashboard = FtcDashboard.getInstance();
+	private final FtcDashboard dashboard = FtcDashboard.getInstance();
 
 	private SampleMecanumDrive drive;
-
-	enum Mode {
-		DRIVER_MODE,
-		TUNING_MODE
-	}
-
 	private Mode mode;
 
 	private static MotionProfile generateProfile(boolean movingForward) {
@@ -98,7 +88,6 @@ public class ManualFeedforwardTurn extends LinearOpMode {
 		boolean movingForwards = true;
 		MotionProfile activeProfile = generateProfile(true);
 		double profileStart = clock.seconds();
-
 
 
 		while (!isStopRequested()) {
@@ -161,5 +150,10 @@ public class ManualFeedforwardTurn extends LinearOpMode {
 
 			telemetry.update();
 		}
+	}
+
+	enum Mode {
+		DRIVER_MODE,
+		TUNING_MODE
 	}
 }
