@@ -17,8 +17,8 @@ import org.firstinspires.ftc.teamcode.Utils.ProfiledPID;
 public class VerticalExtension extends Subsystem {
 
 	public final static double HIGH_POSITION = 25.8;
-	public final static double MID_POSITION = 16.1;
-	public final static double IN_POSITION = 0.1519392231528441;
+	public final static double MID_POSITION = 16;
+	public final static double IN_POSITION = 0;
 	static final double PULLEY_CIRCUMFERENCE = 4.409;
 	static final double counts_per_revolution = 145.090909;
 	public static double Kp = 0.2;
