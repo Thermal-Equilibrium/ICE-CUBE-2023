@@ -30,9 +30,9 @@ public class Robot {
 	ArrayList<LynxModule> modules = new ArrayList<>();
 
 	public Robot(HardwareMap hwMap, OpMode opMode, Gamepad gamepad1, Gamepad gamepad2, Team team) {
-		frontCamera = new FrontCamera();
 		backCamera = new BackCamera(team);
-		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard, scoringMechanism, field, frontCamera, backCamera);
+		frontCamera = new FrontCamera();
+		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard, scoringMechanism, field, backCamera,frontCamera);
 		this.gamepad1 = new Input(gamepad1, scheduler);
 		this.gamepad2 = new Input(gamepad2, scheduler);
 

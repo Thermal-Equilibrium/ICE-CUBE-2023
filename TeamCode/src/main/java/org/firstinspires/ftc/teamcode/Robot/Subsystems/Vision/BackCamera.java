@@ -42,6 +42,8 @@ public class BackCamera extends Subsystem {
 	private OpenCvWebcam cam;
 	private List<Cone> tempConeList;
 
+	public static boolean streamThisCameraToDash = false;
+
 	public BackCamera(Team team) {
 //        pipeline = new Save(team,this);
 		pipeline = new ConeDetectionFast(team, this);
@@ -70,8 +72,13 @@ public class BackCamera extends Subsystem {
 				shutdown();
 			}
 		});
-		FtcDashboard dashboard = FtcDashboard.getInstance();
-		dashboard.startCameraStream(cam, 20);
+		if (streamThisCameraToDash) {
+			// if false, it will stream the other camera,
+
+			FtcDashboard dashboard = FtcDashboard.getInstance();
+			dashboard.startCameraStream(cam, 20);
+		}
+
 	}
 
 	@Override

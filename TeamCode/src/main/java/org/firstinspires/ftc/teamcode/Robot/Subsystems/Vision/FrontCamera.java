@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision;
 
 
+import static org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.BackCamera.streamThisCameraToDash;
+
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -52,6 +55,12 @@ public class FrontCamera extends Subsystem {
 			public void onError(int errorCode) {
 			}
 		});
+		if (!streamThisCameraToDash) {
+			// if false, it will stream the other camera,
+
+			FtcDashboard dashboard = FtcDashboard.getInstance();
+			dashboard.startCameraStream(cam, 20);
+		}
 	}
 
 	@Override

@@ -43,8 +43,7 @@ public class VanillaLatteAuto extends BaseAuto {
 		ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism, robot.drivetrain, robot.backCamera);
 
 		Vector2d goToPole = new Vector2d(-36, 23);
-		Pose2d rotateFaceMedium = shiftRobotRelative(new Pose2d(-35, 27, Math.toRadians(21.8816732757)), -1.5, -2);
-		Pose2d slightlyAdjustedMovement = shiftRobotRelative(rotateFaceMedium,1.5,0);
+		Pose2d rotateFaceMedium = shiftRobotRelative(new Pose2d(-35, 26, Math.toRadians(21.8816732757)), -1.9, -2);
 		Pose2d parkLeft = new Pose2d(-3, 16, Math.toRadians(90));
 		Pose2d parkCenter = new Pose2d(-35, 12.5, Math.toRadians(0));
 		Pose2d parkRight = new Pose2d(-60, 12.5, Math.toRadians(0));
@@ -62,9 +61,7 @@ public class VanillaLatteAuto extends BaseAuto {
 				.lineToLinearHeading(rotateFaceMedium, slowVelocity, slowAcceleration)
 				.build();
 
-		Trajectory scoring3 = robot.drivetrain.getBuilder().trajectoryBuilder(scoring2.end(),false)
-				.lineToLinearHeading(slightlyAdjustedMovement)
-				.build();
+
 
 		Trajectory parkTraj = robot.drivetrain.getBuilder().trajectoryBuilder(scoring2.end(), false)
 				.lineToLinearHeading(Objects.requireNonNull(parking.get(parkingPosition)))
