@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 
 public class Turret extends Subsystem {
 
-	private static final double turretTransfer = Math.toRadians(181);//3.05;
+	private static final double turretTransfer = Math.toRadians(179);//3.05;
 	private static final double MIN_RAW_SERVO_ANGLE = 0;
 	private static final double MAX_RAW_SERVO_ANGLE = 1;
 	private static final double TAU = Math.PI * 2;

@@ -82,6 +82,8 @@ public class VerticalExtension extends Subsystem {
 		double power = controller.calculate(slideTargetPosition, measuredPosition);
 		if (slideTargetPosition > IN_POSITION * 2) {
 			power += Kg;
+		} else {
+			power -= Kg;
 		}
 		vertical1.setPower(power);
 		vertical2.setPower(power);

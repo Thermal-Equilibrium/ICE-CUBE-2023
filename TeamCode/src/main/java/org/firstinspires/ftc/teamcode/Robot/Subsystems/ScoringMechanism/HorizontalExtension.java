@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Utils.ProfiledPID;
 public class HorizontalExtension extends Subsystem {
 
 
-	public final static double IN_POSITION = 6;
+	public final static double IN_POSITION = 0;
 	public final static double SAFE_POSITION = 300;
 	public final static double CLOSE_INTAKE = 100;
 	public final static double EXTENSION1 = 500;
