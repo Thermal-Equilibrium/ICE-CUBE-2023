@@ -24,6 +24,9 @@ public class HorizontalExtension extends Subsystem {
 	public final static double mostlyAutoExtension = autoExtension - 30;
 	public final static double autoExtension_MID = 420;
 	public final static double mostlyAutoExtension_MID = autoExtension_MID - 30;
+	public final static double autoExtension_MID_left = 430;
+	public final static double mostlyAutoExtension_MID_left = autoExtension_MID_left - 30;
+
 	private static final double TICKS_TO_INCH = .03;
 	private static final double INCH_TO_TICKS = 33.3333333333;
 	protected double targetPosition = IN_POSITION;
