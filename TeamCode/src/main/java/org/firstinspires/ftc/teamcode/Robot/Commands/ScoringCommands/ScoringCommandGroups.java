@@ -258,9 +258,8 @@ public class ScoringCommandGroups {
 				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION)) // some amount of time, assuming about 0.2
 				.addNext(moveArm(Turret.ArmStates.TRANSFER)) // 0.25s
 				.addNext(new Delay(0.15)) // 0.15s
-				.addNext(releaseCone())  // 0.25s
 				.addNext(closeLatch()) // 0.0s
-				.addNext(new Delay(0.2)) // 0.2s
+				.addNext(releaseCone())  // 0.25s
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE)); // 0.25
 	}
 
@@ -269,7 +268,7 @@ public class ScoringCommandGroups {
 		return depositConeAsync()
 				.addNext(openLatch())
 				.addNext(moveHorizontalExtension(autoExtensionDistance))
-				.addNext(new Delay(0.1))
+				.addNext(new Delay(0.25))
 				.addNext(grabCone())
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
 				.addNext(moveTurret(Turret.TurretStates.TRANSFER))
