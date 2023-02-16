@@ -77,7 +77,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 
 	static {
 		try {
-			HEADING_PID = new PIDCoefficients(rotation_Kp, 0, solveKD(translation_kp, DriveConstants.kV / TRACK_WIDTH, DriveConstants.gyrationConstant * DriveConstants.kA / TRACK_WIDTH));
+			HEADING_PID = new PIDCoefficients(rotation_Kp, 0, solveKD(rotation_Kp, DriveConstants.kV / TRACK_WIDTH, DriveConstants.gyrationConstant * DriveConstants.kA / TRACK_WIDTH));
 		} catch (Exception e) {
 			HEADING_PID = new PIDCoefficients(rotation_Kp, 0, 0);
 			System.out.println("heading controller synthesis failed, reverting to safe coefficients");

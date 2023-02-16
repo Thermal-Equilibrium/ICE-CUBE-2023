@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
 
 public class MoveClaw extends Command {
 
-	double delayS = 0.25;
+	double delayS = 0.15;
 
 	Turret turret;
 	Turret.ClawStates clawState;

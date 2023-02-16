@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
 
 public class MoveArmDirect extends Command {
-	double delayS = 0.35;
+	double delayS = 0.15;
 
 	Turret turret;
 	double position;

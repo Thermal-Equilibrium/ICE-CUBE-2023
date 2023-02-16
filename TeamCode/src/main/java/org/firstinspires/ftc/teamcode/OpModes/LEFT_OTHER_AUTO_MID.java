@@ -44,9 +44,9 @@ public class LEFT_OTHER_AUTO_MID extends BaseAuto {
 
 		Vector2d goToPole = new Vector2d(-36, 23);
 		Pose2d rotateFaceMedium = shiftRobotRelative(new Pose2d(-36, 26, Math.toRadians(180 - 21.8816732757)), 0.3, 2);
-		Pose2d parkLeft = new Pose2d(-3, 16, Math.toRadians(90));
-		Pose2d parkCenter = new Pose2d(-35, 12.5, Math.toRadians(0));
-		Pose2d parkRight = new Pose2d(-60, 12.5, Math.toRadians(0));
+		Pose2d parkLeft = new Pose2d(-3, 16, Math.toRadians(-90));
+		Pose2d parkCenter = new Pose2d(-35, 12.5, Math.toRadians(-90));
+		Pose2d parkRight = new Pose2d(-60, 12.5, Math.toRadians(-90));
 
 		HashMap<SleeveDetection.ParkingPosition, Pose2d> parking = new HashMap<>();
 
