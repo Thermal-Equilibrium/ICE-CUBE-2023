@@ -29,8 +29,6 @@ public class BackCamera extends Subsystem {
 	private final ExposureControl.Mode exposureMode = ExposureControl.Mode.Manual;
 	private final long exposureMs = 40;
 	private final int gain = 100;
-//    public double HFOV = Math.toRadians(67.9255464975384);
-//    public double VFOV = Math.toRadians(41.50936520321168);
 	private final FocusControl.Mode focusMode = FocusControl.Mode.Fixed;
 	private final double focusLength = 69; //idk what units this is in
 	public Size resolution = Resolution.LOW;
@@ -42,16 +40,22 @@ public class BackCamera extends Subsystem {
 	private OpenCvWebcam cam;
 	private List<Cone> tempConeList;
 
-	public static boolean streamThisCameraToDash = false;
+	public static boolean streamBackCameraToDash = true;
 
 	public BackCamera(Team team) {
-//        pipeline = new Save(team,this);
+        //pipeline = new Save(team,this);
 		pipeline = new ConeDetectionFast(team, this);
 	}
 
 	@Override
 	public void initAuto(HardwareMap hwMap) {
-		cam = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, "Back Webcam"), hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName()));
+		if (streamBackCameraToDash) {
+			cam = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, "Back Webcam"), hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName()));
+		}
+		else {
+			cam = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, "Back Webcam"));
+		}
+
 		cam.setViewportRenderer(OpenCvWebcam.ViewportRenderer.GPU_ACCELERATED);
 		cam.setPipeline(pipeline);
 		cam.openCameraDeviceAsync(new OpenCvWebcam.AsyncCameraOpenListener() {
@@ -72,9 +76,8 @@ public class BackCamera extends Subsystem {
 				shutdown();
 			}
 		});
-		if (streamThisCameraToDash) {
-			// if false, it will stream the other camera,
 
+		if (streamBackCameraToDash) { // if false, it will stream the front camera,
 			FtcDashboard dashboard = FtcDashboard.getInstance();
 			dashboard.startCameraStream(cam, 20);
 		}
@@ -95,7 +98,6 @@ public class BackCamera extends Subsystem {
 	public Cone getCone() {
 		assert pipeline instanceof ConeDetectionFast;
 		tempConeList = ((ConeDetectionFast) pipeline).getCones();
-		Dashboard.packet.put("actual cones", tempConeList.size());
 		if (tempConeList.size() > 0) return tempConeList.get(0);
 		return null;
 	}

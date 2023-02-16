@@ -167,10 +167,10 @@ public class DrPepperDetection extends OpenCvPipeline {
 		for (int i = 0; i < this.rankedCones.size(); i++) {
 			Cone cone = this.rankedCones.get(i);
 			if (i == 0) {
-				markerOutlined(input, cone.top, new Point(0, 0), GREEN, Imgproc.MARKER_STAR, 10, 2);
+				markerOutlined(input, cone.point, new Point(0, 0), GREEN, Imgproc.MARKER_STAR, 10, 2);
 			}
-			textOutlined(input, String.valueOf(i), cone.top, new Point(-4, -16), .7, WHITE, 2);
-			textOutlined(input, "The Best Drink <3", cone.top, new Point(0, 20), .9, WHITE, 2);
+			textOutlined(input, String.valueOf(i), cone.point, new Point(-4, -16), .7, WHITE, 2);
+			textOutlined(input, "The Best Drink <3", cone.point, new Point(0, 20), .9, WHITE, 2);
 		}
 		return input;
 	}

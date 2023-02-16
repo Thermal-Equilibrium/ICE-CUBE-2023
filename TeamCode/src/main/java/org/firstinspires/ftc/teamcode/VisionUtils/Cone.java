@@ -10,29 +10,20 @@ import org.opencv.core.Size;
 public class Cone {
 	public Size size;
 	public CameraBasedPosition position;
-	public Point top;
+	public Point point;
 	public Classification classification;
 	public boolean deadzoned;
-	public RotatedRect rotatedRect;
 	public double score = 0;
 
-	public Cone(Size size, CameraBasedPosition position, Point top, RotatedRect rotatedRect) {
+	public Cone(Size size, CameraBasedPosition position, Point point) {
 		this.size = size;
 		this.position = position;
-		this.top = top;
-		this.rotatedRect = rotatedRect;
-		this.classify();
-	}
-
-	public Cone(Size size, CameraBasedPosition position, Point top) {
-		this.size = size;
-		this.position = position;
-		this.top = top;
+		this.point = point;
 		this.classify();
 	}
 
 	private void classify() {
-		this.deadzoned = false;//!(this.position.angle <= Turret.MAX_SERVO_RADIANS) || !(this.position.angle >= Turret.MIN_SERVO_RADIANS);
+		this.deadzoned = false;
 		if (this.position.distance < ConeDetectionFast.ConeDetectionConfig.perfectDistance - ConeDetectionFast.ConeDetectionConfig.perfectTolerance) {
 			this.classification = Classification.CLOSE;
 		} else if (this.position.distance > 40) {
