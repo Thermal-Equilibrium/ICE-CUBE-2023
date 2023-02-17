@@ -2,9 +2,9 @@ package org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveM
 
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
 
-public class MoveHorizontalExtensionInches extends MoveHorizontalExtension {
+public class SetHorizontalExtensionInches extends MoveHorizontalExtension {
 
-	public MoveHorizontalExtensionInches(HorizontalExtension extension, double desiredPosition) {
+	public SetHorizontalExtensionInches(HorizontalExtension extension, double desiredPosition) {
 		super(extension, desiredPosition);
 	}
 

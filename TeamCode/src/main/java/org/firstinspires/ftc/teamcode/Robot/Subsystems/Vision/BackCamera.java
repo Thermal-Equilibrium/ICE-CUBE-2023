@@ -10,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
+import org.firstinspires.ftc.teamcode.Math.Kinematics.IntakeKinematics;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Utils.Team;
 import org.firstinspires.ftc.teamcode.VisionUtils.Cone;
@@ -21,6 +22,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -99,6 +101,18 @@ public class BackCamera extends Subsystem {
 		assert pipeline instanceof ConeDetectionFast;
 		tempConeList = ((ConeDetectionFast) pipeline).getCones();
 		if (tempConeList.size() > 0) return tempConeList.get(0);
+		return null;
+	}
+
+	@Nullable
+	public List<Double> getAngleAndDistance(double currentDistance) {
+		assert pipeline instanceof ConeDetectionFast;
+		tempConeList = ((ConeDetectionFast) pipeline).getCones();
+		if (tempConeList.size() > 0) {
+			double angle = IntakeKinematics.getTurretAngleToTarget(-1 * tempConeList.get(0).position.dx);
+			double extendDistance = IntakeKinematics.getHorizontalSlideExtensionToTarget(tempConeList.get(0).position.dy, -1 * tempConeList.get(0).position.dx,currentDistance);
+			return Arrays.asList(angle,extendDistance);
+		}
 		return null;
 	}
 

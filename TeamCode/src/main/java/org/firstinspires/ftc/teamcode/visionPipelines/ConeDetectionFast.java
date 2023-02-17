@@ -155,16 +155,19 @@ public class ConeDetectionFast extends OpenCvPipeline {
 	private void hud(Mat frame, ArrayList<Cone> unrankedCones) {
 		for (int i = 0; i < this.cones.size(); i++) {
 			Cone cone = this.cones.get(i);
-			if (i == 0) {
-				markerOutlined(frame, cone.point, new Point(0, 0), GREEN, Imgproc.MARKER_STAR, 10, 2);
-			}
-			if (i == 1) {
-				markerOutlined(frame, cone.point, new Point(0, 0), ORANGE, Imgproc.MARKER_STAR, 10, 2);
-			}
-			textOutlined(frame, String.valueOf(i), cone.point, new Point(-4, -16), .7, WHITE, 2);
-			textOutlined(frame, round2Decimal(cone.position.dx) + ", " + round2Decimal(cone.position.dy), cone.point, new Point(0, 20), .7, WHITE, 2);
-			textOutlined(frame, round2Decimal(cone.position.distance), cone.point, new Point(-4, 40), .7, WHITE, 2);
-			textOutlined(frame, round2Decimal(cone.position.angle), cone.point, new Point(-4, 60), .7, WHITE, 2);
+//			if (i == 0) {
+//				markerOutlined(frame, cone.point, new Point(0, 0), GREEN, Imgproc.MARKER_STAR, 10, 2);
+//			}
+//			if (i == 1) {
+//				markerOutlined(frame, cone.point, new Point(0, 0), ORANGE, Imgproc.MARKER_STAR, 10, 2);
+//			}
+
+			textOutlined(frame, round2Decimal(cone.position.dx), cone.point, new Point(-20, 10), .8, WHITE, 2);
+			textOutlined(frame, round2Decimal(cone.position.dy), cone.point, new Point(-20, 40), .8, WHITE, 2);
+//			textOutlined(frame, String.valueOf(i), cone.point, new Point(-4, -16), .7, WHITE, 2);
+//			textOutlined(frame, round2Decimal(cone.position.dx) + ", " + round2Decimal(cone.position.dy), cone.point, new Point(0, 20), .7, WHITE, 2);
+//			textOutlined(frame, round2Decimal(cone.position.distance), cone.point, new Point(-4, 40), .7, WHITE, 2);
+//			textOutlined(frame, round2Decimal(cone.position.angle), cone.point, new Point(-4, 60), .7, WHITE, 2);
 		}
 		for (Cone cone : unrankedCones) {
 

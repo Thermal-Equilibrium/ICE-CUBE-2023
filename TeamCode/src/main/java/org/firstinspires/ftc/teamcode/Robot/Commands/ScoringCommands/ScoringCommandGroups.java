@@ -14,12 +14,13 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMo
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveArmDirect;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveClaw;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveHorizontalExtension;
-import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveHorizontalExtensionInches;
+import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.SetHorizontalExtensionInches;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurret;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurretAsync;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurretDirect;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveVerticalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.OpenLatch;
+import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.VisualIntake;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
@@ -27,6 +28,7 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.MainScor
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.BackCamera;
+import org.firstinspires.ftc.teamcode.Utils.Side;
 import org.firstinspires.ftc.teamcode.VisionUtils.Cone;
 
 public class ScoringCommandGroups {
@@ -62,7 +64,7 @@ public class ScoringCommandGroups {
 					if (angle < 0) {
 						angle += Math.PI * 2;
 					}
-					return openClaw().addNext(new MoveTurretDirect(turret, angle).addNext(new MoveHorizontalExtensionInches(horizontalExtension, extendDistance)).addNext(moveArm(Turret.ArmStates.DOWN)));
+					return openClaw().addNext(new MoveTurretDirect(turret, angle).addNext(new SetHorizontalExtensionInches(horizontalExtension, extendDistance)).addNext(moveArm(Turret.ArmStates.DOWN)));
 				} else return new NullCommand();
 
 			} else return new NullCommand();
@@ -82,7 +84,7 @@ public class ScoringCommandGroups {
 					}
 					return openClaw()
 							.addNext(new MoveTurretDirect(turret, angle))
-							.addNext(new MoveHorizontalExtensionInches(horizontalExtension, extendDistance))
+							.addNext(new SetHorizontalExtensionInches(horizontalExtension, extendDistance))
 							.addNext(moveArm(Turret.ArmStates.DOWN))
 							.addNext(new Delay(.08))
 							.addNext(grabCone())
@@ -95,53 +97,16 @@ public class ScoringCommandGroups {
 		});
 	}
 
-	public Command autoIntakeCmdMulti() {
-		return new RunCommand(() -> {
-			Cone cone = backCamera.getCone();
-			if (cone != null) {
-
-				double angle = IntakeKinematics.getTurretAngleToTarget(-1 * cone.position.dx);
-				double extendDistance = IntakeKinematics.getHorizontalSlideExtensionToTarget(cone.position.dy, -1 * cone.position.dx, horizontalExtension.getSlidePositionInches());
-				if (extendDistance <= 15) {
-					if (angle < 0) {
-						angle += Math.PI * 2;
-					}
-					return openClaw()
-							.addNext(new MoveTurretDirect(turret, angle))
-							.addNext(new MoveHorizontalExtensionInches(horizontalExtension, extendDistance))
-							.addNext(moveArm(Turret.ArmStates.DOWN))
-							.addNext(new Delay(.08))
-							.addNext(grabCone())
-							.addNext(openLatch())
-							.addNext(collectCone())
-							.addNext(closeLatch())
-
-							.addNext(new Delay(.5))
-							.addNext(openClaw())
-							.addNext(new MoveTurretDirect(turret, angle))
-							.addNext(new MoveHorizontalExtensionInches(horizontalExtension, extendDistance))
-							.addNext(moveArm(Turret.ArmStates.DOWN))
-							.addNext(new Delay(.08))
-							.addNext(grabCone())
-							.addNext(openLatch())
-							.addNext(collectCone())
-							.addNext(closeLatch())
-
-							.addNext(new Delay(.5))
-							.addNext(openClaw())
-							.addNext(new MoveTurretDirect(turret, angle))
-							.addNext(new MoveHorizontalExtensionInches(horizontalExtension, extendDistance))
-							.addNext(moveArm(Turret.ArmStates.DOWN))
-							.addNext(new Delay(.08))
-							.addNext(grabCone())
-							.addNext(openLatch())
-							.addNext(collectCone())
-							.addNext(closeLatch());
-
-				} else return new NullCommand();
-
-			} else return new NullCommand();
-		});
+	public Command autoIntake() {
+		return openClaw()
+				.addNext(new VisualIntake(turret, backCamera,horizontalExtension))
+				.addNext(moveArm(Turret.ArmStates.DOWN))
+				.addNext(new Delay(.15))
+				.addNext(grabCone())
+				.addNext(openLatch())
+				.addNext(new Delay(.15))
+				.addNext(collectCone())
+				.addNext(closeLatch());
 	}
 
 	public Command autoGoToConeTesting() {
@@ -158,11 +123,13 @@ public class ScoringCommandGroups {
 				if (angle < 0) {
 					angle += Math.PI * 2;
 				}
-				return openClaw().addNext(new MoveTurretDirect(turret, angle).addNext(new MoveHorizontalExtensionInches(horizontalExtension, extendDistance)).addNext(moveArm(Turret.ArmStates.DOWN)));
+				return openClaw().addNext(new MoveTurretDirect(turret, angle).addNext(new SetHorizontalExtensionInches(horizontalExtension, extendDistance)).addNext(moveArm(Turret.ArmStates.DOWN)));
 			} else return new NullCommand();
 
 		} else return new NullCommand();
 	}
+
+
 
 	// near straight but tilted to the left
 	public Command moveToIntakingLeft() {
@@ -189,6 +156,20 @@ public class ScoringCommandGroups {
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
 				.addNext(moveTurret(Turret.TurretStates.Slight_RIGHT_AUTO))
 				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
+	}
+
+	public Command moveToIntakingVision(Side side) {
+		Turret.TurretStates state;
+		if (side == Side.LEFT) {
+			state = Turret.TurretStates.Slight_LEFT;
+		}
+		else {
+			state = Turret.TurretStates.Slight_RIGHT;
+		}
+		currentCone--;
+		return moveArm(Turret.ArmStates.TRANSFER_SAFE)
+				.addNext(moveTurret(state))
+				.addNext(new MultipleCommand(moveArmDirect(-0.02 + armConeHeights[currentCone]), openClaw()));
 	}
 
 	public Command moveToIntakingRightAuto() {
@@ -275,6 +256,24 @@ public class ScoringCommandGroups {
 				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION))
 				.addNext(moveArm(Turret.ArmStates.TRANSFER))
 				.addNext(new Delay(0.15))
+				.addNext(releaseCone())
+				.addNext(closeLatch())
+				.addNext(new Delay(0.1))
+				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
+
+	}
+	public Command visuallyCollectConeAuto() {
+
+		return depositConeAsync()
+				.addNext(openLatch())
+				.addNext(new VisualIntake(turret,backCamera,horizontalExtension))
+				.addNext(new Delay(0.15))
+				.addNext(grabCone())
+				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
+				.addNext(moveTurret(Turret.TurretStates.TRANSFER))
+				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION))
+				.addNext(moveArm(Turret.ArmStates.TRANSFER))
+				.addNext(new Delay(0.1))
 				.addNext(releaseCone())
 				.addNext(closeLatch())
 				.addNext(new Delay(0.1))
