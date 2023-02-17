@@ -99,7 +99,7 @@ public class ScoringCommandGroups {
 
 	public Command autoIntake() {
 		return openClaw()
-				.addNext(new VisualIntake(turret, backCamera,horizontalExtension))
+				.addNext(new VisualIntake(turret, backCamera,horizontalExtension,0))
 				.addNext(moveArm(Turret.ArmStates.DOWN))
 				.addNext(new Delay(.15))
 				.addNext(grabCone())
@@ -170,6 +170,10 @@ public class ScoringCommandGroups {
 		return moveArm(Turret.ArmStates.TRANSFER_SAFE)
 				.addNext(moveTurret(state))
 				.addNext(new MultipleCommand(moveArmDirect(-0.02 + armConeHeights[currentCone]), openClaw()));
+	}
+	public Command moveToIntakingVision2() {
+		currentCone--;
+		return new MultipleCommand(moveArmDirect(-0.02 + armConeHeights[currentCone]), openClaw());
 	}
 
 	public Command moveToIntakingRightAuto() {
@@ -262,23 +266,32 @@ public class ScoringCommandGroups {
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
 
 	}
-	public Command visuallyCollectConeAuto() {
-
+	public Command visuallyCollectConeAuto(Side side, boolean last) {
+		double add;
+		if (last) add = 1.5;
+		else add = 0;
+		Turret.TurretStates state;
+		if (side == Side.LEFT) {
+			state = Turret.TurretStates.Slight_LEFT;
+		}
+		else {
+			state = Turret.TurretStates.Slight_RIGHT;
+		}
 		return depositConeAsync()
-				.addNext(openLatch())
-				.addNext(new VisualIntake(turret,backCamera,horizontalExtension))
-				.addNext(new Delay(0.15))
+				.addNext(moveTurret(state))
+				.addNext(moveToIntakingVision2())
+				.addNext(new VisualIntake(turret,backCamera,horizontalExtension,add))
+				.addNext(new Delay(0.1))
 				.addNext(grabCone())
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
+				.addNext(new Delay(0.1))
 				.addNext(moveTurret(Turret.TurretStates.TRANSFER))
 				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION))
 				.addNext(moveArm(Turret.ArmStates.TRANSFER))
 				.addNext(new Delay(0.1))
 				.addNext(releaseCone())
 				.addNext(closeLatch())
-				.addNext(new Delay(0.1))
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
-
 	}
 
 	public Command grabCone() {

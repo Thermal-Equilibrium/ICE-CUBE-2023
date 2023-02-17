@@ -231,13 +231,13 @@ public class ConeDetectionFast extends OpenCvPipeline {
 			Rect rect = Imgproc.boundingRect(contour);
 			if (Imgproc.contourArea(contour) >= ConeDetectionConfig.coneMinArea && rect.height > rect.width) {
 				Point point;
-//				point = getPoint(contour,mask);
+				point = getPoint(contour,mask);
 
-				if (this.conePointMethod == ConePointMethod.MASS) {
-					point = new Point(Imgproc.boundingRect(contour).x + Imgproc.boundingRect(contour).width * .5, Imgproc.boundingRect(contour).y);
-				} else {
-					point = getTop(contour);
-				}
+//				if (this.conePointMethod == ConePointMethod.MASS) {
+//					point = new Point(Imgproc.boundingRect(contour).x + Imgproc.boundingRect(contour).width * .5, Imgproc.boundingRect(contour).y);
+//				} else {
+//					point = getTop(contour);
+//				}
 //				double angleDistanceCorrection = ConeDetectionConfig.MAX_DISTANCE_ANGLE_CORRECTION_ADD * Math.abs(this.getAngle(point) / Math.toRadians(30));
 //				double angleDistanceCorrectionMult = 1 + ConeDetectionConfig.MAX_DISTANCE_ANGLE_CORRECTION_ADD_MULT * Math.abs(this.getAngle(point) / Math.toRadians(30));
 

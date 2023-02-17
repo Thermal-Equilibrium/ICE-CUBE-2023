@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Roadrunn
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringCommandGroups;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
 import org.firstinspires.ftc.teamcode.Utils.Side;
 import org.firstinspires.ftc.teamcode.Utils.Team;
@@ -90,10 +91,10 @@ public class VisionREDRightHighAuto extends BaseAuto {
         auto.addNext(new ToggleBrake(robot.drivetrain));
         auto.addNext(new RoadrunnerHoldPose(robot, goToPole2));
         for (int i = 0; i < 5; ++i) {
-            addCycle(auto, commandGroups);
+            addCycle(auto, commandGroups,i==4);
         }
 
-        auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION))
+        auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION +.04))
                 .addNext(new Delay(0.1))
                 .addNext(commandGroups.depositCone());
 
@@ -102,12 +103,12 @@ public class VisionREDRightHighAuto extends BaseAuto {
         return auto;
     }
 
-    public void addCycle(Command command, ScoringCommandGroups commandGroups) {
-        command.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION),
-                        commandGroups.moveToIntakingVision(Side.RIGHT),
-                        commandGroups.moveHorizontalExtension(HorizontalExtension.PRE_EMPTIVE_EXTEND)))
-                .addNext(commandGroups.depositConeAsync())
-                .addNext(commandGroups.visuallyCollectConeAuto());
+    public void addCycle(Command command, ScoringCommandGroups commandGroups, boolean last) {
+        command.addNext(commandGroups.closeLatch())
+                .addNext(commandGroups.moveArm(Turret.ArmStates.TRANSFER_SAFE))
+                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION +.04))
+                .addNext(commandGroups.visuallyCollectConeAuto(Side.RIGHT,last))
+                .addNext(commandGroups.depositConeAsync());
     }
     @Override
     public Team getTeam() {

@@ -18,13 +18,15 @@ public class VisualIntake extends Command {
     private double extendDistance;
     private boolean failed;
     private boolean finished = false;
+    private double add;
 
 
-    public VisualIntake(Turret turret, BackCamera backCamera, HorizontalExtension horizontalExtension) {
+    public VisualIntake(Turret turret, BackCamera backCamera, HorizontalExtension horizontalExtension,double add) {
         super(turret, backCamera);
         this.turret = turret;
         this.backCamera = backCamera;
         this.horizontalExtension = horizontalExtension;
+        this.add = add;
     }
 
     @Override
@@ -38,7 +40,7 @@ public class VisualIntake extends Command {
                 if (angle < 0) {
                     angle += Math.PI * 2;
                 }
-                this.horizontalExtension.setTargetPositionInches(this.extendDistance);
+                this.horizontalExtension.setTargetPositionInches(this.extendDistance+this.add);
                 this.turret.setBasedTurretPosition(this.angle);
             }
         } else {

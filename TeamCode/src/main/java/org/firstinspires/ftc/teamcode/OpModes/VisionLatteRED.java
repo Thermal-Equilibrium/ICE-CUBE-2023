@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringCommandGroups;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
 import org.firstinspires.ftc.teamcode.Utils.Side;
 import org.firstinspires.ftc.teamcode.Utils.Team;
@@ -72,9 +73,9 @@ public class VisionLatteRED extends BaseAuto {
         auto.addNext(new RoadrunnerHoldPose(robot, scoring2.end()));
         auto.addNext(new ToggleBrake(robot.drivetrain));
         for (int i = 0; i < 5; ++i) {
-            addCycle(auto, commandGroups);
+            addCycle(auto, commandGroups,i==4);
         }
-        auto.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.MID_POSITION + 0.2)))
+        auto.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.MID_POSITION + 0.4)))
                 .addNext(new Delay(0.3))
                 .addNext(commandGroups.depositCone());
         auto.addNext(new ToggleBrake(robot.drivetrain));
@@ -83,14 +84,14 @@ public class VisionLatteRED extends BaseAuto {
         return auto;
     }
 
-
-    public void addCycle(Command command, ScoringCommandGroups commandGroups) {
-        command.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.MID_POSITION),
-                        commandGroups.moveToIntakingVision(Side.LEFT),
-                        commandGroups.moveHorizontalExtension(HorizontalExtension.PRE_EMPTIVE_EXTEND)))
-                .addNext(commandGroups.depositConeAsync())
-                .addNext(commandGroups.visuallyCollectConeAuto());
+    public void addCycle(Command command, ScoringCommandGroups commandGroups, boolean last) {
+                command.addNext(commandGroups.closeLatch())
+                .addNext(commandGroups.moveArm(Turret.ArmStates.TRANSFER_SAFE))
+                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.MID_POSITION+ 0.4))
+                .addNext(commandGroups.visuallyCollectConeAuto(Side.LEFT,last))
+                .addNext(commandGroups.depositConeAsync());
     }
+
     @Override
     public Team getTeam() {
         return Team.RED;

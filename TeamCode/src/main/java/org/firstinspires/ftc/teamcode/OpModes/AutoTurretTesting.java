@@ -22,7 +22,7 @@ public class AutoTurretTesting extends BaseAuto {
 		waitForStart();
 
 		return commandGroups.openClaw()
-				.addNext(new VisualIntake(robot.scoringMechanism.turret, robot.backCamera,robot.scoringMechanism.horizontalExtension))
+				.addNext(new VisualIntake(robot.scoringMechanism.turret, robot.backCamera,robot.scoringMechanism.horizontalExtension,0))
 				.addNext(commandGroups.moveArm(Turret.ArmStates.DOWN))
 				.addNext(new Delay(.20))
 				.addNext(commandGroups.grabCone())
