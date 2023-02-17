@@ -13,14 +13,17 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Brake.To
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.RoadrunnerHoldPose;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringCommandGroups;
+import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.MeasureConestack;
+import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.VisualIntakeStage1;
+import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.VisualIntakeStage2;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
-import org.firstinspires.ftc.teamcode.Utils.Side;
 import org.firstinspires.ftc.teamcode.Utils.Team;
+import org.firstinspires.ftc.teamcode.VisionUtils.VisionMode;
 
 @Autonomous
-public class VisionREDRightHighAuto extends BaseAuto {
+public class VisionSpiceRed extends BaseAuto {
 
 
     final Pose2d goToPole1 = new Pose2d(-38, 24, Math.toRadians(-100));
@@ -91,7 +94,7 @@ public class VisionREDRightHighAuto extends BaseAuto {
         auto.addNext(new ToggleBrake(robot.drivetrain));
         auto.addNext(new RoadrunnerHoldPose(robot, goToPole2));
         for (int i = 0; i < 5; ++i) {
-            addCycle(auto, commandGroups,i==4);
+            addCycle(auto, commandGroups);
         }
 
         auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION +.04))
@@ -103,15 +106,53 @@ public class VisionREDRightHighAuto extends BaseAuto {
         return auto;
     }
 
-    public void addCycle(Command command, ScoringCommandGroups commandGroups, boolean last) {
-        command.addNext(commandGroups.closeLatch())
+    public void addCycle(Command command, ScoringCommandGroups commandGroups) {
+        command.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION + .04))
+                .addNext(commandGroups.depositConeAsync())
+                .addNext(commandGroups.openLatch())
+                .addNext(new Delay(0.2))
+                .addNext(new MeasureConestack(robot.scoringMechanism.turret, robot.backCamera,robot.scoringMechanism.horizontalExtension))
+                .addNext(new VisualIntakeStage1(robot.scoringMechanism.turret, robot.backCamera,robot.scoringMechanism.horizontalExtension))
+                .addNext(commandGroups.cancelableSetArmHeightVision())
+                .addNext(new VisualIntakeStage2(robot.scoringMechanism.turret, robot.backCamera,robot.scoringMechanism.horizontalExtension))
+                .addNext(new Delay(0.1))
+                .addNext(commandGroups.grabCone())
                 .addNext(commandGroups.moveArm(Turret.ArmStates.TRANSFER_SAFE))
-                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION +.04))
-                .addNext(commandGroups.visuallyCollectConeAuto(Side.RIGHT,last))
-                .addNext(commandGroups.depositConeAsync());
+                .addNext(commandGroups.moveTurret(Turret.TurretStates.TRANSFER))
+                .addNext(commandGroups.moveHorizontalExtension(HorizontalExtension.IN_POSITION))
+                .addNext(commandGroups.moveArm(Turret.ArmStates.TRANSFER))
+                .addNext(commandGroups.releaseCone())
+                .addNext(commandGroups.closeLatch())
+                .addNext(new Delay(0.1))
+                .addNext(commandGroups.moveArm(Turret.ArmStates.TRANSFER_SAFE));
     }
+//    public void addCycle(Command command, ScoringCommandGroups commandGroups, boolean last) {
+//        command.addNext(commandGroups.closeLatch())
+//                .addNext(commandGroups.moveArm(Turret.ArmStates.TRANSFER_SAFE))
+//                .addNext(new MeasureConestack(robot.scoringMechanism.turret, robot.backCamera,robot.scoringMechanism.horizontalExtension))
+//                .addNext(new VisualIntakeStage1(robot.scoringMechanism.turret, robot.backCamera,robot.scoringMechanism.horizontalExtension))
+//                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION +.04))
+//                .addNext(commandGroups.depositConeAsync())
+//                .addNext(commandGroups.setArmHeightVision())
+//                .addNext(new VisualIntakeStage2(robot.scoringMechanism.turret, robot.backCamera,robot.scoringMechanism.horizontalExtension))
+//                .addNext(new Delay(0.1))
+//                .addNext(commandGroups.grabCone())
+//                .addNext(commandGroups.moveArm(Turret.ArmStates.TRANSFER_SAFE))
+//                .addNext(new Delay(0.1))
+//                .addNext(commandGroups.moveTurret(Turret.TurretStates.TRANSFER))
+//                .addNext(commandGroups.moveHorizontalExtension(HorizontalExtension.IN_POSITION))
+//                .addNext(commandGroups.moveArm(Turret.ArmStates.TRANSFER))
+//                .addNext(new Delay(0.1))
+//                .addNext(commandGroups.releaseCone())
+//                .addNext(commandGroups.closeLatch())
+//                .addNext(commandGroups.moveArm(Turret.ArmStates.TRANSFER_SAFE))
+//                .addNext(commandGroups.depositConeAsync());
+//    }
     @Override
     public Team getTeam() {
         return Team.RED;
     }
+
+    @Override
+    public VisionMode getVisionMode() { return VisionMode.SPICE; }
 }

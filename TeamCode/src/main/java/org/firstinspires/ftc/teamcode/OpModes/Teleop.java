@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleComman
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.RunCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringCommandGroups;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
+import org.firstinspires.ftc.teamcode.VisionUtils.VisionMode;
 
 
 public class Teleop extends BaseTeleop {
@@ -31,4 +32,6 @@ public class Teleop extends BaseTeleop {
 		robot.gamepad1.whenCirclePressed(commandGroups.moveToLowGoalScoring());
 		return new MultipleCommand(new RobotRelative(robot, robot.gamepad1));
 	}
+	@Override
+	public VisionMode getVisionMode() { return VisionMode.LION; }
 }

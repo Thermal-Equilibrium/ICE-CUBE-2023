@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
 import org.firstinspires.ftc.teamcode.Utils.Team;
+import org.firstinspires.ftc.teamcode.VisionUtils.VisionMode;
 
 public abstract class BaseTeleop extends LinearOpMode {
 
@@ -16,7 +17,7 @@ public abstract class BaseTeleop extends LinearOpMode {
 	public void runOpMode() {
 		PhotonCore.enable();
 
-		robot = new Robot(hardwareMap, Robot.OpMode.Teleop, gamepad1, gamepad2, getTeam());
+		robot = new Robot(hardwareMap, Robot.OpMode.Teleop, gamepad1, gamepad2, getTeam(),getVisionMode());
 		robot.drivetrain.setPose(initialPose);
 
 		waitForStart();
@@ -39,4 +40,6 @@ public abstract class BaseTeleop extends LinearOpMode {
 	public Team getTeam() {
 		return Team.NOT_ASSIGNED;
 	}
+
+	public VisionMode getVisionMode() { return VisionMode.LION; }
 }

@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.Utils.Team;
 
 @Autonomous
-public class VisionLatteBlue extends VisionLatteRED{
+public class VisionLatteBlue extends VisionLatteRed {
     @Override
     public Team getTeam() {
         return Team.BLUE;

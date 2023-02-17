@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.RaceAction;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
 import org.firstinspires.ftc.teamcode.Utils.Team;
+import org.firstinspires.ftc.teamcode.VisionUtils.VisionMode;
 import org.firstinspires.ftc.teamcode.visionPipelines.SleeveDetection;
 
 public abstract class BaseAuto extends LinearOpMode {
@@ -32,7 +33,7 @@ public abstract class BaseAuto extends LinearOpMode {
 	@Override
 	public void runOpMode() {
 		//PhotonCore.enable();
-		robot = new Robot(hardwareMap, Robot.OpMode.Auto, gamepad1, gamepad2, getTeam());
+		robot = new Robot(hardwareMap, Robot.OpMode.Auto, gamepad1, gamepad2, getTeam(), getVisionMode());
 		setRobotPosition();
 
 		while (!isStopRequested() && !opModeIsActive() && opModeInInit()) {
@@ -83,5 +84,5 @@ public abstract class BaseAuto extends LinearOpMode {
 		return Team.NOT_ASSIGNED;
 	}
 
-
+	public VisionMode getVisionMode() { return VisionMode.SPICE; }
 }

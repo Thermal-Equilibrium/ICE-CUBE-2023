@@ -11,10 +11,12 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.Exposur
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 import org.firstinspires.ftc.teamcode.Math.Kinematics.IntakeKinematics;
+import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.CancelableMoveArmDirect;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Utils.Team;
 import org.firstinspires.ftc.teamcode.VisionUtils.Cone;
 import org.firstinspires.ftc.teamcode.VisionUtils.Resolution;
+import org.firstinspires.ftc.teamcode.VisionUtils.VisionMode;
 import org.firstinspires.ftc.teamcode.visionPipelines.ConeDetectionFast;
 import org.opencv.core.Size;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -41,12 +43,14 @@ public class BackCamera extends Subsystem {
 	private final OpenCvPipeline pipeline;
 	private OpenCvWebcam cam;
 	private List<Cone> tempConeList;
-
 	public static boolean streamBackCameraToDash = true;
+	public double accumulatedConestackDistance;
+	public double accumulatedConestackAngle;
+	public boolean foundConestack = false;
 
-	public BackCamera(Team team) {
+	public BackCamera(Team team, VisionMode visionMode) {
         //pipeline = new Save(team,this);
-		pipeline = new ConeDetectionFast(team, this);
+		pipeline = new ConeDetectionFast(team, visionMode, this);
 	}
 
 	@Override

@@ -18,19 +18,19 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Brake.To
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.RoadrunnerHoldPose;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringCommandGroups;
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
+import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.MeasureConestack;
+import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.VisualIntakeStage1;
+import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.VisualIntakeStage2;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
-import org.firstinspires.ftc.teamcode.Utils.Side;
-import org.firstinspires.ftc.teamcode.Utils.Team;
 import org.firstinspires.ftc.teamcode.visionPipelines.SleeveDetection;
 
 import java.util.HashMap;
 import java.util.Objects;
 
 @Autonomous
-public class VisionLatteRED extends BaseAuto {
+public class LeftMidRedVision extends BaseAuto {
     Pose2d startPose = new Pose2d(-36, 66.5, Math.toRadians(-90));
 
     @Override
@@ -47,10 +47,10 @@ public class VisionLatteRED extends BaseAuto {
         ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism, robot.drivetrain, robot.backCamera);
 
         Vector2d goToPole = new Vector2d(-36, 23);
-        Pose2d rotateFaceMedium = shiftRobotRelative(new Pose2d(-35, 26, Math.toRadians(21.8816732757)), -1.1, -2);
-        Pose2d parkLeft = new Pose2d(-3, 16, Math.toRadians(90));
-        Pose2d parkCenter = new Pose2d(-35, 14.5, Math.toRadians(90));
-        Pose2d parkRight = new Pose2d(-60, 12.5, Math.toRadians(0));
+        Pose2d rotateFaceMedium = shiftRobotRelative(new Pose2d(-36, 26, Math.toRadians(180 - 21.8816732757)), 0.3, 2);
+        Pose2d parkLeft = new Pose2d(-3, 16, Math.toRadians(-90));
+        Pose2d parkCenter = new Pose2d(-35, 12.5, Math.toRadians(-90));
+        Pose2d parkRight = new Pose2d(-60, 12.5, Math.toRadians(-90));
 
         HashMap<SleeveDetection.ParkingPosition, Pose2d> parking = new HashMap<>();
 
@@ -65,6 +65,8 @@ public class VisionLatteRED extends BaseAuto {
                 .lineToLinearHeading(rotateFaceMedium, slowVelocity, slowAcceleration)
                 .build();
 
+
+
         Trajectory parkTraj = robot.drivetrain.getBuilder().trajectoryBuilder(scoring2.end(), false)
                 .lineToLinearHeading(Objects.requireNonNull(parking.get(parkingPosition)))
                 .build();
@@ -73,10 +75,10 @@ public class VisionLatteRED extends BaseAuto {
         auto.addNext(new RoadrunnerHoldPose(robot, scoring2.end()));
         auto.addNext(new ToggleBrake(robot.drivetrain));
         for (int i = 0; i < 5; ++i) {
-            addCycle(auto, commandGroups,i==4);
+            addCycle(auto, commandGroups);
         }
-        auto.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.MID_POSITION + 0.4)))
-                .addNext(new Delay(0.3))
+        auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.MID_POSITION + 0.4))
+                .addNext(new Delay(0.1))
                 .addNext(commandGroups.depositCone());
         auto.addNext(new ToggleBrake(robot.drivetrain));
 
@@ -84,17 +86,24 @@ public class VisionLatteRED extends BaseAuto {
         return auto;
     }
 
-    public void addCycle(Command command, ScoringCommandGroups commandGroups, boolean last) {
-                command.addNext(commandGroups.closeLatch())
+    public void addCycle(Command command, ScoringCommandGroups commandGroups) {
+        command.addNext(commandGroups.moveVerticalExtension(VerticalExtension.MID_POSITION + .04))
+                .addNext(commandGroups.depositConeAsync())
+                .addNext(commandGroups.openLatch())
+                .addNext(new Delay(0.2))
+                .addNext(new MeasureConestack(robot.scoringMechanism.turret, robot.backCamera,robot.scoringMechanism.horizontalExtension))
+                .addNext(new VisualIntakeStage1(robot.scoringMechanism.turret, robot.backCamera,robot.scoringMechanism.horizontalExtension))
+                .addNext(commandGroups.cancelableSetArmHeightVision())
+                .addNext(new VisualIntakeStage2(robot.scoringMechanism.turret, robot.backCamera,robot.scoringMechanism.horizontalExtension))
+                .addNext(new Delay(0.1))
+                .addNext(commandGroups.grabCone())
                 .addNext(commandGroups.moveArm(Turret.ArmStates.TRANSFER_SAFE))
-                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.MID_POSITION+ 0.4))
-                .addNext(commandGroups.visuallyCollectConeAuto(Side.LEFT,last))
-                .addNext(commandGroups.depositConeAsync());
-    }
-
-    @Override
-    public Team getTeam() {
-        return Team.RED;
+                .addNext(commandGroups.moveTurret(Turret.TurretStates.TRANSFER))
+                .addNext(commandGroups.moveHorizontalExtension(HorizontalExtension.IN_POSITION))
+                .addNext(commandGroups.moveArm(Turret.ArmStates.TRANSFER))
+                .addNext(commandGroups.releaseCone())
+                .addNext(commandGroups.closeLatch())
+                .addNext(new Delay(0.1))
+                .addNext(commandGroups.moveArm(Turret.ArmStates.TRANSFER_SAFE));
     }
 }
-

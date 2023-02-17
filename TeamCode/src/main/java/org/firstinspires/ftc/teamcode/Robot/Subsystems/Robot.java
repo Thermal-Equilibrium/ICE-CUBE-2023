@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.BackCamera;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.FrontCamera;
 import org.firstinspires.ftc.teamcode.Simulation.TestCommandsSubsystems.PrintSubsystem1;
 import org.firstinspires.ftc.teamcode.Utils.Team;
+import org.firstinspires.ftc.teamcode.VisionUtils.VisionMode;
 
 import java.util.ArrayList;
 
@@ -29,8 +30,8 @@ public class Robot {
 	protected CommandScheduler scheduler;
 	ArrayList<LynxModule> modules = new ArrayList<>();
 
-	public Robot(HardwareMap hwMap, OpMode opMode, Gamepad gamepad1, Gamepad gamepad2, Team team) {
-		backCamera = new BackCamera(team);
+	public Robot(HardwareMap hwMap, OpMode opMode, Gamepad gamepad1, Gamepad gamepad2, Team team, VisionMode visionMode) {
+		backCamera = new BackCamera(team,visionMode);
 		frontCamera = new FrontCamera();
 		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard, scoringMechanism, field, backCamera,frontCamera);
 		this.gamepad1 = new Input(gamepad1, scheduler);

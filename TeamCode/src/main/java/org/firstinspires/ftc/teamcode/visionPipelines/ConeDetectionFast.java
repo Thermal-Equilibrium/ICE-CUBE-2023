@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.Utils.Team;
 import org.firstinspires.ftc.teamcode.VisionUtils.CameraBasedPosition;
 import org.firstinspires.ftc.teamcode.VisionUtils.Cone;
 import org.firstinspires.ftc.teamcode.VisionUtils.ConePointMethod;
+import org.firstinspires.ftc.teamcode.VisionUtils.VisionMode;
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -59,9 +60,12 @@ public class ConeDetectionFast extends OpenCvPipeline {
 	private final BackCamera camera;
 	private final Point camCenter;
 	private Team team;
+	private VisionMode visionMode;
+
 	private volatile List<Cone> cones;
-	public ConeDetectionFast(Team team, BackCamera backCamera) {
+	public ConeDetectionFast(Team team, VisionMode visionMode, BackCamera backCamera) {
 		this.team = team;
+		this.visionMode = visionMode;
 		this.camera = backCamera;
 		this.camCenter = getCenter(this.camera.resolution);
 		this.conePointMethod = ConePointMethod.MASS;
@@ -142,8 +146,15 @@ public class ConeDetectionFast extends OpenCvPipeline {
 
         //this.undistort(frame);
 		Mat mask = new Mat();
+		if (this.visionMode == VisionMode.LATTE) {
+			Imgproc.rectangle(frame,new Point(0,0), new Point(frame.cols(),frame.rows()*ConeDetectionConfig.latteCutOff),GREEN);
+		} else if (this.visionMode == VisionMode.SPICE) {
+			Imgproc.rectangle(frame,new Point(0,0), new Point(frame.cols(),frame.rows()*ConeDetectionConfig.spiceCutOff),GREEN);
+		}
+
 		this.filter(frame, mask);
 		this.morphology(mask);
+
 		frame.setTo(BLACK, mask);
 		ArrayList<Cone> unrankedCones = new ArrayList<>();
 		this.findCones(mask, unrankedCones);
@@ -231,13 +242,14 @@ public class ConeDetectionFast extends OpenCvPipeline {
 			Rect rect = Imgproc.boundingRect(contour);
 			if (Imgproc.contourArea(contour) >= ConeDetectionConfig.coneMinArea && rect.height > rect.width) {
 				Point point;
-				point = getPoint(contour,mask);
 
-//				if (this.conePointMethod == ConePointMethod.MASS) {
-//					point = new Point(Imgproc.boundingRect(contour).x + Imgproc.boundingRect(contour).width * .5, Imgproc.boundingRect(contour).y);
-//				} else {
-//					point = getTop(contour);
-//				}
+//				point = getPoint(contour,mask);
+
+				if (this.conePointMethod == ConePointMethod.MASS) {
+					point = new Point(Imgproc.boundingRect(contour).x + Imgproc.boundingRect(contour).width * .5, Imgproc.boundingRect(contour).y);
+				} else {
+					point = getTop(contour);
+				}
 //				double angleDistanceCorrection = ConeDetectionConfig.MAX_DISTANCE_ANGLE_CORRECTION_ADD * Math.abs(this.getAngle(point) / Math.toRadians(30));
 //				double angleDistanceCorrectionMult = 1 + ConeDetectionConfig.MAX_DISTANCE_ANGLE_CORRECTION_ADD_MULT * Math.abs(this.getAngle(point) / Math.toRadians(30));
 
@@ -344,5 +356,7 @@ public class ConeDetectionFast extends OpenCvPipeline {
 		public static double perfectDistance = 13.5;
 		public static double perfectTolerance = 2.5;
 		public static String spectrum = "HLS";
+		public static double latteCutOff = .3;
+		public static double spiceCutOff = .3;
 	}
 }

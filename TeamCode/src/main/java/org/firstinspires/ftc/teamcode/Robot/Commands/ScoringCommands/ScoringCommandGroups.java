@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleComman
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.NullCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.RunCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.AsyncMoveVerticalExtension;
+import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.CancelableMoveArmDirect;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.CloseLatch;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveArm;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveArmDirect;
@@ -158,22 +159,13 @@ public class ScoringCommandGroups {
 				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
 	}
 
-	public Command moveToIntakingVision(Side side) {
-		Turret.TurretStates state;
-		if (side == Side.LEFT) {
-			state = Turret.TurretStates.Slight_LEFT;
-		}
-		else {
-			state = Turret.TurretStates.Slight_RIGHT;
-		}
-		currentCone--;
-		return moveArm(Turret.ArmStates.TRANSFER_SAFE)
-				.addNext(moveTurret(state))
-				.addNext(new MultipleCommand(moveArmDirect(-0.02 + armConeHeights[currentCone]), openClaw()));
-	}
-	public Command moveToIntakingVision2() {
+	public Command setArmHeightVision() {
 		currentCone--;
 		return new MultipleCommand(moveArmDirect(-0.02 + armConeHeights[currentCone]), openClaw());
+	}
+	public Command cancelableSetArmHeightVision() {
+		if (!CancelableMoveArmDirect.cancelled) currentCone--;
+		return new MultipleCommand(new CancelableMoveArmDirect(turret,-0.02 + armConeHeights[currentCone]), openClaw());
 	}
 
 	public Command moveToIntakingRightAuto() {
@@ -279,7 +271,7 @@ public class ScoringCommandGroups {
 		}
 		return depositConeAsync()
 				.addNext(moveTurret(state))
-				.addNext(moveToIntakingVision2())
+				.addNext(setArmHeightVision())
 				.addNext(new VisualIntake(turret,backCamera,horizontalExtension,add))
 				.addNext(new Delay(0.1))
 				.addNext(grabCone())

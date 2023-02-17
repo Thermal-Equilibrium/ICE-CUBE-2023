@@ -5,9 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Utils.Team;
 
 @TeleOp
-public class BlueTeleop extends Teleop {
+public class TeleopRed extends Teleop {
 	@Override
 	public Team getTeam() {
-		return Team.BLUE;
+		return Team.RED;
 	}
 }
