@@ -90,7 +90,6 @@ public class VisionSpiceRed extends BaseAuto {
 
         Command auto = followRR(driveToPole);
 
-
         auto.addNext(new ToggleBrake(robot.drivetrain));
         auto.addNext(new RoadrunnerHoldPose(robot, goToPole2));
         for (int i = 0; i < 5; ++i) {

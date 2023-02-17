@@ -134,4 +134,9 @@ public class BackCamera extends Subsystem {
 		return ((ConeDetectionFast) pipeline).conestackGuess;
 	}
 
+	public void setVisionMode(VisionMode visionMode) {
+		assert pipeline instanceof ConeDetectionFast;
+		((ConeDetectionFast) pipeline).setVisionMode(visionMode);
+	}
+
 }

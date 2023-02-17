@@ -359,4 +359,7 @@ public class ConeDetectionFast extends OpenCvPipeline {
 		public static double latteCutOff = .3;
 		public static double spiceCutOff = .3;
 	}
+	public void setVisionMode(VisionMode visionMode) {
+		this.visionMode = visionMode;
+	}
 }
