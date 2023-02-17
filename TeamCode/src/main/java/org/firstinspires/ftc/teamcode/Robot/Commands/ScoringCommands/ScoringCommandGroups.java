@@ -164,8 +164,13 @@ public class ScoringCommandGroups {
 		return new MultipleCommand(moveArmDirect(-0.02 + armConeHeights[currentCone]), openClaw());
 	}
 	public Command cancelableSetArmHeightVision() {
-		if (!CancelableMoveArmDirect.cancelled) currentCone--;
-		return new MultipleCommand(new CancelableMoveArmDirect(turret,-0.02 + armConeHeights[currentCone]), openClaw());
+		if (!CancelableMoveArmDirect.cancelled) {currentCone--;
+			return new MultipleCommand(new CancelableMoveArmDirect(turret,-0.02 + armConeHeights[currentCone]), openClaw());
+		}
+		else {
+			return new NullCommand();
+		}
+
 	}
 
 	public Command moveToIntakingRightAuto() {
