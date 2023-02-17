@@ -48,8 +48,8 @@ public class VisionLatteRed extends BaseAuto {
         TrajectoryAccelerationConstraint slowAcceleration = SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL_slow);
 
         ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism, robot.drivetrain, robot.backCamera);
-
         Vector2d goToPole = new Vector2d(-36, 23);
+//        Vector2d goToPole = new Vector2d(-36, 23);
         Pose2d rotateFaceMedium = shiftRobotRelative(new Pose2d(-35, 26, Math.toRadians(21.8816732757)), -1.1, -2);
         Pose2d parkLeft = new Pose2d(-3, 16, Math.toRadians(90));
         Pose2d parkCenter = new Pose2d(-35, 14.5, Math.toRadians(90));
@@ -78,7 +78,7 @@ public class VisionLatteRed extends BaseAuto {
         for (int i = 0; i < 5; ++i) {
             addCycle(auto, commandGroups);
         }
-        auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.MID_POSITION + 0.4))
+        auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.MID_POSITION + .5))
                 .addNext(new Delay(0.1))
                 .addNext(commandGroups.depositCone());
         auto.addNext(new ToggleBrake(robot.drivetrain));
@@ -88,7 +88,7 @@ public class VisionLatteRed extends BaseAuto {
     }
 
     public void addCycle(Command command, ScoringCommandGroups commandGroups) {
-        command.addNext(commandGroups.moveVerticalExtension(VerticalExtension.MID_POSITION + .04))
+        command.addNext(commandGroups.moveVerticalExtension(VerticalExtension.MID_POSITION + .5))
                 .addNext(commandGroups.depositConeAsync())
                 .addNext(commandGroups.openLatch())
                 .addNext(new Delay(0.2))

@@ -147,9 +147,9 @@ public class ConeDetectionFast extends OpenCvPipeline {
         //this.undistort(frame);
 		Mat mask = new Mat();
 		if (this.visionMode == VisionMode.LATTE) {
-			Imgproc.rectangle(frame,new Point(0,0), new Point(frame.cols(),frame.rows()*ConeDetectionConfig.latteCutOff),GREEN);
+			Imgproc.rectangle(frame,new Point(0,frame.rows()), new Point(frame.cols(),frame.rows()*ConeDetectionConfig.latteCutOff),GREEN,-1);
 		} else if (this.visionMode == VisionMode.SPICE) {
-			Imgproc.rectangle(frame,new Point(0,0), new Point(frame.cols(),frame.rows()*ConeDetectionConfig.spiceCutOff),GREEN);
+			Imgproc.rectangle(frame,new Point(0,frame.rows()), new Point(frame.cols(),frame.rows()*ConeDetectionConfig.spiceCutOff),GREEN,-1);
 		}
 
 		this.filter(frame, mask);
@@ -338,7 +338,7 @@ public class ConeDetectionFast extends OpenCvPipeline {
 		public static int RED_MIN_VALUE = 0;
 		public static int RED_MIN_LIGHTNESS = 0;
 
-		public static int RED_MAX_HUE = 200;
+		public static int RED_MAX_HUE = 190;
 		public static int RED_MAX_SATURATION = 255;
 		public static int RED_MAX_VALUE = 255;
 		public static int RED_MAX_LIGHTNESS = 255;
@@ -356,8 +356,8 @@ public class ConeDetectionFast extends OpenCvPipeline {
 		public static double perfectDistance = 13.5;
 		public static double perfectTolerance = 2.5;
 		public static String spectrum = "HLS";
-		public static double latteCutOff = .3;
-		public static double spiceCutOff = .3;
+		public static double latteCutOff = .58;
+		public static double spiceCutOff = .58;
 	}
 	public void setVisionMode(VisionMode visionMode) {
 		this.visionMode = visionMode;

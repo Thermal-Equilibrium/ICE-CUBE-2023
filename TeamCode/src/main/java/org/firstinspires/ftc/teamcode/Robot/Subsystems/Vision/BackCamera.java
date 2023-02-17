@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 public class BackCamera extends Subsystem {
 	private final OpenCvCameraRotation cameraRotation = OpenCvCameraRotation.UPRIGHT;
 	private final ExposureControl.Mode exposureMode = ExposureControl.Mode.Manual;
-	private final long exposureMs = 40;
+	private final long exposureMs = 30;
 	private final int gain = 100;
 	private final FocusControl.Mode focusMode = FocusControl.Mode.Fixed;
 	private final double focusLength = 69; //idk what units this is in
@@ -44,8 +44,8 @@ public class BackCamera extends Subsystem {
 	private OpenCvWebcam cam;
 	private List<Cone> tempConeList;
 	public static boolean streamBackCameraToDash = true;
-	public double accumulatedConestackDistance;
-	public double accumulatedConestackAngle;
+	public double accumulatedConestackDistance = 0;
+	public double accumulatedConestackAngle = 0;
 	public boolean foundConestack = false;
 
 	public BackCamera(Team team, VisionMode visionMode) {

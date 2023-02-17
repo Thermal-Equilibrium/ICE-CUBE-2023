@@ -96,7 +96,7 @@ public class VisionSpiceRed extends BaseAuto {
             addCycle(auto, commandGroups);
         }
 
-        auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION +.04))
+        auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION +.06))
                 .addNext(new Delay(0.1))
                 .addNext(commandGroups.depositCone());
 
@@ -106,7 +106,7 @@ public class VisionSpiceRed extends BaseAuto {
     }
 
     public void addCycle(Command command, ScoringCommandGroups commandGroups) {
-        command.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION + .04))
+        command.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION + .06))
                 .addNext(commandGroups.depositConeAsync())
                 .addNext(commandGroups.openLatch())
                 .addNext(new Delay(0.2))
