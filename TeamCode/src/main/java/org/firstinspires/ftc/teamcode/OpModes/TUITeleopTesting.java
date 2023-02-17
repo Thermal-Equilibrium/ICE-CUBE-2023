@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.BaseTeleop;
@@ -9,6 +10,7 @@ import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.RobotRelative;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MoveFieldCursor;
 import org.firstinspires.ftc.teamcode.Utils.VirtualField;
+@Disabled
 
 @TeleOp
 public class TUITeleopTesting extends BaseTeleop {

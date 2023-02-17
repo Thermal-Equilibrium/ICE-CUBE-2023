@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 public class BackCamera extends Subsystem {
 	private final OpenCvCameraRotation cameraRotation = OpenCvCameraRotation.UPRIGHT;
-	private final ExposureControl.Mode exposureMode = ExposureControl.Mode.Manual;
+	private final ExposureControl.Mode exposureMode = ExposureControl.Mode.ContinuousAuto;
 	private final long exposureMs = 30;
 	private final int gain = 100;
 	private final FocusControl.Mode focusMode = FocusControl.Mode.Fixed;
@@ -69,7 +69,7 @@ public class BackCamera extends Subsystem {
 			public void onOpened() {
 				cam.startStreaming((int) resolution.width, (int) resolution.height, cameraRotation);
 				cam.getExposureControl().setMode(exposureMode);
-				cam.getExposureControl().setExposure(exposureMs, TimeUnit.MILLISECONDS);
+//				cam.getExposureControl().setExposure(exposureMs, TimeUnit.MILLISECONDS);
 				cam.getGainControl().setGain(gain);
 				cam.getFocusControl().setMode(focusMode);
 				if (focusMode == FocusControl.Mode.Fixed) {
