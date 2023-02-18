@@ -4,13 +4,10 @@ package org.firstinspires.ftc.teamcode.Utils;
 //detected Pole: Pole{xPixel=352.0, width=109.0, isValidPole=true}0,0
 
 import static org.firstinspires.ftc.teamcode.Math.Controllers.CriticallyDampedPDControl.solveKD;
-import static org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants.TRACK_WIDTH;
 
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 
 import org.firstinspires.ftc.teamcode.RR_quickstart.drive.DriveConstants;
-
-import java.util.ArrayList;
 
 // detected Pole: Pole{xPixel=92.0, width=117.0, isValidPole=true} -0.1,2.5
 // detected Pole: Pole{xPixel=562.0, width=113.0, isValidPole=true} -0.4,-1.8
@@ -21,8 +18,7 @@ import java.util.ArrayList;
 public class TestLinearInterpolator {
 
 
-	public static void main(String[] args) throws Exception
-	{
+	public static void main(String[] args) throws Exception {
 		double rotation_Kp = 11;
 		PIDCoefficients HEADING_PID = new PIDCoefficients(rotation_Kp, 0, solveKD(rotation_Kp, DriveConstants.kV, DriveConstants.gyrationConstant * DriveConstants.kA));
 		System.out.println("Kd = " + HEADING_PID.kD);

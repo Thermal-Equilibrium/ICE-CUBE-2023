@@ -4,7 +4,6 @@ import com.acmerobotics.dashboard.config.Config;
 
 import org.firstinspires.ftc.teamcode.visionPipelines.ConeDetectionFast;
 import org.opencv.core.Point;
-import org.opencv.core.RotatedRect;
 import org.opencv.core.Size;
 
 public class Cone {

@@ -21,6 +21,7 @@ public class ProfiledPID implements FeedbackController {
 	double previousMotorTarget = 0;
 	double m_targetPosition = 0;
 	double m_state = 0;
+
 	public ProfiledPID(MotionConstraint verticalConstraint, MotionConstraint downConstraint,
 					   PIDCoefficients coefficients) {
 		this.verticalConstraint = verticalConstraint;

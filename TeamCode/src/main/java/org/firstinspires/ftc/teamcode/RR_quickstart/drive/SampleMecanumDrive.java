@@ -84,10 +84,6 @@ public class SampleMecanumDrive extends MecanumDrive {
 		}
 	}
 
-	public boolean isHoldingPosition = false;
-	public Pose2d holdingPose = new Pose2d();
-	MedianFilter3 voltageFilter = new MedianFilter3();
-	TwoWheelTrackingLocalizer localizer2Wheel;
 	private final BNO055IMU imu;
 	private final PIDFController axialController = new PIDFController(TRANSLATIONAL_PID);
 	private final PIDFController lateralController = new PIDFController(TRANSLATIONAL_PID);
@@ -101,6 +97,10 @@ public class SampleMecanumDrive extends MecanumDrive {
 	private final List<DcMotorEx> motors;
 	//    private BNO055IMU imu;
 	private final VoltageSensor batteryVoltageSensor;
+	public boolean isHoldingPosition = false;
+	public Pose2d holdingPose = new Pose2d();
+	MedianFilter3 voltageFilter = new MedianFilter3();
+	TwoWheelTrackingLocalizer localizer2Wheel;
 
 	public SampleMecanumDrive(HardwareMap hardwareMap) {
 		super(DriveConstants.kV, DriveConstants.kA, DriveConstants.kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);

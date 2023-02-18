@@ -11,10 +11,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 public class MotionProfiledADRCPoseStabilizationController {
+	private final double integral_sum = 0;
 	// time that the last update occured at
 	protected double time_of_last_update = 0;
 	protected boolean hasStarted = false;
-
 	// has the robot started a motion profiled move to point? this is used
 	// approx the number of milliseconds one loop takes
 	protected double loop_time_est = 15;
@@ -40,7 +40,6 @@ public class MotionProfiledADRCPoseStabilizationController {
 	PIDEx pidY = new PIDEx(coefficients);
 	PIDCoefficientsEx turnNormal = new PIDCoefficientsEx(1.5, 0, 0.24, 0.5, 0.3, 0.9);
 	boolean notForVision = true;
-	private final double integral_sum = 0;
 
 	public MotionProfiledADRCPoseStabilizationController(double acceleration_time) {
 		this.acceleration_time = acceleration_time;

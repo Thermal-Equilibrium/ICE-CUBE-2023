@@ -7,6 +7,7 @@ public class VirtualField {
 	Coordinate cursor = new Coordinate(0, 0, true);
 	Coordinate target = new Coordinate(0, 0, false);
 	Telemetry telemetry;
+
 	public VirtualField(Telemetry telemetry) {
 		// Initialize the field empty
 		for (int i = 0; i < 5; i++) {

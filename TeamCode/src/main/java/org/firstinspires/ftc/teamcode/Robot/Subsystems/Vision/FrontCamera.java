@@ -23,10 +23,10 @@ public class FrontCamera extends Subsystem {
 	private final ExposureControl.Mode exposureMode = ExposureControl.Mode.Auto;
 	private final long exposureMs = 15;
 	private final int gain = 0;
+	private final OpenCvPipeline pipeline;
 	public Size resolution = Resolution.LOW;
 	public double FOV = Math.toRadians(0); // <-(not the actual fov (duh))
 	public Pose2d position = new Pose2d(0, 0, Math.toRadians(0));
-	private final OpenCvPipeline pipeline;
 	private OpenCvWebcam cam;
 	private boolean open = false;
 
@@ -39,8 +39,7 @@ public class FrontCamera extends Subsystem {
 //		cam = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, "Front Webcam"));
 		if (!streamBackCameraToDash) {
 			cam = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, "Front Webcam"), hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName()));
-		}
-		else {
+		} else {
 			cam = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, "Front Webcam"));
 		}
 		cam.setViewportRenderer(OpenCvWebcam.ViewportRenderer.GPU_ACCELERATED);

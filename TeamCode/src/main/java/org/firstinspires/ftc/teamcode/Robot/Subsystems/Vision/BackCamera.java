@@ -27,25 +27,24 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class BackCamera extends Subsystem {
+	public static boolean streamBackCameraToDash = true;
 	private final OpenCvCameraRotation cameraRotation = OpenCvCameraRotation.UPRIGHT;
 	private final ExposureControl.Mode exposureMode = ExposureControl.Mode.Manual;
 	private final long exposureMs = 40;
 	private final int gain = 100;
 	private final FocusControl.Mode focusMode = FocusControl.Mode.Fixed;
 	private final double focusLength = 69; //idk what units this is in
+	private final OpenCvPipeline pipeline;
 	public Size resolution = Resolution.LOW;
 	public Size nativeResolution = new Size(1920, 1080);
 	public double HFOV = Math.toRadians(67.8727791718758);//68.67
 	public double VFOV = Math.toRadians(41.473850212095506);//42.07
 	public Pose2d position = new Pose2d(0, 0, Math.toRadians(0));
-	private final OpenCvPipeline pipeline;
 	private OpenCvWebcam cam;
 	private List<Cone> tempConeList;
 
-	public static boolean streamBackCameraToDash = true;
-
 	public BackCamera(Team team) {
-        //pipeline = new Save(team,this);
+		//pipeline = new Save(team,this);
 		pipeline = new ConeDetectionFast(team, this);
 	}
 
@@ -53,8 +52,7 @@ public class BackCamera extends Subsystem {
 	public void initAuto(HardwareMap hwMap) {
 		if (streamBackCameraToDash) {
 			cam = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, "Back Webcam"), hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName()));
-		}
-		else {
+		} else {
 			cam = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, "Back Webcam"));
 		}
 
@@ -110,8 +108,8 @@ public class BackCamera extends Subsystem {
 		tempConeList = ((ConeDetectionFast) pipeline).getCones();
 		if (tempConeList.size() > 0) {
 			double angle = IntakeKinematics.getTurretAngleToTarget(-1 * tempConeList.get(0).position.dx);
-			double extendDistance = IntakeKinematics.getHorizontalSlideExtensionToTarget(tempConeList.get(0).position.dy, -1 * tempConeList.get(0).position.dx,currentDistance);
-			return Arrays.asList(angle,extendDistance);
+			double extendDistance = IntakeKinematics.getHorizontalSlideExtensionToTarget(tempConeList.get(0).position.dy, -1 * tempConeList.get(0).position.dx, currentDistance);
+			return Arrays.asList(angle, extendDistance);
 		}
 		return null;
 	}

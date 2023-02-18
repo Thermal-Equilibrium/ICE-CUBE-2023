@@ -62,7 +62,6 @@ public class VanillaLatteAuto extends BaseAuto {
 				.build();
 
 
-
 		Trajectory parkTraj = robot.drivetrain.getBuilder().trajectoryBuilder(scoring2.end(), false)
 				.lineToLinearHeading(Objects.requireNonNull(parking.get(parkingPosition)))
 				.build();

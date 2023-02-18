@@ -22,95 +22,96 @@ import org.firstinspires.ftc.teamcode.Utils.Team;
 public class VisionREDRightHighAuto extends BaseAuto {
 
 
-    final Pose2d goToPole1 = new Pose2d(-38, 24, Math.toRadians(-100));
-    final Pose2d parkRight = new Pose2d(-63, 20, Math.toRadians(0));
-    final Pose2d parkMID = new Pose2d(-40, 18, Math.toRadians(-90));
-    //    final Pose2d parkLeft1 = new Pose2d(-38,26,Math.toRadians(-90));
+	final Pose2d goToPole1 = new Pose2d(-38, 24, Math.toRadians(-100));
+	final Pose2d parkRight = new Pose2d(-63, 20, Math.toRadians(0));
+	final Pose2d parkMID = new Pose2d(-40, 18, Math.toRadians(-90));
+	//    final Pose2d parkLeft1 = new Pose2d(-38,26,Math.toRadians(-90));
 //    final Pose2d parkLeft = new Pose2d(-6,38,Math.toRadians(180));
-    final Pose2d parkLeft1_new = new Pose2d(-38, 19, Math.toRadians(270));
-    final Pose2d parkLeft_new = new Pose2d(-8, 15, Math.toRadians(90));
-    Pose2d startPose = new Pose2d(-36, 66.5, Math.toRadians(-90));
-    Pose2d goToPole2 = shiftRobotRelative(
-            new Pose2d(-36.2, 10.158013549498268, Math.toRadians(338.11832672430523)),
-            0.3,
-            -1
-    );
-    final Pose2d parkRight1 = new Pose2d(goToPole2.getX() - 1, goToPole2.getY() + 3, goToPole2.getHeading());
+	final Pose2d parkLeft1_new = new Pose2d(-38, 19, Math.toRadians(270));
+	final Pose2d parkLeft_new = new Pose2d(-8, 15, Math.toRadians(90));
+	Pose2d startPose = new Pose2d(-36, 66.5, Math.toRadians(-90));
+	Pose2d goToPole2 = shiftRobotRelative(
+			new Pose2d(-36.2, 10.158013549498268, Math.toRadians(338.11832672430523)),
+			0.3,
+			-1
+	);
+	final Pose2d parkRight1 = new Pose2d(goToPole2.getX() - 1, goToPole2.getY() + 3, goToPole2.getHeading());
 
-    @Override
-    public void setRobotPosition() {
-        robot.drivetrain.setPose(startPose);
-    }
+	@Override
+	public void setRobotPosition() {
+		robot.drivetrain.setPose(startPose);
+	}
 
-    @Override
-    public Command setupAuto(CommandScheduler scheduler) {
-        ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism, robot.drivetrain, robot.backCamera);
+	@Override
+	public Command setupAuto(CommandScheduler scheduler) {
+		ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism, robot.drivetrain, robot.backCamera);
 
-        Trajectory driveToPole = robot.drivetrain.getBuilder().trajectoryBuilder(startPose)
-                .splineTo(goToPole1.vec(), goToPole1.getHeading())
-                .splineToSplineHeading(goToPole2, calculateTangent(goToPole1, goToPole2))
-                .build();
+		Trajectory driveToPole = robot.drivetrain.getBuilder().trajectoryBuilder(startPose)
+				.splineTo(goToPole1.vec(), goToPole1.getHeading())
+				.splineToSplineHeading(goToPole2, calculateTangent(goToPole1, goToPole2))
+				.build();
 
-        Trajectory parkRightTraj = robot.drivetrain.getBuilder().trajectoryBuilder(goToPole2, true)
-                .splineToConstantHeading(parkRight1.vec(), calculateTangent(goToPole2, parkRight1))
-                .splineToSplineHeading(parkRight, calculateTangent(parkRight1, parkRight))
-                .build();
+		Trajectory parkRightTraj = robot.drivetrain.getBuilder().trajectoryBuilder(goToPole2, true)
+				.splineToConstantHeading(parkRight1.vec(), calculateTangent(goToPole2, parkRight1))
+				.splineToSplineHeading(parkRight, calculateTangent(parkRight1, parkRight))
+				.build();
 
-        Trajectory parkMidTraj = robot.drivetrain.getBuilder().trajectoryBuilder(goToPole2, true)
-                .lineToLinearHeading(parkMID)
-                .build();
+		Trajectory parkMidTraj = robot.drivetrain.getBuilder().trajectoryBuilder(goToPole2, true)
+				.lineToLinearHeading(parkMID)
+				.build();
 //
 //        Trajectory parkLeftTraj = robot.drivetrain.getBuilder().trajectoryBuilder(goToPole2,true)
 //                .splineTo(parkLeft1.vec(),Math.toRadians(75))
 //                .splineTo(parkLeft.vec(), Math.toRadians(0))
 //                .build();
 
-        Trajectory parkLeftTrajNew = robot.drivetrain.getBuilder().trajectoryBuilder(goToPole2, true)
-                .splineToConstantHeading(parkLeft1_new.vec(), Math.toRadians(0))
-                .splineToSplineHeading(parkLeft_new, Math.toRadians(0))
-                .build();
+		Trajectory parkLeftTrajNew = robot.drivetrain.getBuilder().trajectoryBuilder(goToPole2, true)
+				.splineToConstantHeading(parkLeft1_new.vec(), Math.toRadians(0))
+				.splineToSplineHeading(parkLeft_new, Math.toRadians(0))
+				.build();
 
-        Trajectory park = parkLeftTrajNew;
+		Trajectory park = parkLeftTrajNew;
 
-        switch (parkingPosition) {
-            case LEFT:
-                park = parkLeftTrajNew;
-                break;
-            case CENTER:
-                park = parkMidTraj;
-                break;
-            case RIGHT:
-                park = parkRightTraj;
-                break;
-        }
+		switch (parkingPosition) {
+			case LEFT:
+				park = parkLeftTrajNew;
+				break;
+			case CENTER:
+				park = parkMidTraj;
+				break;
+			case RIGHT:
+				park = parkRightTraj;
+				break;
+		}
 
-        Command auto = followRR(driveToPole);
+		Command auto = followRR(driveToPole);
 
 
-        auto.addNext(new ToggleBrake(robot.drivetrain));
-        auto.addNext(new RoadrunnerHoldPose(robot, goToPole2));
-        for (int i = 0; i < 5; ++i) {
-            addCycle(auto, commandGroups);
-        }
+		auto.addNext(new ToggleBrake(robot.drivetrain));
+		auto.addNext(new RoadrunnerHoldPose(robot, goToPole2));
+		for (int i = 0; i < 5; ++i) {
+			addCycle(auto, commandGroups);
+		}
 
-        auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION))
-                .addNext(new Delay(0.1))
-                .addNext(commandGroups.depositCone());
+		auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION))
+				.addNext(new Delay(0.1))
+				.addNext(commandGroups.depositCone());
 
-        auto.addNext(new Delay(0.1).addNext(new ToggleBrake(robot.drivetrain)));
-        auto.addNext(followRR(park));
-        return auto;
-    }
+		auto.addNext(new Delay(0.1).addNext(new ToggleBrake(robot.drivetrain)));
+		auto.addNext(followRR(park));
+		return auto;
+	}
 
-    public void addCycle(Command command, ScoringCommandGroups commandGroups) {
-        command.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION),
-                        commandGroups.moveToIntakingVision(Side.RIGHT),
-                        commandGroups.moveHorizontalExtension(HorizontalExtension.PRE_EMPTIVE_EXTEND)))
-                .addNext(commandGroups.depositConeAsync())
-                .addNext(commandGroups.visuallyCollectConeAuto());
-    }
-    @Override
-    public Team getTeam() {
-        return Team.RED;
-    }
+	public void addCycle(Command command, ScoringCommandGroups commandGroups) {
+		command.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION),
+						commandGroups.moveToIntakingVision(Side.RIGHT),
+						commandGroups.moveHorizontalExtension(HorizontalExtension.PRE_EMPTIVE_EXTEND)))
+				.addNext(commandGroups.depositConeAsync())
+				.addNext(commandGroups.visuallyCollectConeAuto());
+	}
+
+	@Override
+	public Team getTeam() {
+		return Team.RED;
+	}
 }

@@ -16,8 +16,9 @@ public class Save extends OpenCvPipeline {
 	private final Team team;
 	private final BackCamera camera;
 	private final Point camCenter;
-	private int index;
 	private final ElapsedTime timer;
+	private int index;
+
 	public Save(Team team, BackCamera backCamera) {
 		this.team = team;
 		this.camera = backCamera;

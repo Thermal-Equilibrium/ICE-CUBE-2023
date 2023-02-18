@@ -14,12 +14,12 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMo
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveArmDirect;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveClaw;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveHorizontalExtension;
-import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.SetHorizontalExtensionInches;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurret;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurretAsync;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurretDirect;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveVerticalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.OpenLatch;
+import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.SetHorizontalExtensionInches;
 import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.VisualIntake;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Drivetrain;
@@ -99,7 +99,7 @@ public class ScoringCommandGroups {
 
 	public Command autoIntake() {
 		return openClaw()
-				.addNext(new VisualIntake(turret, backCamera,horizontalExtension))
+				.addNext(new VisualIntake(turret, backCamera, horizontalExtension))
 				.addNext(moveArm(Turret.ArmStates.DOWN))
 				.addNext(new Delay(.15))
 				.addNext(grabCone())
@@ -128,7 +128,6 @@ public class ScoringCommandGroups {
 
 		} else return new NullCommand();
 	}
-
 
 
 	// near straight but tilted to the left
@@ -162,8 +161,7 @@ public class ScoringCommandGroups {
 		Turret.TurretStates state;
 		if (side == Side.LEFT) {
 			state = Turret.TurretStates.Slight_LEFT;
-		}
-		else {
+		} else {
 			state = Turret.TurretStates.Slight_RIGHT;
 		}
 		currentCone--;
@@ -262,11 +260,12 @@ public class ScoringCommandGroups {
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
 
 	}
+
 	public Command visuallyCollectConeAuto() {
 
 		return depositConeAsync()
 				.addNext(openLatch())
-				.addNext(new VisualIntake(turret,backCamera,horizontalExtension))
+				.addNext(new VisualIntake(turret, backCamera, horizontalExtension))
 				.addNext(new Delay(0.15))
 				.addNext(grabCone())
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))

@@ -8,9 +8,9 @@ import org.firstinspires.ftc.teamcode.VisionUtils.Cone;
 public class TurretToBestCone extends Command {
 	private final Turret turret;
 	private final BackCamera backCamera;
-	private Cone target = null;
 	private final boolean allowFar;
 	private final boolean allowClose;
+	private Cone target = null;
 
 
 	public TurretToBestCone(Turret turret, BackCamera backCamera, boolean allowFar, boolean allowClose) {

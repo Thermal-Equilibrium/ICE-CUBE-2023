@@ -53,19 +53,16 @@ public class StandardTrackingWheelLocalizerIMU extends ThreeTrackingWheelLocaliz
 	public static double HEADING_EPSILON = toRadians(0.05);
 
 	private final BNO055IMU imu;
-	private double baseExtHeading;
 	private final double previousHeading = 0;
-
 	private final ElapsedTime lastIMUUpdateTimer = new ElapsedTime();
 	private final ElapsedTime stableHeadingTimer = new ElapsedTime();
-	private double stableCheckHeading;
-
-	private List<Double> cachedWheelPositions = Collections.emptyList();
 	private final boolean useCachedWheelPositions = false;
-
 	private final Encoder leftEncoder;
 	private final Encoder rightEncoder;
 	private final Encoder frontEncoder;
+	private double baseExtHeading;
+	private double stableCheckHeading;
+	private List<Double> cachedWheelPositions = Collections.emptyList();
 
 	public StandardTrackingWheelLocalizerIMU(HardwareMap hardwareMap) {
 		super(Arrays.asList(

@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 
 import com.acmerobotics.dashboard.config.Config;
 
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.BackCamera;
 import org.firstinspires.ftc.teamcode.Utils.Team;
 import org.firstinspires.ftc.teamcode.VisionUtils.CameraBasedPosition;
@@ -16,10 +15,8 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
-import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -50,16 +47,17 @@ public class ConeDetectionFast extends OpenCvPipeline {
 	private final Mat intrinsic = new Mat(3, 3, CvType.CV_64F, new Scalar(0));
 	private final Mat newIntrinsic = new Mat(3, 3, CvType.CV_64F, new Scalar(0));
 	private final Mat distortions = new Mat(1, 5, CvType.CV_64F, new Scalar(0));
+	private final BackCamera camera;
+	private final Point camCenter;
 	public ConePointMethod conePointMethod;
 	public volatile Cone conestackGuess = null;
 	Scalar redLower;
 	Scalar redUpper;
 	Scalar blueLower;
 	Scalar blueUpper;
-	private final BackCamera camera;
-	private final Point camCenter;
 	private Team team;
 	private volatile List<Cone> cones;
+
 	public ConeDetectionFast(Team team, BackCamera backCamera) {
 		this.team = team;
 		this.camera = backCamera;
@@ -108,16 +106,16 @@ public class ConeDetectionFast extends OpenCvPipeline {
 
 	private static Point getPoint(MatOfPoint contour, Mat mask) {
 		Rect rect = Imgproc.boundingRect(contour);
-		rect.height = (int) (rect.height*.1);
+		rect.height = (int) (rect.height * .1);
 		Mat roi = mask.submat(rect);
 		ArrayList<MatOfPoint> contours2 = new ArrayList<>();
-		Imgproc.findContours(roi,contours2,new Mat(),Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+		Imgproc.findContours(roi, contours2, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
 		Rect rect2 = Imgproc.boundingRect(contours2.get(0));
 //		Point point2 = new Point(rect2.x,rect2));
 		Moments m = Imgproc.moments(contours2.get(0));
 		Point center = new Point(m.get_m10() / m.get_m00(), m.get_m01() / m.get_m00());
 		roi.release();
-		return new Point(rect.br().x - center.x,rect.br().y - center.y);
+		return new Point(rect.br().x - center.x, rect.br().y - center.y);
 	}
 
 	private static Point getCenter(Size size) {
@@ -140,7 +138,7 @@ public class ConeDetectionFast extends OpenCvPipeline {
 			}
 		}
 
-        //this.undistort(frame);
+		//this.undistort(frame);
 		Mat mask = new Mat();
 		this.filter(frame, mask);
 		this.morphology(mask);
@@ -244,17 +242,17 @@ public class ConeDetectionFast extends OpenCvPipeline {
 				double dist = this.getDistance(rect.width, CONE_WIDTH);
 				double angle = this.getAngle(point);
 
-				if (angle >= Math.PI) angle -= Math.PI*2; //unfix angle
+				if (angle >= Math.PI) angle -= Math.PI * 2; //unfix angle
 				double[] z = {1, dist, angle, Math.pow(dist, 2), dist * angle, Math.pow(angle, 2), Math.pow(dist, 3), Math.pow(dist, 2) * angle, dist * Math.pow(angle, 2), Math.pow(angle, 3)};
 				double yhat = 0;
-				double[] params = {6.31364828e+00, -1.12473013e+00, -4.80012098e+00,  4.20113244e-02,
-						3.34183578e-01,  2.92658270e+00, -5.71336671e-04, -3.47121640e-03,
+				double[] params = {6.31364828e+00, -1.12473013e+00, -4.80012098e+00, 4.20113244e-02,
+						3.34183578e-01, 2.92658270e+00, -5.71336671e-04, -3.47121640e-03,
 						8.20912273e-01, -1.70789303e+00};
 				for (int i = 0; i < params.length; i++) {
 					yhat += params[i] * z[i];
 				}
 				dist += yhat;
-				if (angle < 0) angle += Math.PI*2; //refix angle
+				if (angle < 0) angle += Math.PI * 2; //refix angle
 
 				unrankedCones.add(new Cone(rect.size(), new CameraBasedPosition(dist, angle, this.camera.position), point));
 				contour.release();
@@ -303,14 +301,14 @@ public class ConeDetectionFast extends OpenCvPipeline {
 	}
 
 	@SuppressLint("DefaultLocale")
-	private String round2Decimal(double number){
-		return String.format("%.2f",number);
+	private String round2Decimal(double number) {
+		return String.format("%.2f", number);
 	}
 
 	@Config
 	public static class ConeDetectionConfig {
 		public static boolean updateColors = true;
-//		public static double distanceCorrectionMult = 1.05;
+		//		public static double distanceCorrectionMult = 1.05;
 //		public static double distanceCorrectionAdd = 0;
 //		public static double MAX_DISTANCE_ANGLE_CORRECTION_ADD = 1;
 //		public static double MAX_DISTANCE_ANGLE_CORRECTION_ADD_MULT = .13;

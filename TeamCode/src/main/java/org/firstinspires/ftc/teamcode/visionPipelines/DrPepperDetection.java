@@ -44,24 +44,24 @@ public class DrPepperDetection extends OpenCvPipeline {
 	private final ArrayList<MatOfPoint> rawContours = new ArrayList<>();
 	private final ArrayList<Cone> unrankedCones = new ArrayList<>();
 	private final Mat hierarchy = new Mat();
-	public ConePointMethod conePointMethod;
-	public volatile Cone conestackGuess = null;
 	private final BackCamera camera;
-	private List<Cone> usableCones = new ArrayList<>();
-	private List<Cone> rankedCones = new ArrayList<>();
-	private Cone tracking;
 	private final Point camCenter;
 	private final Team team;
-	private Rect tempRect;
-	private Point tempPoint;
-
 	private final Mat mask;
 	private final Mat undistorted;
 	private final Mat camMat;
 	private final Mat newCamMat;
 	private final Mat dists;
+	public ConePointMethod conePointMethod;
+	public volatile Cone conestackGuess = null;
+	private List<Cone> usableCones = new ArrayList<>();
+	private List<Cone> rankedCones = new ArrayList<>();
+	private Cone tracking;
+	private Rect tempRect;
+	private Point tempPoint;
 	private Scalar redLower;
 	private Scalar redUpper;
+
 	public DrPepperDetection(Team team, BackCamera backCamera) {
 		this.team = team;
 		this.camera = backCamera;

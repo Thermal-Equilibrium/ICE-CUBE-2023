@@ -47,10 +47,8 @@ import java.util.Objects;
 @Autonomous(group = "drive")
 public class ManualFeedforwardTurn extends LinearOpMode {
 	public static double DISTANCE = Math.toRadians(360 * 5); // in
-	public VoltageSensor batterVoltageSensor;
-
 	private final FtcDashboard dashboard = FtcDashboard.getInstance();
-
+	public VoltageSensor batterVoltageSensor;
 	private SampleMecanumDrive drive;
 	private Mode mode;
 

@@ -34,12 +34,12 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
 	public static double LATERAL_DISTANCE = 10.509951133427611; // in; distance between the left and right wheels
 	public static double FORWARD_OFFSET = 1.6; // in; offset of the lateral wheel
 	final int REJECT_CUTOFF = (int) TICKS_PER_REV * 10;
-	int previous_left_pos = 0;
-	int previous_right_pos = 0;
-	int previous_middle_pos = 0;
 	private final Encoder leftEncoder;
 	private final Encoder rightEncoder;
 	private final Encoder frontEncoder;
+	int previous_left_pos = 0;
+	int previous_right_pos = 0;
+	int previous_middle_pos = 0;
 
 	public StandardTrackingWheelLocalizer(HardwareMap hardwareMap) {
 		super(Arrays.asList(
