@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class BackCamera extends Subsystem {
-	public static boolean streamBackCameraToDash = true;
+	public static boolean streamBackCameraToDash = false;
 	private final OpenCvCameraRotation cameraRotation = OpenCvCameraRotation.UPRIGHT;
 	private final ExposureControl.Mode exposureMode = ExposureControl.Mode.Manual;
 	private final long exposureMs = 40;

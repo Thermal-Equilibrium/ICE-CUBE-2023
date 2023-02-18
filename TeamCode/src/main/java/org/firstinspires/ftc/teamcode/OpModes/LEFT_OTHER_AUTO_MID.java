@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.RR_quickstart.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Brake.ToggleBrake;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.RoadrunnerHoldPose;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
+import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.NullCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringCommandGroups;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
@@ -43,16 +44,28 @@ public class LEFT_OTHER_AUTO_MID extends BaseAuto {
 		ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism, robot.drivetrain, robot.backCamera);
 
 		Vector2d goToPole = new Vector2d(-36, 23);
-		Pose2d rotateFaceMedium = shiftRobotRelative(new Pose2d(-36, 26, Math.toRadians(180 - 21.8816732757)), 0.3, 2);
-		Pose2d parkLeft = new Pose2d(-3, 16, Math.toRadians(-90));
-		Pose2d parkCenter = new Pose2d(-35, 12.5, Math.toRadians(-90));
-		Pose2d parkRight = new Pose2d(-60, 12.5, Math.toRadians(-90));
+		Pose2d rotateFaceMedium = shiftRobotRelative(new Pose2d(-36, 26, Math.toRadians(180 - 21.8816732757)), 0.1, 2);
+		Pose2d parkLeft = new Pose2d(-3, 17, Math.toRadians(-90));
+		Pose2d parkCenter = new Pose2d(-35, 16, Math.toRadians(-90));
+		Pose2d parkRight = new Pose2d(-60, 15, Math.toRadians(-90));
+
+		Pose2d chosenPark = parkCenter;
 
 		HashMap<SleeveDetection.ParkingPosition, Pose2d> parking = new HashMap<>();
 
 		parking.put(SleeveDetection.ParkingPosition.LEFT, parkLeft);
 		parking.put(SleeveDetection.ParkingPosition.CENTER, parkCenter);
 		parking.put(SleeveDetection.ParkingPosition.RIGHT, parkRight);
+
+		switch (parkingPosition) {
+			case LEFT:
+				chosenPark = parkLeft;
+				break;
+			case CENTER:
+			case RIGHT:
+				chosenPark = parkCenter;
+				break;
+		}
 
 		Trajectory scoring1 = robot.drivetrain.getBuilder().trajectoryBuilder(startPose, false)
 				.splineToConstantHeading(goToPole, Math.toRadians(270), slowVelocity, slowAcceleration)
@@ -63,8 +76,20 @@ public class LEFT_OTHER_AUTO_MID extends BaseAuto {
 
 
 		Trajectory parkTraj = robot.drivetrain.getBuilder().trajectoryBuilder(scoring2.end(), false)
-				.lineToLinearHeading(Objects.requireNonNull(parking.get(parkingPosition)))
+				.lineToLinearHeading(chosenPark)
 				.build();
+
+		// only to be used for right position
+		Trajectory parkTrajPart2 = robot.drivetrain.getBuilder().trajectoryBuilder(parkTraj.end(), false)
+				.lineToLinearHeading(parkRight)
+				.build();
+
+		Command finalParkCommand = new NullCommand();
+
+		if (parkingPosition.equals(SleeveDetection.ParkingPosition.RIGHT)) {
+			finalParkCommand = followRR(parkTrajPart2);
+		}
+
 
 		Command auto = followRR(scoring1).addNext(followRR(scoring2));
 		auto.addNext(new RoadrunnerHoldPose(robot, scoring2.end()));
@@ -77,7 +102,8 @@ public class LEFT_OTHER_AUTO_MID extends BaseAuto {
 				.addNext(commandGroups.depositCone());
 		auto.addNext(new ToggleBrake(robot.drivetrain));
 
-		auto = auto.addNext(followRR(parkTraj));
+		auto = auto.addNext(followRR(parkTraj)).addNext(finalParkCommand);
+
 		return auto;
 	}
 
@@ -93,7 +119,16 @@ public class LEFT_OTHER_AUTO_MID extends BaseAuto {
 		command.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.MID_POSITION),
 						commandGroups.moveToIntakingLeftSideMidAuto(),
 						commandGroups.moveHorizontalExtension(HorizontalExtension.PRE_EMPTIVE_EXTEND)))
+				.addNext(commandGroups.depositConeAsync())
 				.addNext(commandGroups.moveHorizontalExtension(HorizontalExtension.mostlyAutoExtension_MID_left))
 				.addNext(commandGroups.collectConeAuto(HorizontalExtension.autoExtension_MID_left));
 	}
+//	public void addCycle(Command command, ScoringCommandGroups commandGroups) {
+//		command.addNext(multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.MID_POSITION),
+//						commandGroups.moveToIntakingLeftAuto(),
+//						commandGroups.moveHorizontalExtension(HorizontalExtension.PRE_EMPTIVE_EXTEND)))
+//				.addNext(commandGroups.depositConeAsync())
+//				.addNext(commandGroups.moveHorizontalExtension(HorizontalExtension.mostlyAutoExtension_MID))
+//				.addNext(commandGroups.collectConeAuto(HorizontalExtension.autoExtension_MID));
+//	}
 }

@@ -297,6 +297,11 @@ public class ScoringCommandGroups {
 				.addNext(moveArm(Turret.ArmStates.LOW_SCORING))
 				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION));
 	}
+	public Command moveToGroundRetake() {
+		return moveClaw(Turret.ClawStates.Closed)
+				.addNext(moveArm(Turret.ArmStates.TRANSFER))
+				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION));
+	}
 
 	// Move vertical extension down. If it is already going down, open the claw
 	public Command moveVerticalExtensionDownOrReleaseClaw() {
