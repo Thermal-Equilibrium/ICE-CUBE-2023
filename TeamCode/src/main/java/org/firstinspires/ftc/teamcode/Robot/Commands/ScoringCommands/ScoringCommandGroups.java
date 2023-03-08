@@ -21,7 +21,10 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMo
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurretDirect;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveVerticalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.OpenLatch;
+import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.MeasureConestack;
 import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.VisualIntake;
+import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.VisualIntakeStage1;
+import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.VisualIntakeStage2;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
@@ -49,7 +52,36 @@ public class ScoringCommandGroups {
 		this.drivetrain = drivetrain;
 		this.backCamera = backCamera;
 	}
+	public Command teleAuto() {
+		Command command = new NullCommand();
+		for (int i = 0; i < 5; ++i) {
+			addCycle(command);
+		}
+		return command;
+	}
 
+	private void addCycle(Command command) {
+		command.addNext(new MeasureConestack(turret, backCamera,horizontalExtension))
+				.addNext(new VisualIntakeStage1(turret, backCamera,horizontalExtension))
+				.addNext(cancelableSetArmHeightVision())
+				.addNext(new VisualIntakeStage2(turret, backCamera,horizontalExtension))
+				.addNext(new Delay(0.1))
+				.addNext(grabCone())
+				.addNext(new Delay(0.1))
+				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
+				.addNext(moveTurret(Turret.TurretStates.TRANSFER))
+				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION))
+				.addNext(moveArm(Turret.ArmStates.TRANSFER))
+				.addNext(new Delay(0.1))
+				.addNext(releaseCone())
+				.addNext(closeLatch())
+				.addNext(new Delay(0.1))
+				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
+				.addNext(moveVerticalExtension(VerticalExtension.HIGH_POSITION + .06))
+				.addNext(depositConeAsync())
+				.addNext(openLatch())
+				.addNext(new Delay(0.2));
+	}
 	public Command autoGoToCone() {
 		return new RunCommand(() -> {
 			Cone cone = backCamera.getCone();

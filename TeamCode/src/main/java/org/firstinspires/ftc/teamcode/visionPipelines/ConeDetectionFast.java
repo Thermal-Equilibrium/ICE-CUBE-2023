@@ -48,9 +48,6 @@ public class ConeDetectionFast extends OpenCvPipeline {
 	private final Mat structuringSmall = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(3, 3));
 	private final Mat structuringMedium = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(5, 5));
 	private final Mat structuringLarge = Imgproc.getStructuringElement(Imgproc.CV_SHAPE_RECT, new Size(7, 7));
-	private final Mat intrinsic = new Mat(3, 3, CvType.CV_64F, new Scalar(0));
-	private final Mat newIntrinsic = new Mat(3, 3, CvType.CV_64F, new Scalar(0));
-	private final Mat distortions = new Mat(1, 5, CvType.CV_64F, new Scalar(0));
 	public ConePointMethod conePointMethod;
 	public volatile Cone conestackGuess = null;
 	Scalar redLower;
@@ -69,29 +66,6 @@ public class ConeDetectionFast extends OpenCvPipeline {
 		this.camera = backCamera;
 		this.camCenter = getCenter(this.camera.resolution);
 		this.conePointMethod = ConePointMethod.MASS;
-		this.intrinsic.put(0, 0, 1426.5985779804787);
-		this.intrinsic.put(0, 1, 0.0);
-		this.intrinsic.put(0, 2, 972.3839433768713);
-		this.intrinsic.put(1, 0, 0.0);
-		this.intrinsic.put(1, 1, 1425.4201782937196);
-		this.intrinsic.put(1, 2, 502.392108240942);
-		this.intrinsic.put(2, 0, 0.0);
-		this.intrinsic.put(2, 1, 0.0);
-		this.intrinsic.put(2, 2, 1.0);
-		this.newIntrinsic.put(0, 0, 1409.3309326171875);
-		this.newIntrinsic.put(0, 1, 0.0);
-		this.newIntrinsic.put(0, 2, 973.1659712699111);
-		this.newIntrinsic.put(1, 0, 0.0);
-		this.newIntrinsic.put(1, 1, 1408.265869140625);
-		this.newIntrinsic.put(1, 2, 499.84253896542214);
-		this.newIntrinsic.put(2, 0, 0.0);
-		this.newIntrinsic.put(2, 1, 0.0);
-		this.newIntrinsic.put(2, 2, 1.0);
-		this.distortions.put(0, 0, 0.04305789687257069);
-		this.distortions.put(0, 1, -0.1860924497772236);
-		this.distortions.put(0, 2, -0.0014156458648092228);
-		this.distortions.put(0, 3, 0.0004741244848272146);
-		this.distortions.put(0, 4, 0.14543734560152707);
 		if (Objects.equals(ConeDetectionConfig.spectrum, "HSV")) {
 			redLower = new Scalar(ConeDetectionConfig.RED_MIN_HUE, ConeDetectionConfig.RED_MIN_SATURATION, ConeDetectionConfig.RED_MIN_VALUE);
 			redUpper = new Scalar(ConeDetectionConfig.RED_MAX_HUE, ConeDetectionConfig.RED_MAX_SATURATION, ConeDetectionConfig.RED_MAX_VALUE);
@@ -190,16 +164,6 @@ public class ConeDetectionFast extends OpenCvPipeline {
 				textOutlined(frame, "FAR", cone.point, new Point(0, 20), .7, RED, 2);
 			}
 		}
-	}
-
-	private void undistort(Mat frame) {
-		Mat resizing = new Mat();
-		Mat undistorted = new Mat();
-		Imgproc.resize(frame, resizing, this.camera.nativeResolution);
-		Calib3d.undistort(resizing, undistorted, this.newIntrinsic, this.distortions);
-		Imgproc.resize(undistorted, frame, this.camera.resolution);
-		resizing.release();
-		undistorted.release();
 	}
 
 	private void filter(Mat frame, Mat mask) {
