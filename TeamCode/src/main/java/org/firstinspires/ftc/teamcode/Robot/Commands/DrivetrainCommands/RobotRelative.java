@@ -51,7 +51,7 @@ public class RobotRelative extends Command {
 
 		y = MathUtils.applyDeadBand(y, strafe_dead_band);
 
-		Pose2d powers = new Pose2d(x * scalar, y * scalar, turn * scalar);
+		Pose2d powers = new Pose2d(x * scalar, y * scalar, turn * scalar * 0.75);
 
 
 		drivetrain.robotRelative(powers);

@@ -94,7 +94,7 @@ public class Turret extends Subsystem {
 				setBasedTurretPosition(Math.toRadians(345));
 				break;
 			case Slight_LEFT_AUTO:
-				setBasedTurretPosition(Math.toRadians(330));
+				setBasedTurretPosition(Math.toRadians(333));
 				break;
 			case FAR_LEFT:
 				setBasedTurretPosition(Math.toRadians(290));

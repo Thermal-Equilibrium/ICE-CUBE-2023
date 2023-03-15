@@ -16,9 +16,10 @@ import org.firstinspires.ftc.teamcode.Utils.ProfiledPID;
 @Config
 public class VerticalExtension extends Subsystem {
 
-	public final static double HIGH_POSITION = 26;
-	public final static double MID_POSITION = 16;
-	public final static double LOW_POSITION = 6;
+	public final static double HIGH_POSITION = 26.4;
+	public final static double MID_POSITION = 16.3;
+	public final static double MID_POSITION_teleop = 16.2;
+
 	public final static double IN_POSITION = 0;
 	static final double PULLEY_CIRCUMFERENCE = 4.409;
 	static final double counts_per_revolution = 145.090909;

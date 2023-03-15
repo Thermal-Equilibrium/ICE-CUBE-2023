@@ -21,11 +21,11 @@ public class HorizontalExtension extends Subsystem {
 	public final static double PRE_EMPTIVE_EXTEND = 100;
 	public final static double PRE_EMPTIVE_EXTEND_BIG = 300;
 	public final static double TELE_CYCLE_EXTENSION = 359; // todo figure out our max safe extension
-	public final static double autoExtension = 400;
+	public final static double autoExtension = 408;
 	public final static double mostlyAutoExtension = autoExtension - 30;
-	public final static double autoExtension_MID = 420;
+	public final static double autoExtension_MID = 422;
 	public final static double mostlyAutoExtension_MID = autoExtension_MID - 30;
-	public final static double autoExtension_MID_left = 430;
+	public final static double autoExtension_MID_left = 455;
 	public final static double mostlyAutoExtension_MID_left = autoExtension_MID_left - 30;
 
 	private static final double TICKS_TO_INCH = .03;
