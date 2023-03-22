@@ -54,11 +54,27 @@ public class ScoringCommandGroups {
 	}
 	public Command teleAuto() {
 		Command command = new NullCommand();
-		for (int i = 0; i < 5; ++i) {
+		for (int i = 0; i < 4; ++i) {
 			addCycle(command);
 		}
-		return command;
+		return command.addNext(new MeasureConestack(turret, backCamera,horizontalExtension))
+				.addNext(new VisualIntakeStage1(turret, backCamera,horizontalExtension))
+				.addNext(cancelableSetArmHeightVision())
+				.addNext(new VisualIntakeStage2(turret, backCamera,horizontalExtension))
+				.addNext(new Delay(0.1))
+				.addNext(grabCone())
+				.addNext(new Delay(0.1))
+				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
+				.addNext(moveTurret(Turret.TurretStates.TRANSFER))
+				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION))
+				.addNext(moveArm(Turret.ArmStates.TRANSFER))
+				.addNext(new Delay(0.1))
+				.addNext(releaseCone())
+				.addNext(closeLatch())
+				.addNext(new Delay(0.1))
+				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
 	}
+
 
 	private void addCycle(Command command) {
 		command.addNext(new MeasureConestack(turret, backCamera,horizontalExtension))
