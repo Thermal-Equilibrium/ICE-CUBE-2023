@@ -125,7 +125,9 @@ public class ConeDetectionFast extends OpenCvPipeline {
 		} else if (this.visionMode == VisionMode.SPICE) {
 			Imgproc.rectangle(frame,new Point(0,frame.rows()), new Point(frame.cols(),frame.rows()*ConeDetectionConfig.spiceCutOff),GREEN,-1);
 		}
-
+		else {
+			Imgproc.rectangle(frame,new Point(0,frame.rows()), new Point(frame.cols(),frame.rows()*ConeDetectionConfig.otherCutOff),GREEN,-1);
+		}
 		this.filter(frame, mask);
 		this.morphology(mask);
 
@@ -214,8 +216,6 @@ public class ConeDetectionFast extends OpenCvPipeline {
 				} else {
 					point = getTop(contour);
 				}
-//				double angleDistanceCorrection = ConeDetectionConfig.MAX_DISTANCE_ANGLE_CORRECTION_ADD * Math.abs(this.getAngle(point) / Math.toRadians(30));
-//				double angleDistanceCorrectionMult = 1 + ConeDetectionConfig.MAX_DISTANCE_ANGLE_CORRECTION_ADD_MULT * Math.abs(this.getAngle(point) / Math.toRadians(30));
 
 				double dist = this.getDistance(rect.width, CONE_WIDTH);
 				double angle = this.getAngle(point);
@@ -322,6 +322,7 @@ public class ConeDetectionFast extends OpenCvPipeline {
 		public static String spectrum = "HLS";
 		public static double latteCutOff = .58;
 		public static double spiceCutOff = .58;
+		public static double otherCutOff = .58;
 	}
 	public void setVisionMode(VisionMode visionMode) {
 		this.visionMode = visionMode;
