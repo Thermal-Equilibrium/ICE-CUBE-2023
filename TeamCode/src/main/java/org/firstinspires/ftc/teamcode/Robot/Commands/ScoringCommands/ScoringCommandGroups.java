@@ -137,7 +137,7 @@ public class ScoringCommandGroups {
 
 				.addNext(new Delay(0.1))
 				.addNext(releaseCone())
-//				.addNext(closeLatch())
+				.addNext(closeLatch())
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
 
 
