@@ -154,7 +154,7 @@ public class Turret extends Subsystem {
 				arm1.setPosition(armSafe);
 				break;
 			case PART_DOWN:
-				arm1.setPosition(0.3);
+				arm1.setPosition(0.2);
 				break;
 			case DOWN:
 				arm1.setPosition(armDown);

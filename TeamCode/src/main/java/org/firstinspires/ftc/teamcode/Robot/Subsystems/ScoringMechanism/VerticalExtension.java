@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.Utils.ProfiledPID;
 @Config
 public class VerticalExtension extends Subsystem {
 
-	public final static double HIGH_POSITION = 26.4;
+	public final static double HIGH_POSITION = 26.7;
 	public final static double MID_POSITION = 16.3;
 	public final static double MID_POSITION_teleop = 16.2;
 

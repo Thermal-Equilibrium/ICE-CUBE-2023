@@ -275,7 +275,7 @@ public class ConeDetectionFast extends OpenCvPipeline {
 	@Config
 	public static class ConeDetectionConfig {
 		public static double distMult = 1;
-		public static double distAdd = 0;
+		public static double distAdd = .5;
 		public static boolean updateColors = true;
 		public static int coneMinArea = 600;
 		public static int RED_MIN_HUE = 161;
