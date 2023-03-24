@@ -66,15 +66,13 @@ public class ScoringCommandGroups {
 				.addNext(moveTurret(Turret.TurretStates.TRANSFER))
 				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION))
 				.addNext(moveArm(Turret.ArmStates.TRANSFER))
-
-
 				.addNext(new Delay(0.1))
 				.addNext(releaseCone())
 //				.addNext(closeLatch())
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
 
 
-		for (int i = 0; i < 4; ++i) {
+		for (int i = 0; i < 3; ++i) {
 			command.addNext(moveVerticalExtension(VerticalExtension.HIGH_POSITION + .06))
 					.addNext(new MultipleCommand(
 							new VisualIntakeStage1(intakeParameters, turret,horizontalExtension)
@@ -97,7 +95,24 @@ public class ScoringCommandGroups {
 					.addNext(closeLatch())
 					.addNext(new Delay(0.1))
 					.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
+
+
 		}
+		command.addNext(moveVerticalExtension(VerticalExtension.HIGH_POSITION + .06))
+				.addNext(new MultipleCommand(
+						new VisualIntakeStage1(intakeParameters, turret,horizontalExtension)
+								.addNext(setArmHeightVisionStack(intakeParameters))
+						,
+						depositConeAsync()
+				))
+				.addNext(new VisualIntakeStage2(intakeParameters, turret,horizontalExtension))
+				.addNext(new Delay(0.1))
+				.addNext(grabCone())
+				.addNext(new Delay(0.1))
+
+				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
+				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION))
+				.addNext(moveArm(Turret.ArmStates.LOW_SCORING));
 		return command
 				.addNext(new SetDrivetrainBrake(drivetrain, Drivetrain.BrakeStates.FREE));
 	}
