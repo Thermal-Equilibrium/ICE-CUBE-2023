@@ -80,7 +80,7 @@ public class GetIntakeParameters extends Command {
         }
         Dashboard.packet.put("foundCone",foundCone);
         Dashboard.packet.put("angle",angle);
-        Dashboard.packet.put("extendDistance",foundCone);
+        Dashboard.packet.put("extendDistance",extendDistance);
         if (foundCone) {
             this.angles.add(angle);
             this.distances.add(extendDistance);
