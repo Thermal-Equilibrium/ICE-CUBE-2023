@@ -1,39 +1,33 @@
 package org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
-import org.firstinspires.ftc.teamcode.Math.Kinematics.IntakeKinematics;
+import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Brake.SetDrivetrainBrake;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.NullCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.RunCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.AsyncMoveVerticalExtension;
-import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.CancelableMoveArmDirect;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.CloseLatch;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveArm;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveArmDirect;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveClaw;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveHorizontalExtension;
-import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.SetHorizontalExtensionInches;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurret;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurretAsync;
-import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurretDirect;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveVerticalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.OpenLatch;
-import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.MeasureConestack;
-import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.VisualIntake;
+import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.CancelableMoveArmDirect;
+import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.GetIntakeParameters;
 import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.VisualIntakeStage1;
 import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.VisualIntakeStage2;
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.MainScoringMechanism;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.BackCamera;
-import org.firstinspires.ftc.teamcode.Utils.Side;
-import org.firstinspires.ftc.teamcode.VisionUtils.Cone;
+import org.firstinspires.ftc.teamcode.VisionUtils.IntakeParameters;
 
 public class ScoringCommandGroups {
 	public int currentCone = 5;
@@ -45,6 +39,9 @@ public class ScoringCommandGroups {
 	Pose2d intakePosition = new Pose2d();
 	double[] armConeHeights = {0.08, 0.11, 0.1357, 0.1632, 0.1800};
 
+	double[] armConeHeightsVision = {0.08, 0.11, 0.1357, 0.1502, 0.1670};
+
+
 	public ScoringCommandGroups(MainScoringMechanism mechanism, Drivetrain drivetrain, BackCamera backCamera) {
 		this.horizontalExtension = mechanism.horizontalExtension;
 		this.verticalExtension = mechanism.verticalExtension;
@@ -52,15 +49,152 @@ public class ScoringCommandGroups {
 		this.drivetrain = drivetrain;
 		this.backCamera = backCamera;
 	}
+	public Command fastTeleAutoSingleMeasure() {
+		GetIntakeParameters getIntakeParameters = new GetIntakeParameters(turret, backCamera, horizontalExtension);
+		IntakeParameters intakeParameters = getIntakeParameters.getIntakeParameters();
+		Command command = new NullCommand()
+				.addNext(new SetDrivetrainBrake(drivetrain, Drivetrain.BrakeStates.ACTIVATED))
+				.addNext(getIntakeParameters)//new MultipleCommand(getIntakeParameters,openLatch())
+				.addNext(new VisualIntakeStage1(intakeParameters, turret,horizontalExtension))
+				.addNext(setArmHeightVisionStack(intakeParameters))
+				.addNext(new VisualIntakeStage2(intakeParameters, turret,horizontalExtension))
+				.addNext(new Delay(0.1))
+				.addNext(grabCone())
+
+
+				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
+				.addNext(moveTurret(Turret.TurretStates.TRANSFER))
+				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION))
+				.addNext(moveArm(Turret.ArmStates.TRANSFER))
+
+
+				.addNext(new Delay(0.1))
+				.addNext(releaseCone())
+//				.addNext(closeLatch())
+				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
+
+
+		for (int i = 0; i < 4; ++i) {
+			command.addNext(moveVerticalExtension(VerticalExtension.HIGH_POSITION + .06))
+					.addNext(new MultipleCommand(
+							new VisualIntakeStage1(intakeParameters, turret,horizontalExtension)
+									.addNext(setArmHeightVisionStack(intakeParameters))
+							,
+							depositConeAsync()
+					))
+					.addNext(new VisualIntakeStage2(intakeParameters, turret,horizontalExtension))
+					.addNext(new Delay(0.1))
+					.addNext(grabCone())
+					.addNext(new Delay(0.1))
+
+					.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
+					.addNext(moveTurret(Turret.TurretStates.TRANSFER))
+					.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION))
+					.addNext(moveArm(Turret.ArmStates.TRANSFER))
+
+					.addNext(new Delay(0.1))
+					.addNext(releaseCone())
+					.addNext(closeLatch())
+					.addNext(new Delay(0.1))
+					.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
+		}
+		return command
+				.addNext(new SetDrivetrainBrake(drivetrain, Drivetrain.BrakeStates.FREE));
+	}
+	public Command fastTeleAuto() {
+		GetIntakeParameters getIntakeParameters = new GetIntakeParameters(turret, backCamera, horizontalExtension);
+		IntakeParameters intakeParameters = getIntakeParameters.getIntakeParameters();
+		Command command = new NullCommand()
+				.addNext(new SetDrivetrainBrake(drivetrain, Drivetrain.BrakeStates.ACTIVATED))
+				.addNext(getIntakeParameters)//new MultipleCommand(getIntakeParameters,openLatch())
+				.addNext(new VisualIntakeStage1(intakeParameters, turret,horizontalExtension))
+				.addNext(setArmHeightVisionStack(intakeParameters))
+				.addNext(new VisualIntakeStage2(intakeParameters, turret,horizontalExtension))
+				.addNext(new Delay(0.1))
+				.addNext(grabCone())
+
+
+				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
+				.addNext(moveTurret(Turret.TurretStates.TRANSFER))
+				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION))
+				.addNext(moveArm(Turret.ArmStates.TRANSFER))
+
+
+				.addNext(new Delay(0.1))
+				.addNext(releaseCone())
+//				.addNext(closeLatch())
+				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
+
+
+
+		for (int i = 0; i < 4; ++i) {
+			GetIntakeParameters getCycleIntakeParameters = new GetIntakeParameters(turret, backCamera, horizontalExtension);
+			IntakeParameters cycleIntakeParameters = getCycleIntakeParameters.getIntakeParameters();
+			command.addNext(getCycleIntakeParameters)//new MultipleCommand(getCycleIntakeParameters,openLatch()))
+					.addNext(moveVerticalExtension(VerticalExtension.HIGH_POSITION + .06))
+					.addNext(new MultipleCommand(
+							new VisualIntakeStage1(cycleIntakeParameters, turret,horizontalExtension)
+									.addNext(setArmHeightVisionStack(cycleIntakeParameters))
+							,
+							depositConeAsync()
+					))
+					.addNext(new VisualIntakeStage2(cycleIntakeParameters, turret,horizontalExtension))
+					.addNext(new Delay(0.1))
+					.addNext(grabCone())
+					.addNext(new Delay(0.1))
+
+
+					.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
+					.addNext(moveTurret(Turret.TurretStates.TRANSFER))
+					.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION))
+					.addNext(moveArm(Turret.ArmStates.TRANSFER))
+
+
+					.addNext(new Delay(0.1))
+					.addNext(releaseCone())
+					.addNext(closeLatch())
+					.addNext(new Delay(0.1))
+					.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
+		}
+		return command
+				.addNext(new SetDrivetrainBrake(drivetrain, Drivetrain.BrakeStates.FREE));
+	}
+
+
+
 	public Command teleAuto() {
 		Command command = new NullCommand();
+
 		for (int i = 0; i < 4; ++i) {
-			addCycle(command);
+			GetIntakeParameters getCycleIntakeParameters = new GetIntakeParameters(turret, backCamera, horizontalExtension);
+			IntakeParameters cycleIntakeParameters = getCycleIntakeParameters.getIntakeParameters();
+			command.addNext(getCycleIntakeParameters)
+					.addNext(new VisualIntakeStage1(cycleIntakeParameters, turret,horizontalExtension))
+					.addNext(setArmHeightVisionStack(cycleIntakeParameters))
+					.addNext(new VisualIntakeStage2(cycleIntakeParameters, turret,horizontalExtension))
+					.addNext(new Delay(0.1))
+					.addNext(grabCone())
+					.addNext(new Delay(0.1))
+					.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
+					.addNext(moveTurret(Turret.TurretStates.TRANSFER))
+					.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION))
+					.addNext(moveArm(Turret.ArmStates.TRANSFER))
+					.addNext(new Delay(0.1))
+					.addNext(releaseCone())
+					.addNext(closeLatch())
+					.addNext(new Delay(0.1))
+					.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
+					.addNext(moveVerticalExtension(VerticalExtension.HIGH_POSITION + .06))
+					.addNext(depositConeAsync())
+					.addNext(openLatch())
+					.addNext(new Delay(0.1));
 		}
-		return command.addNext(new MeasureConestack(turret, backCamera,horizontalExtension))
-				.addNext(new VisualIntakeStage1(turret, backCamera,horizontalExtension))
-				.addNext(cancelableSetArmHeightVision())
-				.addNext(new VisualIntakeStage2(turret, backCamera,horizontalExtension))
+		GetIntakeParameters getIntakeParameters = new GetIntakeParameters(turret, backCamera, horizontalExtension);
+		IntakeParameters intakeParameters = getIntakeParameters.getIntakeParameters();
+		return command.addNext(getIntakeParameters)
+				.addNext(new VisualIntakeStage1(intakeParameters, turret,horizontalExtension))
+				.addNext(setArmHeightVisionStack(intakeParameters))
+				.addNext(new VisualIntakeStage2(intakeParameters, turret,horizontalExtension))
 				.addNext(new Delay(0.1))
 				.addNext(grabCone())
 				.addNext(new Delay(0.1))
@@ -74,13 +208,37 @@ public class ScoringCommandGroups {
 				.addNext(new Delay(0.1))
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
 	}
-
-
-	private void addCycle(Command command) {
-		command.addNext(new MeasureConestack(turret, backCamera,horizontalExtension))
-				.addNext(new VisualIntakeStage1(turret, backCamera,horizontalExtension))
-				.addNext(cancelableSetArmHeightVision())
-				.addNext(new VisualIntakeStage2(turret, backCamera,horizontalExtension))
+//	public Command autoGoToCone() {
+//		return new RunCommand(() -> {
+//			Cone cone = backCamera.getCone();
+//			if (cone != null) {
+//
+//				double angle = IntakeKinematics.getTurretAngleToTarget(-1 * cone.position.dx);
+//				double extendDistance = IntakeKinematics.getHorizontalSlideExtensionToTarget(cone.position.dy, -1 * cone.position.dx, horizontalExtension.getSlidePositionInches());
+//				Dashboard.packet.put("THE dx", cone.position.dx);
+//				Dashboard.packet.put("THE dy", cone.position.dy);
+//				Dashboard.packet.put("THE angle", Math.toDegrees(angle));
+//				Dashboard.packet.put("THE extendDist", extendDistance);
+//				if (extendDistance <= 15) {
+//					if (angle < 0) {
+//						angle += Math.PI * 2;
+//					}
+//					return openClaw().addNext(new MoveTurretDirect(turret, angle).addNext(new SetHorizontalExtensionInches(horizontalExtension, extendDistance)).addNext(moveArm(Turret.ArmStates.DOWN)));
+//				} else return new NullCommand();
+//
+//			} else return new NullCommand();
+//		});
+//	}
+	public Command autoGoToCone() {
+		GetIntakeParameters getIntakeParameters = new GetIntakeParameters(turret, backCamera, horizontalExtension);
+		IntakeParameters intakeParameters = getIntakeParameters.getIntakeParameters();
+		return getIntakeParameters
+				.addNext(new VisualIntakeStage1(intakeParameters, turret,horizontalExtension))
+				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()))
+				.addNext(new VisualIntakeStage2(intakeParameters, turret,horizontalExtension));
+	}
+	public Command autoIntake() {
+		return autoGoToCone()
 				.addNext(new Delay(0.1))
 				.addNext(grabCone())
 				.addNext(new Delay(0.1))
@@ -90,94 +248,14 @@ public class ScoringCommandGroups {
 				.addNext(moveArm(Turret.ArmStates.TRANSFER))
 				.addNext(new Delay(0.1))
 				.addNext(releaseCone())
-				.addNext(closeLatch())
-				.addNext(new Delay(0.1))
-				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
-				.addNext(moveVerticalExtension(VerticalExtension.HIGH_POSITION + .06))
-				.addNext(depositConeAsync())
-				.addNext(openLatch())
-				.addNext(new Delay(0.2));
-	}
-	public Command autoGoToCone() {
-		return new RunCommand(() -> {
-			Cone cone = backCamera.getCone();
-			if (cone != null) {
-
-				double angle = IntakeKinematics.getTurretAngleToTarget(-1 * cone.position.dx);
-				double extendDistance = IntakeKinematics.getHorizontalSlideExtensionToTarget(cone.position.dy, -1 * cone.position.dx, horizontalExtension.getSlidePositionInches());
-				Dashboard.packet.put("THE dx", cone.position.dx);
-				Dashboard.packet.put("THE dy", cone.position.dy);
-				Dashboard.packet.put("THE angle", Math.toDegrees(angle));
-				Dashboard.packet.put("THE extendDist", extendDistance);
-				if (extendDistance <= 15) {
-					if (angle < 0) {
-						angle += Math.PI * 2;
-					}
-					return openClaw().addNext(new MoveTurretDirect(turret, angle).addNext(new SetHorizontalExtensionInches(horizontalExtension, extendDistance)).addNext(moveArm(Turret.ArmStates.DOWN)));
-				} else return new NullCommand();
-
-			} else return new NullCommand();
-		});
-	}
-
-	public Command autoIntakeCmd() {
-		return new RunCommand(() -> {
-			Cone cone = backCamera.getCone();
-			if (cone != null) {
-
-				double angle = IntakeKinematics.getTurretAngleToTarget(-1 * cone.position.dx);
-				double extendDistance = IntakeKinematics.getHorizontalSlideExtensionToTarget(cone.position.dy, -1 * cone.position.dx, horizontalExtension.getSlidePositionInches());
-				if (extendDistance <= 15) {
-					if (angle < 0) {
-						angle += Math.PI * 2;
-					}
-					return openClaw()
-							.addNext(new MoveTurretDirect(turret, angle))
-							.addNext(new SetHorizontalExtensionInches(horizontalExtension, extendDistance))
-							.addNext(moveArm(Turret.ArmStates.DOWN))
-							.addNext(new Delay(.08))
-							.addNext(grabCone())
-							.addNext(openLatch())
-							.addNext(collectCone())
-							.addNext(closeLatch());
-				} else return new NullCommand();
-
-			} else return new NullCommand();
-		});
-	}
-
-	public Command autoIntake() {
-		return openClaw()
-				.addNext(new VisualIntake(turret, backCamera,horizontalExtension,0))
-				.addNext(moveArm(Turret.ArmStates.DOWN))
-				.addNext(new Delay(.15))
-				.addNext(grabCone())
-				.addNext(openLatch())
-				.addNext(new Delay(.15))
-				.addNext(collectCone())
 				.addNext(closeLatch());
 	}
 
-	public Command autoGoToConeTesting() {
-		Cone cone = backCamera.getCone();
-		if (cone != null) {
 
-			double angle = IntakeKinematics.getTurretAngleToTarget(-1 * cone.position.dx);
-			double extendDistance = IntakeKinematics.getHorizontalSlideExtensionToTarget(cone.position.dy, -1 * cone.position.dx, horizontalExtension.getSlidePositionInches());
-			Dashboard.packet.put("THE dx", cone.position.dx);
-			Dashboard.packet.put("THE dy", cone.position.dy);
-			Dashboard.packet.put("THE angle", Math.toDegrees(angle));
-			Dashboard.packet.put("THE extendDist", extendDistance);
-			if (extendDistance <= 17) {
-				if (angle < 0) {
-					angle += Math.PI * 2;
-				}
-				return openClaw().addNext(new MoveTurretDirect(turret, angle).addNext(new SetHorizontalExtensionInches(horizontalExtension, extendDistance)).addNext(moveArm(Turret.ArmStates.DOWN)));
-			} else return new NullCommand();
-
-		} else return new NullCommand();
+	public Command setArmHeightVisionStack(IntakeParameters intakeParameters) {
+		currentCone--;
+		return new MultipleCommand(new CancelableMoveArmDirect(intakeParameters,turret,-0.02 + armConeHeightsVision[currentCone]), openClaw());
 	}
-
 
 
 	// near straight but tilted to the left
@@ -205,20 +283,6 @@ public class ScoringCommandGroups {
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
 				.addNext(moveTurret(Turret.TurretStates.Slight_RIGHT_AUTO))
 				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
-	}
-
-	public Command setArmHeightVision() {
-		currentCone--;
-		return new MultipleCommand(moveArmDirect(-0.02 + armConeHeights[currentCone]), openClaw());
-	}
-	public Command cancelableSetArmHeightVision() {
-		if (!CancelableMoveArmDirect.cancelled) {currentCone--;
-			return new MultipleCommand(new CancelableMoveArmDirect(turret,-0.02 + armConeHeights[currentCone]), openClaw());
-		}
-		else {
-			return new NullCommand();
-		}
-
 	}
 
 	public Command moveToIntakingRightAuto() {
@@ -310,33 +374,6 @@ public class ScoringCommandGroups {
 				.addNext(new Delay(0.1))
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
 
-	}
-	public Command visuallyCollectConeAuto(Side side, boolean last) {
-		double add;
-		if (last) add = 1.5;
-		else add = 0;
-		Turret.TurretStates state;
-		if (side == Side.LEFT) {
-			state = Turret.TurretStates.Slight_LEFT;
-		}
-		else {
-			state = Turret.TurretStates.Slight_RIGHT;
-		}
-		return depositConeAsync()
-				.addNext(moveTurret(state))
-				.addNext(setArmHeightVision())
-				.addNext(new VisualIntake(turret,backCamera,horizontalExtension,add))
-				.addNext(new Delay(0.1))
-				.addNext(grabCone())
-				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
-				.addNext(new Delay(0.1))
-				.addNext(moveTurret(Turret.TurretStates.TRANSFER))
-				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION))
-				.addNext(moveArm(Turret.ArmStates.TRANSFER))
-				.addNext(new Delay(0.1))
-				.addNext(releaseCone())
-				.addNext(closeLatch())
-				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
 	}
 
 	public Command grabCone() {

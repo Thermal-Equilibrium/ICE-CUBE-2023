@@ -5,22 +5,17 @@ import android.annotation.SuppressLint;
 
 import com.acmerobotics.dashboard.config.Config;
 
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.BackCamera;
 import org.firstinspires.ftc.teamcode.Utils.Team;
 import org.firstinspires.ftc.teamcode.VisionUtils.CameraBasedPosition;
 import org.firstinspires.ftc.teamcode.VisionUtils.Cone;
 import org.firstinspires.ftc.teamcode.VisionUtils.ConePointMethod;
 import org.firstinspires.ftc.teamcode.VisionUtils.VisionMode;
-import org.opencv.calib3d.Calib3d;
 import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
-import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -120,18 +115,11 @@ public class ConeDetectionFast extends OpenCvPipeline {
 
         //this.undistort(frame);
 		Mat mask = new Mat();
-		if (this.visionMode == VisionMode.LATTE) {
-			Imgproc.rectangle(frame,new Point(0,frame.rows()), new Point(frame.cols(),frame.rows()*ConeDetectionConfig.latteCutOff),GREEN,-1);
-		} else if (this.visionMode == VisionMode.SPICE) {
-			Imgproc.rectangle(frame,new Point(0,frame.rows()), new Point(frame.cols(),frame.rows()*ConeDetectionConfig.spiceCutOff),GREEN,-1);
-		}
-		else {
-			Imgproc.rectangle(frame,new Point(0,frame.rows()), new Point(frame.cols(),frame.rows()*ConeDetectionConfig.otherCutOff),GREEN,-1);
-		}
+		Imgproc.rectangle(frame,new Point(0,frame.rows()), new Point(frame.cols(),frame.rows()*(1-ConeDetectionConfig.cutOff)),GREEN,-1);
 		this.filter(frame, mask);
 		this.morphology(mask);
 
-		frame.setTo(BLACK, mask);
+		frame.setTo(PURPLE, mask);
 		ArrayList<Cone> unrankedCones = new ArrayList<>();
 		this.findCones(mask, unrankedCones);
 		this.rank(unrankedCones);
@@ -142,19 +130,19 @@ public class ConeDetectionFast extends OpenCvPipeline {
 	private void hud(Mat frame, ArrayList<Cone> unrankedCones) {
 		for (int i = 0; i < this.cones.size(); i++) {
 			Cone cone = this.cones.get(i);
-//			if (i == 0) {
-//				markerOutlined(frame, cone.point, new Point(0, 0), GREEN, Imgproc.MARKER_STAR, 10, 2);
-//			}
-//			if (i == 1) {
-//				markerOutlined(frame, cone.point, new Point(0, 0), ORANGE, Imgproc.MARKER_STAR, 10, 2);
-//			}
+			if (i == 0) {
+				markerOutlined(frame, cone.point, new Point(0, 0), GREEN, Imgproc.MARKER_STAR, 10, 2);
+			}
+			if (i == 1) {
+				markerOutlined(frame, cone.point, new Point(0, 0), ORANGE, Imgproc.MARKER_STAR, 10, 2);
+			}
 
-			textOutlined(frame, round2Decimal(cone.position.dx), cone.point, new Point(-20, 10), .8, WHITE, 2);
-			textOutlined(frame, round2Decimal(cone.position.dy), cone.point, new Point(-20, 40), .8, WHITE, 2);
-//			textOutlined(frame, String.valueOf(i), cone.point, new Point(-4, -16), .7, WHITE, 2);
-//			textOutlined(frame, round2Decimal(cone.position.dx) + ", " + round2Decimal(cone.position.dy), cone.point, new Point(0, 20), .7, WHITE, 2);
-//			textOutlined(frame, round2Decimal(cone.position.distance), cone.point, new Point(-4, 40), .7, WHITE, 2);
-//			textOutlined(frame, round2Decimal(cone.position.angle), cone.point, new Point(-4, 60), .7, WHITE, 2);
+//			textOutlined(frame, round2Decimal(cone.position.dx), cone.point, new Point(-20, 10), .8, WHITE, 2);
+//			textOutlined(frame, round2Decimal(cone.position.dy), cone.point, new Point(-20, 40), .8, WHITE, 2);
+			textOutlined(frame, String.valueOf(i), cone.point, new Point(-4, -16), .7, WHITE, 2);
+			textOutlined(frame, round2Decimal(cone.position.dx) + ", " + round2Decimal(cone.position.dy), cone.point, new Point(0, 20), .7, WHITE, 2);
+			textOutlined(frame, round2Decimal(cone.position.distance), cone.point, new Point(-4, 40), .7, WHITE, 2);
+			textOutlined(frame, round2Decimal(cone.position.angle), cone.point, new Point(-4, 60), .7, WHITE, 2);
 		}
 		for (Cone cone : unrankedCones) {
 
@@ -193,7 +181,7 @@ public class ConeDetectionFast extends OpenCvPipeline {
 	}
 
 	private void morphology(Mat mask) {
-		Imgproc.morphologyEx(mask, mask, Imgproc.MORPH_OPEN, this.structuringLarge);
+		Imgproc.morphologyEx(mask, mask, Imgproc.MORPH_OPEN, this.structuringMedium);
 		Imgproc.morphologyEx(mask, mask, Imgproc.MORPH_CLOSE, this.structuringMedium);
 	}
 
@@ -231,7 +219,8 @@ public class ConeDetectionFast extends OpenCvPipeline {
 				}
 				dist += yhat;
 				if (angle < 0) angle += Math.PI*2; //refix angle
-
+				dist *= ConeDetectionConfig.distMult;
+				dist += ConeDetectionConfig.distAdd;;
 				unrankedCones.add(new Cone(rect.size(), new CameraBasedPosition(dist, angle, this.camera.position), point));
 				contour.release();
 			}
@@ -267,7 +256,7 @@ public class ConeDetectionFast extends OpenCvPipeline {
 
 	private double getDistance(double width, double realWidth) {
 		double occupiedFOV = this.camera.HFOV * (width / this.camera.resolution.width);
-		return ConeDetectionConfig.distanceCorrectionAdd + ConeDetectionConfig.distanceCorrectionMult * ((realWidth / 2) / Math.tan(occupiedFOV / 2) + (realWidth / 2));
+		return ((realWidth / 2) / Math.tan(occupiedFOV / 2) + (realWidth / 2));
 	}
 
 	private double getAngle(Point point) {
@@ -285,44 +274,30 @@ public class ConeDetectionFast extends OpenCvPipeline {
 
 	@Config
 	public static class ConeDetectionConfig {
+		public static double distMult = 1;
+		public static double distAdd = 0;
 		public static boolean updateColors = true;
-//		public static double distanceCorrectionMult = 1.05;
-//		public static double distanceCorrectionAdd = 0;
-//		public static double MAX_DISTANCE_ANGLE_CORRECTION_ADD = 1;
-//		public static double MAX_DISTANCE_ANGLE_CORRECTION_ADD_MULT = .13;
-//		public static double MAX_DISTANCE_ANGLE_CORRECTION_ADD = 0;
-//		public static double MAX_DISTANCE_ANGLE_CORRECTION_ADD_MULT = 1;
-		public static double distanceCorrectionMult = 1;
-		public static double distanceCorrectionAdd = 0;
-
 		public static int coneMinArea = 600;
-
 		public static int RED_MIN_HUE = 161;
 		public static int RED_MIN_SATURATION = 80;
 		public static int RED_MIN_VALUE = 0;
 		public static int RED_MIN_LIGHTNESS = 0;
-
 		public static int RED_MAX_HUE = 190;
 		public static int RED_MAX_SATURATION = 255;
 		public static int RED_MAX_VALUE = 255;
 		public static int RED_MAX_LIGHTNESS = 255;
-
 		public static int BLUE_MIN_HUE = 146;
 		public static int BLUE_MIN_SATURATION = 55;
 		public static int BLUE_MIN_VALUE = 0;
 		public static int BLUE_MIN_LIGHTNESS = 0;
-
 		public static int BLUE_MAX_HUE = 196;
 		public static int BLUE_MAX_SATURATION = 255;
 		public static int BLUE_MAX_VALUE = 255;
 		public static int BLUE_MAX_LIGHTNESS = 255;
-
 		public static double perfectDistance = 13.5;
 		public static double perfectTolerance = 2.5;
 		public static String spectrum = "HLS";
-		public static double latteCutOff = .58;
-		public static double spiceCutOff = .58;
-		public static double otherCutOff = .58;
+		public static double cutOff = .55;
 	}
 	public void setVisionMode(VisionMode visionMode) {
 		this.visionMode = visionMode;

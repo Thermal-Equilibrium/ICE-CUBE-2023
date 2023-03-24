@@ -4,31 +4,28 @@ import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.BackCamera;
+import org.firstinspires.ftc.teamcode.VisionUtils.IntakeParameters;
 
 public class VisualIntakeStage2 extends Command {
     private final Turret turret;
-    private final BackCamera backCamera;
     private final HorizontalExtension horizontalExtension;
     private boolean finished = false;
+    private IntakeParameters intakeParameters;
 
 
-    public VisualIntakeStage2(Turret turret, BackCamera backCamera, HorizontalExtension horizontalExtension) {
-        super(turret, backCamera);
+    public VisualIntakeStage2(IntakeParameters intakeParameters, Turret turret, HorizontalExtension horizontalExtension) {
+        super(turret, horizontalExtension);
+        this.intakeParameters = intakeParameters;
         this.turret = turret;
-        this.backCamera = backCamera;
         this.horizontalExtension = horizontalExtension;
     }
 
     @Override
     public void init() {
-        if (this.backCamera.foundConestack) {
-            this.horizontalExtension.setTargetPositionInches(this.backCamera.accumulatedConestackDistance);
-            this.turret.setBasedTurretPosition(this.backCamera.accumulatedConestackAngle);
+        if (this.intakeParameters.foundCone) {
+            this.horizontalExtension.setTargetPositionInches(this.intakeParameters.extendDistance);
+            this.turret.setBasedTurretPosition(this.intakeParameters.angle);
         }
-//        else {
-//            this.horizontalExtension.setTargetPositionInches(5);
-//            this.turret.setBasedTurretPosition(0);
-//        }
     }
 
     @Override

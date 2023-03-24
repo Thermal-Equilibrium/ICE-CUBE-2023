@@ -1,27 +1,28 @@
-package org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements;
+package org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
+import org.firstinspires.ftc.teamcode.VisionUtils.IntakeParameters;
 
 public class CancelableMoveArmDirect extends Command {
-    public static boolean cancelled = false;
-    double delayS = 0.15;
+    private Turret turret;
+    private double position;
 
-    Turret turret;
-    double position;
+    private ElapsedTime timer = new ElapsedTime();
+    private double delayS = 0.15;
+    private IntakeParameters intakeParameters;
 
-    ElapsedTime timer = new ElapsedTime();
-
-    public CancelableMoveArmDirect(Turret turret, double position) {
+    public CancelableMoveArmDirect(IntakeParameters intakeParameters, Turret turret, double position) {
+        this.intakeParameters = intakeParameters;
         this.turret = turret;
         this.position = position;
     }
 
     @Override
     public void init() {
-        if (!cancelled) {
+        if (intakeParameters.foundCone) {
             turret.setArmDirect(position);
             timer.reset();
         }
@@ -34,7 +35,7 @@ public class CancelableMoveArmDirect extends Command {
 
     @Override
     public boolean completed() {
-        return (timer.seconds() > delayS) || cancelled;
+        return (timer.seconds() > delayS) || !intakeParameters.foundCone;
     }
 
     @Override

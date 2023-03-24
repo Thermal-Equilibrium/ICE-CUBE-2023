@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision;
 import androidx.annotation.Nullable;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -11,7 +12,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.Exposur
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 import org.firstinspires.ftc.teamcode.Math.Kinematics.IntakeKinematics;
-import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.CancelableMoveArmDirect;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Utils.Team;
 import org.firstinspires.ftc.teamcode.VisionUtils.Cone;
@@ -29,9 +29,13 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class BackCamera extends Subsystem {
+	@Config
+	public static class CamConfig {
+		public static int exposureMicroSec = 500;
+	}
 	private final OpenCvCameraRotation cameraRotation = OpenCvCameraRotation.UPRIGHT;
 	private final ExposureControl.Mode exposureMode = ExposureControl.Mode.ContinuousAuto;
-	private final long exposureMs = 30;
+//	private final long exposureMs = 30;
 	private final int gain = 100;
 	private final FocusControl.Mode focusMode = FocusControl.Mode.Fixed;
 	private final double focusLength = 69; //idk what units this is in
@@ -44,9 +48,6 @@ public class BackCamera extends Subsystem {
 	private OpenCvWebcam cam;
 	private List<Cone> tempConeList;
 	public static boolean streamBackCameraToDash = true;
-	public double accumulatedConestackDistance = 0;
-	public double accumulatedConestackAngle = 0;
-	public boolean foundConestack = false;
 
 	public BackCamera(Team team, VisionMode visionMode) {
         //pipeline = new Save(team,this);
@@ -69,7 +70,7 @@ public class BackCamera extends Subsystem {
 			public void onOpened() {
 				cam.startStreaming((int) resolution.width, (int) resolution.height, cameraRotation);
 				cam.getExposureControl().setMode(exposureMode);
-//				cam.getExposureControl().setExposure(exposureMs, TimeUnit.MILLISECONDS);
+//				cam.getExposureControl().setExposure((long) CamConfig.exposureMicroSec, TimeUnit.MICROSECONDS);
 				cam.getGainControl().setGain(gain);
 				cam.getFocusControl().setMode(focusMode);
 				if (focusMode == FocusControl.Mode.Fixed) {
@@ -92,6 +93,7 @@ public class BackCamera extends Subsystem {
 
 	@Override
 	public void periodic() {
+//		cam.getExposureControl().setExposure((long) CamConfig.exposureMicroSec, TimeUnit.MILLISECONDS);
 		Dashboard.packet.put("Back FPS", cam.getFps());
 	}
 

@@ -9,17 +9,20 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.CommandFramework.BaseAuto;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
+import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Brake.SetDrivetrainBrake;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Brake.ToggleBrake;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.RoadrunnerHoldPose;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringCommandGroups;
-import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.MeasureConestack;
+import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.GetIntakeParameters;
 import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.VisualIntakeStage1;
 import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.VisualIntakeStage2;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
 import org.firstinspires.ftc.teamcode.Utils.Team;
+import org.firstinspires.ftc.teamcode.VisionUtils.IntakeParameters;
 import org.firstinspires.ftc.teamcode.VisionUtils.VisionMode;
 
 @Autonomous
@@ -90,30 +93,35 @@ public class VisionSpiceRed extends BaseAuto {
 
         Command auto = followRR(driveToPole);
 
-        auto.addNext(new ToggleBrake(robot.drivetrain));
+        auto.addNext(new SetDrivetrainBrake(robot.drivetrain, Drivetrain.BrakeStates.ACTIVATED));
         auto.addNext(new RoadrunnerHoldPose(robot, goToPole2));
+
+        GetIntakeParameters getIntakeParameters = new GetIntakeParameters(robot.scoringMechanism.turret, robot.backCamera, robot.scoringMechanism.horizontalExtension);
+        IntakeParameters intakeParameters = getIntakeParameters.getIntakeParameters();
+        auto.addNext(getIntakeParameters);
+
         for (int i = 0; i < 5; ++i) {
-            addCycle(auto, commandGroups);
+            addCycle(auto, commandGroups, intakeParameters);
         }
 
         auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION +.06))
                 .addNext(new Delay(0.1))
                 .addNext(commandGroups.depositCone());
 
-        auto.addNext(new Delay(0.1).addNext(new ToggleBrake(robot.drivetrain)));
+        auto.addNext(new SetDrivetrainBrake(robot.drivetrain, Drivetrain.BrakeStates.FREE));
         auto.addNext(followRR(park));
         return auto;
     }
 
-    public void addCycle(Command command, ScoringCommandGroups commandGroups) {
+    public void addCycle(Command command, ScoringCommandGroups commandGroups, IntakeParameters intakeParameters) {
         command.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION + .06))
                 .addNext(commandGroups.depositConeAsync())
                 .addNext(commandGroups.openLatch())
                 .addNext(new Delay(0.2))
-                .addNext(new MeasureConestack(robot.scoringMechanism.turret, robot.backCamera,robot.scoringMechanism.horizontalExtension))
-                .addNext(new VisualIntakeStage1(robot.scoringMechanism.turret, robot.backCamera,robot.scoringMechanism.horizontalExtension))
-                .addNext(commandGroups.cancelableSetArmHeightVision())
-                .addNext(new VisualIntakeStage2(robot.scoringMechanism.turret, robot.backCamera,robot.scoringMechanism.horizontalExtension))
+//                .addNext(getIntakeParameters)
+                .addNext(new VisualIntakeStage1(intakeParameters, robot.scoringMechanism.turret, robot.scoringMechanism.horizontalExtension))
+                .addNext(commandGroups.setArmHeightVisionStack(intakeParameters))
+                .addNext(new VisualIntakeStage2(intakeParameters, robot.scoringMechanism.turret, robot.scoringMechanism.horizontalExtension))
                 .addNext(new Delay(0.1))
                 .addNext(commandGroups.grabCone())
                 .addNext(commandGroups.moveArm(Turret.ArmStates.TRANSFER_SAFE))
@@ -125,28 +133,7 @@ public class VisionSpiceRed extends BaseAuto {
                 .addNext(new Delay(0.1))
                 .addNext(commandGroups.moveArm(Turret.ArmStates.TRANSFER_SAFE));
     }
-//    public void addCycle(Command command, ScoringCommandGroups commandGroups, boolean last) {
-//        command.addNext(commandGroups.closeLatch())
-//                .addNext(commandGroups.moveArm(Turret.ArmStates.TRANSFER_SAFE))
-//                .addNext(new MeasureConestack(robot.scoringMechanism.turret, robot.backCamera,robot.scoringMechanism.horizontalExtension))
-//                .addNext(new VisualIntakeStage1(robot.scoringMechanism.turret, robot.backCamera,robot.scoringMechanism.horizontalExtension))
-//                .addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION +.04))
-//                .addNext(commandGroups.depositConeAsync())
-//                .addNext(commandGroups.setArmHeightVision())
-//                .addNext(new VisualIntakeStage2(robot.scoringMechanism.turret, robot.backCamera,robot.scoringMechanism.horizontalExtension))
-//                .addNext(new Delay(0.1))
-//                .addNext(commandGroups.grabCone())
-//                .addNext(commandGroups.moveArm(Turret.ArmStates.TRANSFER_SAFE))
-//                .addNext(new Delay(0.1))
-//                .addNext(commandGroups.moveTurret(Turret.TurretStates.TRANSFER))
-//                .addNext(commandGroups.moveHorizontalExtension(HorizontalExtension.IN_POSITION))
-//                .addNext(commandGroups.moveArm(Turret.ArmStates.TRANSFER))
-//                .addNext(new Delay(0.1))
-//                .addNext(commandGroups.releaseCone())
-//                .addNext(commandGroups.closeLatch())
-//                .addNext(commandGroups.moveArm(Turret.ArmStates.TRANSFER_SAFE))
-//                .addNext(commandGroups.depositConeAsync());
-//    }
+
     @Override
     public Team getTeam() {
         return Team.RED;
