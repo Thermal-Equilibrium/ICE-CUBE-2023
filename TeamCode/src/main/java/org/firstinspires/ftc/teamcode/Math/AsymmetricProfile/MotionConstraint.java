@@ -5,7 +5,7 @@ package org.firstinspires.ftc.teamcode.Math.AsymmetricProfile;
  * This is a constraint on our motion profile, it describes the dynamics we want our robot to
  * exert over a given trajectory
  */
-public class MotionConstraint {
+public class  MotionConstraint {
 
 	/**
 	 * the maximum initial acceleration we allow the robot to experience

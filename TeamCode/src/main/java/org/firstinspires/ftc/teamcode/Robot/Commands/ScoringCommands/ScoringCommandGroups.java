@@ -42,7 +42,7 @@ public class ScoringCommandGroups {
 	double[] armConeHeights = {0.08, 0.11, 0.1357, 0.1632, 0.1800};
 
 	double[] armConeHeightsVision = {0.0699, 0.11, 0.1357, 0.1502, 0.1670};
-
+	boolean hasAlreadyRanTeleAuto = false;
 
 	public ScoringCommandGroups(MainScoringMechanism mechanism, Drivetrain drivetrain, BackCamera backCamera) {
 		this.horizontalExtension = mechanism.horizontalExtension;
@@ -80,7 +80,7 @@ public class ScoringCommandGroups {
 				.addNext(moveArmIfCone(Turret.ArmStates.TRANSFER_SAFE,intakeParameters));
 
 
-		for (int i = 0; i < 3; ++i) {
+		for (int i = 0; i < 2; ++i) {
 			command.addNext(moveVerticalExtension(VerticalExtension.HIGH_POSITION + .06))
 					.addNext(new MultipleCommand(
 							new VisualIntakeStage1(intakeParameters, turret,horizontalExtension)
@@ -125,6 +125,13 @@ public class ScoringCommandGroups {
 				.addNext(new SetDrivetrainBrake(drivetrain, Drivetrain.BrakeStates.FREE));
 	}
 	public Command fastTeleAuto() {
+
+		if (hasAlreadyRanTeleAuto) {
+			return new NullCommand();
+		}
+
+		hasAlreadyRanTeleAuto = true;
+
 		GetIntakeParameters getIntakeParameters = new GetIntakeParameters(turret, backCamera, horizontalExtension);
 		IntakeParameters intakeParameters = getIntakeParameters.getIntakeParameters();
 		Command command = new NullCommand()
@@ -296,7 +303,6 @@ public class ScoringCommandGroups {
 			return moveVerticalExtension(VerticalExtension.HIGH_POSITION);
 		}
 		return new MultipleCommand(moveHorizontalExtension(HorizontalExtension.CLOSE_INTAKE), moveVerticalExtension(VerticalExtension.HIGH_POSITION))
-				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
 				.addNext(moveTurret(Turret.TurretStates.Slight_LEFT))
 				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
 	}

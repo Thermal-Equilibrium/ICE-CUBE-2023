@@ -24,8 +24,8 @@ public class Turret extends Subsystem {
 	double currentFreeStateValue = 0;
 	Servo latch;
 
-	int MIN_PWM_RANGE = 510;
-	int MAX_PWM_RANGE = 2490;
+	int MIN_PWM_RANGE = 515;
+	int MAX_PWM_RANGE = 2485;
 
 	double latch_open = 0.48;
 	double latch_closed = 0.18;

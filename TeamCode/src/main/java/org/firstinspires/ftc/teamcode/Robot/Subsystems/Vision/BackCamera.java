@@ -28,15 +28,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+@Config
 public class BackCamera extends Subsystem {
 	@Config
 	public static class CamConfig {
-		public static int exposureMicroSec = 500;
+		public static int exposureMicroSec = 60000;
 	}
 	private final OpenCvCameraRotation cameraRotation = OpenCvCameraRotation.UPRIGHT;
-	private final ExposureControl.Mode exposureMode = ExposureControl.Mode.ContinuousAuto;
+	private final ExposureControl.Mode exposureMode = ExposureControl.Mode.Manual;
 //	private final long exposureMs = 30;
-	private final int gain = 100;
+	public static int gain = 70;
 	private final FocusControl.Mode focusMode = FocusControl.Mode.Fixed;
 	private final double focusLength = 69; //idk what units this is in
 	public Size resolution = Resolution.LOW;
@@ -70,7 +71,7 @@ public class BackCamera extends Subsystem {
 			public void onOpened() {
 				cam.startStreaming((int) resolution.width, (int) resolution.height, cameraRotation);
 				cam.getExposureControl().setMode(exposureMode);
-//				cam.getExposureControl().setExposure((long) CamConfig.exposureMicroSec, TimeUnit.MICROSECONDS);
+				cam.getExposureControl().setExposure((long) CamConfig.exposureMicroSec, TimeUnit.MICROSECONDS);
 				cam.getGainControl().setGain(gain);
 				cam.getFocusControl().setMode(focusMode);
 				if (focusMode == FocusControl.Mode.Fixed) {

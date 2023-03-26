@@ -36,7 +36,7 @@ public class RobotRelative extends Command {
 	public void periodic() {
 
 
-		double scalar = 1;
+		double scalar = 1.0;
 
 		double x;
 		double y;
@@ -51,7 +51,7 @@ public class RobotRelative extends Command {
 
 		y = MathUtils.applyDeadBand(y, strafe_dead_band);
 
-		Pose2d powers = new Pose2d(x * scalar, y * scalar, turn * scalar * 0.75);
+		Pose2d powers = new Pose2d(x * scalar, y * scalar, turn * scalar * 0.5);
 
 
 		drivetrain.robotRelative(powers);
