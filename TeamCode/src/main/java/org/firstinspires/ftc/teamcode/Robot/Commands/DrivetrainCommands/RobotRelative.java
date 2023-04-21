@@ -41,9 +41,16 @@ public class RobotRelative extends Command {
 		double x;
 		double y;
 		double turn;
+
+		double multiplier = 1;
+
 		y = game_pad1.getStrafeJoystick();
 		x = game_pad1.getForwardJoystick();
 		turn = game_pad1.getTurnJoystick();
+
+		x= x * multiplier;
+		y = y * multiplier;
+		turn = turn * multiplier;
 
 		if (this.extension.getSlidePosition() > 200) {
 			turn *= 0.5;

@@ -26,7 +26,7 @@ public class VerticalExtension extends Subsystem {
 	public static double Kp = 0.2;
 	public static double Kd = 1.3 * Math.sqrt(Kp * 0.0015);
 	public static double max_accel = 190;
-	public static double max_velocity = 200;
+	public static double max_velocity = 100;
 	protected double slideTargetPosition = 0;
 	protected double Kg = 0.09499;
 	MainScoringMechanism.MechanismStates state = MainScoringMechanism.MechanismStates.BEGIN;
