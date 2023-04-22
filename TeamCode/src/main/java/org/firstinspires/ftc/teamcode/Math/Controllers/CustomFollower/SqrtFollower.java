@@ -9,20 +9,20 @@ import org.jetbrains.annotations.Nullable;
 
 public class SqrtFollower extends TrajectoryFollower {
 
-	protected Pose2d lastError;
+    protected Pose2d lastError;
 
-	@Override
-	public @NotNull Pose2d getLastError() {
-		return lastError;
-	}
+    @Override
+    public @NotNull Pose2d getLastError() {
+        return lastError;
+    }
 
-	@Override
-	protected void setLastError(@NotNull Pose2d pose2d) {
-		this.lastError = pose2d;
-	}
+    @Override
+    protected void setLastError(@NotNull Pose2d pose2d) {
+        this.lastError = pose2d;
+    }
 
-	@Override
-	protected @NotNull DriveSignal internalUpdate(@NotNull Pose2d pose2d, @Nullable Pose2d pose2d1) {
-		return null;
-	}
+    @Override
+    protected @NotNull DriveSignal internalUpdate(@NotNull Pose2d pose2d, @Nullable Pose2d pose2d1) {
+        return null;
+    }
 }

@@ -7,12 +7,12 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
 import org.firstinspires.ftc.teamcode.VisionUtils.IntakeParameters;
 
 public class CancelableMoveArmDirect extends Command {
-    private Turret turret;
-    private double position;
+    private final Turret turret;
+    private final double position;
 
-    private ElapsedTime timer = new ElapsedTime();
-    private double delayS = 0.15;
-    private IntakeParameters intakeParameters;
+    private final ElapsedTime timer = new ElapsedTime();
+    private final double delayS = 0.15;
+    private final IntakeParameters intakeParameters;
 
     public CancelableMoveArmDirect(IntakeParameters intakeParameters, Turret turret, double position) {
         this.intakeParameters = intakeParameters;

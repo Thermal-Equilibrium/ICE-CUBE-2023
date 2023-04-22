@@ -6,8 +6,8 @@ import org.firstinspires.ftc.teamcode.Utils.Team;
 
 @TeleOp
 public class TeleopRed extends Teleop {
-	@Override
-	public Team getTeam() {
-		return Team.RED;
-	}
+    @Override
+    public Team getTeam() {
+        return Team.RED;
+    }
 }

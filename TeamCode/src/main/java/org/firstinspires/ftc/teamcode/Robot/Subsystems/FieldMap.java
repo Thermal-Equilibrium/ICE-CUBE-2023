@@ -5,18 +5,18 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 
 public class FieldMap extends Subsystem {
-	@Override
-	public void initAuto(HardwareMap hwMap) {
+    @Override
+    public void initAuto(HardwareMap hwMap) {
 
-	}
+    }
 
-	@Override
-	public void periodic() {
+    @Override
+    public void periodic() {
 
-	}
+    }
 
-	@Override
-	public void shutdown() {
+    @Override
+    public void shutdown() {
 
-	}
+    }
 }

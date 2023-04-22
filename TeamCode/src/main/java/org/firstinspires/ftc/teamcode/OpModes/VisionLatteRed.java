@@ -117,6 +117,8 @@ public class VisionLatteRed extends BaseAuto {
     }
 
     @Override
-    public VisionMode getVisionMode() { return VisionMode.LATTE; }
+    public VisionMode getVisionMode() {
+        return VisionMode.LATTE;
+    }
 }
 

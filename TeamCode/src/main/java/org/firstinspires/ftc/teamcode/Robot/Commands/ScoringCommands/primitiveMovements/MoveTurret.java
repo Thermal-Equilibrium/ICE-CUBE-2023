@@ -6,37 +6,37 @@ import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
 
 public class MoveTurret extends Command {
-	double delayS = 0.22;
+    double delayS = 0.22;
 
-	Turret turret;
-	Turret.TurretStates turretStates;
+    Turret turret;
+    Turret.TurretStates turretStates;
 
-	ElapsedTime timer = new ElapsedTime();
+    ElapsedTime timer = new ElapsedTime();
 
-	public MoveTurret(Turret turret, Turret.TurretStates turretStates) {
-		this.turret = turret;
-		this.turretStates = turretStates;
-	}
+    public MoveTurret(Turret turret, Turret.TurretStates turretStates) {
+        this.turret = turret;
+        this.turretStates = turretStates;
+    }
 
-	@Override
-	public void init() {
-		turret.setTurret(turretStates);
-		timer.reset();
-	}
+    @Override
+    public void init() {
+        turret.setTurret(turretStates);
+        timer.reset();
+    }
 
-	@Override
-	public void periodic() {
+    @Override
+    public void periodic() {
 
-	}
+    }
 
-	@Override
-	public boolean completed() {
-		return timer.seconds() > delayS;
-	}
+    @Override
+    public boolean completed() {
+        return timer.seconds() > delayS;
+    }
 
-	@Override
-	public void shutdown() {
+    @Override
+    public void shutdown() {
 
-	}
+    }
 
 }

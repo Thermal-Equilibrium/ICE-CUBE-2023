@@ -4,12 +4,12 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Horizont
 
 public class SetHorizontalExtensionInches extends MoveHorizontalExtension {
 
-	public SetHorizontalExtensionInches(HorizontalExtension extension, double desiredPosition) {
-		super(extension, desiredPosition);
-	}
+    public SetHorizontalExtensionInches(HorizontalExtension extension, double desiredPosition) {
+        super(extension, desiredPosition);
+    }
 
-	@Override
-	public void init() {
-		extension.setTargetPositionInches(desiredPosition);
-	}
+    @Override
+    public void init() {
+        extension.setTargetPositionInches(desiredPosition);
+    }
 }

@@ -31,20 +31,20 @@ import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
 @Autonomous(group = "drive")
 public class BackAndForth extends BaseAuto {
 
-	public static double DISTANCE = 50;
+    public static double DISTANCE = 50;
 
-	@Override
-	public Command setupAuto(CommandScheduler scheduler) {
+    @Override
+    public Command setupAuto(CommandScheduler scheduler) {
 
-		Trajectory trajectoryForward = robot.drivetrain.getBuilder().trajectoryBuilder(new Pose2d())
-				.forward(DISTANCE)
-				.build();
+        Trajectory trajectoryForward = robot.drivetrain.getBuilder().trajectoryBuilder(new Pose2d())
+                .forward(DISTANCE)
+                .build();
 
-		Trajectory trajectoryBackward = robot.drivetrain.getBuilder().trajectoryBuilder(trajectoryForward.end())
-				.back(DISTANCE)
-				.build();
+        Trajectory trajectoryBackward = robot.drivetrain.getBuilder().trajectoryBuilder(trajectoryForward.end())
+                .back(DISTANCE)
+                .build();
 
-		return followRR(trajectoryForward)
-				.addNext(followRR(trajectoryBackward));
-	}
+        return followRR(trajectoryForward)
+                .addNext(followRR(trajectoryBackward));
+    }
 }

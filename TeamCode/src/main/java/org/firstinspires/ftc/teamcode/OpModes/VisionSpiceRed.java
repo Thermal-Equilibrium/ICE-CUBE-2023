@@ -10,7 +10,6 @@ import org.firstinspires.ftc.teamcode.CommandFramework.BaseAuto;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Brake.SetDrivetrainBrake;
-import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Brake.ToggleBrake;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.RoadrunnerHoldPose;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringCommandGroups;
@@ -104,7 +103,7 @@ public class VisionSpiceRed extends BaseAuto {
             addCycle(auto, commandGroups, intakeParameters);
         }
 
-        auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION +.06))
+        auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION + .06))
                 .addNext(new Delay(0.1))
                 .addNext(commandGroups.depositCone());
 
@@ -140,5 +139,7 @@ public class VisionSpiceRed extends BaseAuto {
     }
 
     @Override
-    public VisionMode getVisionMode() { return VisionMode.SPICE; }
+    public VisionMode getVisionMode() {
+        return VisionMode.SPICE;
+    }
 }

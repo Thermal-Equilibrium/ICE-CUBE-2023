@@ -15,10 +15,10 @@ import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
 
 @Autonomous
 public class TurnTuning extends BaseAuto {
-	@RequiresApi(api = Build.VERSION_CODES.N)
-	@Override
-	public Command setupAuto(CommandScheduler scheduler) {
-		Command auto = null;
-		return auto;
-	}
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public Command setupAuto(CommandScheduler scheduler) {
+        Command auto = null;
+        return auto;
+    }
 }

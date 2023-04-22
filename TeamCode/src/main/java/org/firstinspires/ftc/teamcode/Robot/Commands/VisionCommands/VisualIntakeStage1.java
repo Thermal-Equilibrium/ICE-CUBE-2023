@@ -10,7 +10,7 @@ public class VisualIntakeStage1 extends Command {
     private final Turret turret;
     private final HorizontalExtension horizontalExtension;
     private boolean finished = false;
-    private IntakeParameters intakeParameters;
+    private final IntakeParameters intakeParameters;
 
 
     public VisualIntakeStage1(IntakeParameters intakeParameters, Turret turret, HorizontalExtension horizontalExtension) {

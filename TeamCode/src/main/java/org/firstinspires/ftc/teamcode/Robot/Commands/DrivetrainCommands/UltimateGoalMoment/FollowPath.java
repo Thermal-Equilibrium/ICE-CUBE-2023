@@ -15,55 +15,55 @@ import java.util.LinkedList;
  */
 public class FollowPath extends Command {
 
-	MotionProfiledADRCPoseStabilizationController controller = new MotionProfiledADRCPoseStabilizationController();
-	LinkedList<Pose2d> positions = new LinkedList<>();
-	Drivetrain drivetrain;
-	Pose2d currentTarget;
-	Pose2d power = new Pose2d();
+    MotionProfiledADRCPoseStabilizationController controller = new MotionProfiledADRCPoseStabilizationController();
+    LinkedList<Pose2d> positions = new LinkedList<>();
+    Drivetrain drivetrain;
+    Pose2d currentTarget;
+    Pose2d power = new Pose2d();
 
-	public FollowPath(Drivetrain drivetrain, Pose2d... pose2ds) {
-		this.drivetrain = drivetrain;
-		Collections.addAll(positions, pose2ds);
-	}
+    public FollowPath(Drivetrain drivetrain, Pose2d... pose2ds) {
+        this.drivetrain = drivetrain;
+        Collections.addAll(positions, pose2ds);
+    }
 
 
-	@Override
-	public void init() {
-		currentTarget = positions.removeFirst();
-	}
+    @Override
+    public void init() {
+        currentTarget = positions.removeFirst();
+    }
 
-	@Override
-	public void periodic() {
+    @Override
+    public void periodic() {
 
-		drivetrain.fieldRelative(power);
-		if (isDoneWithPoint() && positions.size() >= 1) {
-			currentTarget = positions.removeFirst();
-			controller = new MotionProfiledADRCPoseStabilizationController(800);
-		}
-		power = controller.goToPosition(currentTarget, drivetrain.getPose());
+        drivetrain.fieldRelative(power);
+        if (isDoneWithPoint() && positions.size() >= 1) {
+            currentTarget = positions.removeFirst();
+            controller = new MotionProfiledADRCPoseStabilizationController(800);
+        }
+        power = controller.goToPosition(currentTarget, drivetrain.getPose());
 
-	}
+    }
 
-	@Override
-	public boolean completed() {
-		return positions.size() < 1 && isDoneWithPoint();
-	}
+    @Override
+    public boolean completed() {
+        return positions.size() < 1 && isDoneWithPoint();
+    }
 
-	@Override
-	public void shutdown() {
-		drivetrain.robotRelative(new Pose2d());
-	}
+    @Override
+    public void shutdown() {
+        drivetrain.robotRelative(new Pose2d());
+    }
 
-	protected boolean isDoneWithPoint() {
-		return (controller.errorMag() < 1.2
-				&& controller.headingErrorMag() < Math.toRadians(2)
-				&& controller.getErrorMagDeriv() < 1
-				&& Math.abs(drivetrain.getVelocity().getHeading()) < Math.toRadians(3))
-				|| (
-				Math.abs(drivetrain.getVelocity().getHeading()) < Math.toRadians(3)
-						&& controller.getErrorMagDeriv() < 0.2 && controller.errorMag() < 4 // might die for short paths
-		);
+    protected boolean isDoneWithPoint() {
+        return (controller.errorMag() < 1.2
+                && controller.headingErrorMag() < Math.toRadians(2)
+                && controller.getErrorMagDeriv() < 1
+                && Math.abs(drivetrain.getVelocity().getHeading()) < Math.toRadians(3))
+                || (
+                Math.abs(drivetrain.getVelocity().getHeading()) < Math.toRadians(3)
+                        && controller.getErrorMagDeriv() < 0.2 && controller.errorMag() < 4 // might die for short paths
+        );
 
-	}
+    }
 
 }

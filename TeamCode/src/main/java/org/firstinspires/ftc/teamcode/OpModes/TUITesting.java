@@ -7,13 +7,14 @@ import org.firstinspires.ftc.teamcode.CommandFramework.BaseAuto;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.TUI;
+
 @Disabled
 
 @Autonomous
 public class TUITesting extends BaseAuto {
 
-	@Override
-	public Command setupAuto(CommandScheduler scheduler) {
-		return new TUI(telemetry);
-	}
+    @Override
+    public Command setupAuto(CommandScheduler scheduler) {
+        return new TUI(telemetry);
+    }
 }

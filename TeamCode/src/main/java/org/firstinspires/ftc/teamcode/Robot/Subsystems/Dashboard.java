@@ -11,32 +11,32 @@ import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 public class Dashboard extends Subsystem {
 
 
-	public static TelemetryPacket packet = new TelemetryPacket();
-	FtcDashboard dashboard = FtcDashboard.getInstance();
-	ElapsedTime dashboardTimer = new ElapsedTime();
+    public static TelemetryPacket packet = new TelemetryPacket();
+    FtcDashboard dashboard = FtcDashboard.getInstance();
+    ElapsedTime dashboardTimer = new ElapsedTime();
 
-	@Override
-	public void initAuto(HardwareMap hwMap) {
-		dashboard.sendTelemetryPacket(packet);
-		packet = new TelemetryPacket();
-		//dashboard.setTelemetryTransmissionInterval(250);
-	}
+    @Override
+    public void initAuto(HardwareMap hwMap) {
+        dashboard.sendTelemetryPacket(packet);
+        packet = new TelemetryPacket();
+        //dashboard.setTelemetryTransmissionInterval(250);
+    }
 
-	@Override
-	public void periodic() {
-		dashboard.sendTelemetryPacket(packet);
-		packet = new TelemetryPacket();
-		packet.put("Loop time", dashboardTimer.milliseconds());
-		dashboardTimer.reset();
-	}
+    @Override
+    public void periodic() {
+        dashboard.sendTelemetryPacket(packet);
+        packet = new TelemetryPacket();
+        packet.put("Loop time", dashboardTimer.milliseconds());
+        dashboardTimer.reset();
+    }
 
 
-	public void startCameraStream(CameraStreamSource source, int maxFps) {
-		dashboard.startCameraStream(source, maxFps);
-	}
+    public void startCameraStream(CameraStreamSource source, int maxFps) {
+        dashboard.startCameraStream(source, maxFps);
+    }
 
-	@Override
-	public void shutdown() {
+    @Override
+    public void shutdown() {
 
-	}
+    }
 }

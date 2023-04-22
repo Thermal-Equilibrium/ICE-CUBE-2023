@@ -28,52 +28,52 @@ import java.util.Collections;
  */
 public class BallerFilter {
 
-	Double[] data;
-	double percentageToRemove = 0.5;
-	int numToRemain;
+    Double[] data;
+    double percentageToRemove = 0.5;
+    int numToRemain;
 
-	public BallerFilter(Double[] data) {
-		this.data = data;
-		this.numToRemain = (int) ((1 - percentageToRemove) * data.length);
+    public BallerFilter(Double[] data) {
+        this.data = data;
+        this.numToRemain = (int) ((1 - percentageToRemove) * data.length);
 
-	}
-
-
-	public double computeResult() {
-		Arrays.sort(data);
-		double median;
-		if (data.length % 2 == 0)
-			median = (data[data.length / 2] + data[data.length / 2 - 1]) / 2;
-		else
-			median = data[data.length / 2];
-
-		ArrayList<Double> data2 = new ArrayList<>();
-		Collections.addAll(data2, data);
+    }
 
 
-		while (data2.size() > numToRemain + 1) {
-			double currentMaxDeviation = Math.abs(median - data2.get(0));
-			double currentElementToRemove = data2.get(0);
-			for (int i = 1; i < data2.size(); i++) {
-				double currentDeviation = Math.abs(median - data2.get(0));
-				if (currentDeviation > currentMaxDeviation) {
-					currentMaxDeviation = currentDeviation;
-					currentElementToRemove = data2.get(0);
-				}
-			}
-			data2.remove(currentElementToRemove);
-		}
+    public double computeResult() {
+        Arrays.sort(data);
+        double median;
+        if (data.length % 2 == 0)
+            median = (data[data.length / 2] + data[data.length / 2 - 1]) / 2;
+        else
+            median = data[data.length / 2];
 
-		double sum = 0;
-		for (double e :
-				data2) {
-			sum += e;
-		}
-
-		return sum / data.length;
+        ArrayList<Double> data2 = new ArrayList<>();
+        Collections.addAll(data2, data);
 
 
-	}
+        while (data2.size() > numToRemain + 1) {
+            double currentMaxDeviation = Math.abs(median - data2.get(0));
+            double currentElementToRemove = data2.get(0);
+            for (int i = 1; i < data2.size(); i++) {
+                double currentDeviation = Math.abs(median - data2.get(0));
+                if (currentDeviation > currentMaxDeviation) {
+                    currentMaxDeviation = currentDeviation;
+                    currentElementToRemove = data2.get(0);
+                }
+            }
+            data2.remove(currentElementToRemove);
+        }
+
+        double sum = 0;
+        for (double e :
+                data2) {
+            sum += e;
+        }
+
+        return sum / data.length;
+
+
+    }
 
 
 }

@@ -14,10 +14,10 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.RobotRel
 @TeleOp
 public class TestServo extends BaseTeleop {
 
-	@Override
-	public Command setupTeleop(CommandScheduler scheduler) {
-		hardwareMap.get(Servo.class, "wrist").setPosition(0.1);
+    @Override
+    public Command setupTeleop(CommandScheduler scheduler) {
+        hardwareMap.get(Servo.class, "wrist").setPosition(0.1);
 
-		return new RobotRelative(robot, robot.gamepad1);
-	}
+        return new RobotRelative(robot, robot.gamepad1);
+    }
 }

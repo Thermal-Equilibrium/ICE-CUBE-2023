@@ -4,125 +4,125 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class OneDimensionalLQRController {
 
-	// reference signal scaling term
-	protected double Kr = 0;
+    // reference signal scaling term
+    protected double Kr = 0;
 
-	// gain 'matrix' K
-	protected double K = 0;
+    // gain 'matrix' K
+    protected double K = 0;
 
-	// output gain scalar
-	protected double outputGain = 1;
-	double state_error = 0;
-	double kd = 0.12627 * 0.05;
-	double last_error = 0;
-	double error = 0;
-	ElapsedTime timer = new ElapsedTime();
-	private double integral_sum = 0;
-	private double Ki = 0;
-	private double last_setpoint = 0;
+    // output gain scalar
+    protected double outputGain = 1;
+    double state_error = 0;
+    double kd = 0.12627 * 0.05;
+    double last_error = 0;
+    double error = 0;
+    ElapsedTime timer = new ElapsedTime();
+    private double integral_sum = 0;
+    private double Ki = 0;
+    private double last_setpoint = 0;
 
-	/**
-	 * constructor pogg
-	 *
-	 * @param K  gain K
-	 * @param Kr signal scaling
-	 */
-	public OneDimensionalLQRController(double K, double Kr, double Ki) {
-		this.Kr = Kr;
-		this.K = K;
-		this.outputGain = 1;
-		this.Ki = Ki;
-	}
+    /**
+     * constructor pogg
+     *
+     * @param K  gain K
+     * @param Kr signal scaling
+     */
+    public OneDimensionalLQRController(double K, double Kr, double Ki) {
+        this.Kr = Kr;
+        this.K = K;
+        this.outputGain = 1;
+        this.Ki = Ki;
+    }
 
-	/**
-	 * constructor with output scaling pogg
-	 *
-	 * @param K          gain K
-	 * @param Kr         signal scaling
-	 * @param outputGain
-	 */
-	public OneDimensionalLQRController(double K, double Kr, double outputGain, double Ki) {
-		this.K = K;
-		this.Kr = Kr;
-		this.outputGain = outputGain;
-		this.Ki = Ki;
-	}
+    /**
+     * constructor with output scaling pogg
+     *
+     * @param K          gain K
+     * @param Kr         signal scaling
+     * @param outputGain
+     */
+    public OneDimensionalLQRController(double K, double Kr, double outputGain, double Ki) {
+        this.K = K;
+        this.Kr = Kr;
+        this.outputGain = outputGain;
+        this.Ki = Ki;
+    }
 
-	/**
-	 * outputs the signal from the LQR controller
-	 *
-	 * @param reference the state we want to achieve
-	 * @param state     the state we are at
-	 * @return the command to send to the motor
-	 */
-	public double outputLQR(double reference, double state) {
+    /**
+     * outputs the signal from the LQR controller
+     *
+     * @param reference the state we want to achieve
+     * @param state     the state we are at
+     * @return the command to send to the motor
+     */
+    public double outputLQR(double reference, double state) {
 
-		if (reference != last_setpoint) {
-			integral_sum = 0;
-		}
+        if (reference != last_setpoint) {
+            integral_sum = 0;
+        }
 
-		double scaledReference = reference * Kr;
-		double scaledState = state * K;
-		error = scaledReference - scaledState;
-		integral_sum += (reference - state) * timer.milliseconds();
-
-
-		double integral_sum_max = 1;
-		if (integral_sum_max < integral_sum) {
-			integral_sum = integral_sum_max;
-		}
-		double integral_sum_min = -integral_sum_max;
-		if (integral_sum_min > integral_sum) {
-			integral_sum = integral_sum_min;
-		}
+        double scaledReference = reference * Kr;
+        double scaledState = state * K;
+        error = scaledReference - scaledState;
+        integral_sum += (reference - state) * timer.milliseconds();
 
 
-		state_error = (reference - state);
-		double derivative = state_error - last_error / timer.milliseconds();
-		last_error = (reference - state);
-
-		last_setpoint = reference;
-
-		timer.reset();
-		return (error * outputGain) + (integral_sum * Ki) + (derivative * kd);
-
-	}
-
-	public double getError() {
-		return state_error;
-	}
-
-	public double getK() {
-		return K;
-	}
-
-	public void setK(double k) {
-		K = k;
-	}
-
-	public double getKr() {
-		return Kr;
-	}
-
-	public void setKr(double kr) {
-		Kr = kr;
-	}
-
-	public double getOutputGain() {
-		return outputGain;
-	}
-
-	public void setOutputGain(double outputGain) {
-		this.outputGain = outputGain;
-	}
+        double integral_sum_max = 1;
+        if (integral_sum_max < integral_sum) {
+            integral_sum = integral_sum_max;
+        }
+        double integral_sum_min = -integral_sum_max;
+        if (integral_sum_min > integral_sum) {
+            integral_sum = integral_sum_min;
+        }
 
 
-	/**
-	 * @return if the error has crossed zero, indicating it is wise to zero the integral count.
-	 */
-	protected boolean ZeroCrossOccured() {
-		return Math.signum(error) != Math.signum(last_error);
-	}
+        state_error = (reference - state);
+        double derivative = state_error - last_error / timer.milliseconds();
+        last_error = (reference - state);
+
+        last_setpoint = reference;
+
+        timer.reset();
+        return (error * outputGain) + (integral_sum * Ki) + (derivative * kd);
+
+    }
+
+    public double getError() {
+        return state_error;
+    }
+
+    public double getK() {
+        return K;
+    }
+
+    public void setK(double k) {
+        K = k;
+    }
+
+    public double getKr() {
+        return Kr;
+    }
+
+    public void setKr(double kr) {
+        Kr = kr;
+    }
+
+    public double getOutputGain() {
+        return outputGain;
+    }
+
+    public void setOutputGain(double outputGain) {
+        this.outputGain = outputGain;
+    }
+
+
+    /**
+     * @return if the error has crossed zero, indicating it is wise to zero the integral count.
+     */
+    protected boolean ZeroCrossOccured() {
+        return Math.signum(error) != Math.signum(last_error);
+    }
 
 
 }

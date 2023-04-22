@@ -5,10 +5,8 @@ import static org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.T
 import com.acmerobotics.dashboard.config.Config;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
-
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
-
 
 
 public class ManualControl extends Command {
@@ -19,6 +17,7 @@ public class ManualControl extends Command {
         public static int armPosition = 4;
         public static boolean clawGrabbing = false;
     }
+
     private final Turret turret;
     private final HorizontalExtension horizontalExtension;
 

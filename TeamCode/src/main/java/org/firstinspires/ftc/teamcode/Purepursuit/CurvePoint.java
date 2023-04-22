@@ -11,50 +11,50 @@ import org.firstinspires.ftc.teamcode.Math.Geometry.Rotation2d;
  */
 public class CurvePoint {
 
-	public final double DEFAULT_FOLLOW_DIST = CurveCalculator.FAST_FOLLOW_DIST_IN;
-	public double x;
-	public double y;
-	public double moveSpeed;
-	public double followDistance;
-	public boolean visited = false;
-	protected boolean isObstacle = false;
+    public final double DEFAULT_FOLLOW_DIST = CurveCalculator.FAST_FOLLOW_DIST_IN;
+    public double x;
+    public double y;
+    public double moveSpeed;
+    public double followDistance;
+    public boolean visited = false;
+    protected boolean isObstacle = false;
 
-	public CurvePoint(double x, double y, double moveSpeed, double followDistance) {
-		this.x = x;
-		this.y = y;
-		this.moveSpeed = moveSpeed;
-		this.followDistance = followDistance;
-	}
-
-
-	public CurvePoint(double x, double y, double moveSpeed) {
-		this.x = x;
-		this.y = y;
-		this.moveSpeed = moveSpeed;
-		this.followDistance = DEFAULT_FOLLOW_DIST;
-	}
-
-	public CurvePoint(double x, double y) {
-		this.x = x;
-		this.y = y;
-		this.moveSpeed = 1;
-		this.followDistance = DEFAULT_FOLLOW_DIST;
-	}
-
-	public CurvePoint(CurvePoint thisPoint) {
-		this.x = thisPoint.x;
-		this.y = thisPoint.y;
-		this.moveSpeed = thisPoint.moveSpeed;
-		this.followDistance = thisPoint.followDistance;
-		this.setObstacle(thisPoint.isObstacle());
-		this.visited = thisPoint.visited;
-	}
+    public CurvePoint(double x, double y, double moveSpeed, double followDistance) {
+        this.x = x;
+        this.y = y;
+        this.moveSpeed = moveSpeed;
+        this.followDistance = followDistance;
+    }
 
 
-	public void setPoint(Point intersection) {
-		this.x = intersection.x;
-		this.y = intersection.y;
-	}
+    public CurvePoint(double x, double y, double moveSpeed) {
+        this.x = x;
+        this.y = y;
+        this.moveSpeed = moveSpeed;
+        this.followDistance = DEFAULT_FOLLOW_DIST;
+    }
+
+    public CurvePoint(double x, double y) {
+        this.x = x;
+        this.y = y;
+        this.moveSpeed = 1;
+        this.followDistance = DEFAULT_FOLLOW_DIST;
+    }
+
+    public CurvePoint(CurvePoint thisPoint) {
+        this.x = thisPoint.x;
+        this.y = thisPoint.y;
+        this.moveSpeed = thisPoint.moveSpeed;
+        this.followDistance = thisPoint.followDistance;
+        this.setObstacle(thisPoint.isObstacle());
+        this.visited = thisPoint.visited;
+    }
+
+
+    public void setPoint(Point intersection) {
+        this.x = intersection.x;
+        this.y = intersection.y;
+    }
 
 
 //    @Override
@@ -63,43 +63,43 @@ public class CurvePoint {
 //    }
 
 
-	@Override
-	public boolean equals(@Nullable Object obj) {
+    @Override
+    public boolean equals(@Nullable Object obj) {
 
-		if (obj == this) return true;
-		if (!(obj instanceof CurvePoint)) return false;
-		CurvePoint that = (CurvePoint) obj;
+        if (obj == this) return true;
+        if (!(obj instanceof CurvePoint)) return false;
+        CurvePoint that = (CurvePoint) obj;
 
-		return this.x == that.x && this.y == that.y;
-	}
+        return this.x == that.x && this.y == that.y;
+    }
 
-	public boolean equals(Point other) {
-		return this.x == other.x && this.y == other.y;
-	}
+    public boolean equals(Point other) {
+        return this.x == other.x && this.y == other.y;
+    }
 
-	public double distanceTo(CurvePoint other) {
-		Pose2d thisPose = new Pose2d(this.x, this.y, new Rotation2d(0));
-		Pose2d otherPose = new Pose2d(other.x, other.y, new Rotation2d(0));
-		return thisPose.distanceBetween(otherPose);
-	}
+    public double distanceTo(CurvePoint other) {
+        Pose2d thisPose = new Pose2d(this.x, this.y, new Rotation2d(0));
+        Pose2d otherPose = new Pose2d(other.x, other.y, new Rotation2d(0));
+        return thisPose.distanceBetween(otherPose);
+    }
 
-	public boolean isObstacle() {
-		return isObstacle;
-	}
+    public boolean isObstacle() {
+        return isObstacle;
+    }
 
-	public void setObstacle(boolean obstacle) {
-		isObstacle = obstacle;
-	}
+    public void setObstacle(boolean obstacle) {
+        isObstacle = obstacle;
+    }
 
-	@NonNull
-	@Override
-	public String toString() {
-		return "x: " + this.x + " y: " + this.y;
-	}
+    @NonNull
+    @Override
+    public String toString() {
+        return "x: " + this.x + " y: " + this.y;
+    }
 
 
-	@Override
-	public int hashCode() {
-		return (int) x + (int) Math.pow(y, 2);
-	}
+    @Override
+    public int hashCode() {
+        return (int) x + (int) Math.pow(y, 2);
+    }
 }

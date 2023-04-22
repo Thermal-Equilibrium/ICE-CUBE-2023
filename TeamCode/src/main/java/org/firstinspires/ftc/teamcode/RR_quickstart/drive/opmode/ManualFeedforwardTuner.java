@@ -44,114 +44,114 @@ import java.util.Objects;
 
 @Autonomous(group = "drive")
 public class ManualFeedforwardTuner extends LinearOpMode {
-	public static double DISTANCE = 30; // in
-	public VoltageSensor batterVoltageSensor;
+    public static double DISTANCE = 30; // in
+    public VoltageSensor batterVoltageSensor;
 
-	private final FtcDashboard dashboard = FtcDashboard.getInstance();
+    private final FtcDashboard dashboard = FtcDashboard.getInstance();
 
-	private SampleMecanumDrive drive;
-	private Mode mode;
+    private SampleMecanumDrive drive;
+    private Mode mode;
 
-	private static MotionProfile generateProfile(boolean movingForward) {
-		MotionState start = new MotionState(movingForward ? 0 : DISTANCE, 0, 0, 0);
-		MotionState goal = new MotionState(movingForward ? DISTANCE : 0, 0, 0, 0);
-		return MotionProfileGenerator.generateSimpleMotionProfile(start, goal, MAX_VEL, MAX_ACCEL);
-	}
+    private static MotionProfile generateProfile(boolean movingForward) {
+        MotionState start = new MotionState(movingForward ? 0 : DISTANCE, 0, 0, 0);
+        MotionState goal = new MotionState(movingForward ? DISTANCE : 0, 0, 0, 0);
+        return MotionProfileGenerator.generateSimpleMotionProfile(start, goal, MAX_VEL, MAX_ACCEL);
+    }
 
-	@Override
-	public void runOpMode() {
-		if (RUN_USING_ENCODER) {
-			RobotLog.setGlobalErrorMsg("Feedforward constants usually don't need to be tuned " +
-					"when using the built-in drive motor velocity PID.");
-		}
+    @Override
+    public void runOpMode() {
+        if (RUN_USING_ENCODER) {
+            RobotLog.setGlobalErrorMsg("Feedforward constants usually don't need to be tuned " +
+                    "when using the built-in drive motor velocity PID.");
+        }
 
-		telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
+        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
-		drive = new SampleMecanumDrive(hardwareMap);
+        drive = new SampleMecanumDrive(hardwareMap);
 
-		mode = Mode.TUNING_MODE;
+        mode = Mode.TUNING_MODE;
 
-		NanoClock clock = NanoClock.system();
+        NanoClock clock = NanoClock.system();
 
-		batterVoltageSensor = hardwareMap.voltageSensor.iterator().next();
+        batterVoltageSensor = hardwareMap.voltageSensor.iterator().next();
 
-		telemetry.addLine("Ready!");
-		telemetry.update();
-		telemetry.clearAll();
+        telemetry.addLine("Ready!");
+        telemetry.update();
+        telemetry.clearAll();
 
-		waitForStart();
+        waitForStart();
 
-		if (isStopRequested()) return;
+        if (isStopRequested()) return;
 
-		boolean movingForwards = true;
-		MotionProfile activeProfile = generateProfile(true);
-		double profileStart = clock.seconds();
+        boolean movingForwards = true;
+        MotionProfile activeProfile = generateProfile(true);
+        double profileStart = clock.seconds();
 
 
-		while (!isStopRequested()) {
-			telemetry.addData("mode", mode);
+        while (!isStopRequested()) {
+            telemetry.addData("mode", mode);
 
-			switch (mode) {
-				case TUNING_MODE:
-					if (gamepad1.y) {
-						mode = Mode.DRIVER_MODE;
-					}
+            switch (mode) {
+                case TUNING_MODE:
+                    if (gamepad1.y) {
+                        mode = Mode.DRIVER_MODE;
+                    }
 
-					// calculate and set the motor power
-					double profileTime = clock.seconds() - profileStart;
+                    // calculate and set the motor power
+                    double profileTime = clock.seconds() - profileStart;
 
-					if (profileTime > activeProfile.duration()) {
-						// generate a new profile
-						movingForwards = !movingForwards;
-						activeProfile = generateProfile(movingForwards);
-						profileStart = clock.seconds();
-					}
+                    if (profileTime > activeProfile.duration()) {
+                        // generate a new profile
+                        movingForwards = !movingForwards;
+                        activeProfile = generateProfile(movingForwards);
+                        profileStart = clock.seconds();
+                    }
 
-					double scaleFactor = 12 / batterVoltageSensor.getVoltage();
+                    double scaleFactor = 12 / batterVoltageSensor.getVoltage();
 
-					MotionState motionState = activeProfile.get(profileTime);
-					double targetPower = Kinematics.calculateMotorFeedforward(motionState.getV(), motionState.getA(), kV * scaleFactor, kA * scaleFactor, kStatic * scaleFactor);
+                    MotionState motionState = activeProfile.get(profileTime);
+                    double targetPower = Kinematics.calculateMotorFeedforward(motionState.getV(), motionState.getA(), kV * scaleFactor, kA * scaleFactor, kStatic * scaleFactor);
 
-					drive.setDrivePower(new Pose2d(targetPower, 0, 0));
-					drive.updatePoseEstimate();
+                    drive.setDrivePower(new Pose2d(targetPower, 0, 0));
+                    drive.updatePoseEstimate();
 
-					Pose2d poseVelo = Objects.requireNonNull(drive.getPoseVelocity(), "poseVelocity() must not be null. Ensure that the getWheelVelocities() method has been overridden in your localizer.");
-					double currentVelo = poseVelo.getX();
+                    Pose2d poseVelo = Objects.requireNonNull(drive.getPoseVelocity(), "poseVelocity() must not be null. Ensure that the getWheelVelocities() method has been overridden in your localizer.");
+                    double currentVelo = poseVelo.getX();
 
-					int n = 0;
-					for (VoltageSensor voltageSensor : hardwareMap.voltageSensor) {
-						telemetry.addData("voltage" + (n++), voltageSensor.getVoltage() * 10);
-					}
+                    int n = 0;
+                    for (VoltageSensor voltageSensor : hardwareMap.voltageSensor) {
+                        telemetry.addData("voltage" + (n++), voltageSensor.getVoltage() * 10);
+                    }
 
-					// update telemetry
-					telemetry.addData("targetVelocity", motionState.getV());
-					telemetry.addData("measuredVelocity", currentVelo);
-					telemetry.addData("error", motionState.getV() - currentVelo);
-					break;
-				case DRIVER_MODE:
-					if (gamepad1.b) {
-						mode = Mode.TUNING_MODE;
-						movingForwards = true;
-						activeProfile = generateProfile(movingForwards);
-						profileStart = clock.seconds();
-					}
+                    // update telemetry
+                    telemetry.addData("targetVelocity", motionState.getV());
+                    telemetry.addData("measuredVelocity", currentVelo);
+                    telemetry.addData("error", motionState.getV() - currentVelo);
+                    break;
+                case DRIVER_MODE:
+                    if (gamepad1.b) {
+                        mode = Mode.TUNING_MODE;
+                        movingForwards = true;
+                        activeProfile = generateProfile(movingForwards);
+                        profileStart = clock.seconds();
+                    }
 
-					drive.setWeightedDrivePower(
-							new Pose2d(
-									-gamepad1.left_stick_y,
-									-gamepad1.left_stick_x,
-									-gamepad1.right_stick_x
-							)
-					);
-					break;
-			}
+                    drive.setWeightedDrivePower(
+                            new Pose2d(
+                                    -gamepad1.left_stick_y,
+                                    -gamepad1.left_stick_x,
+                                    -gamepad1.right_stick_x
+                            )
+                    );
+                    break;
+            }
 
-			telemetry.update();
-		}
-	}
+            telemetry.update();
+        }
+    }
 
-	enum Mode {
-		DRIVER_MODE,
-		TUNING_MODE
-	}
+    enum Mode {
+        DRIVER_MODE,
+        TUNING_MODE
+    }
 }

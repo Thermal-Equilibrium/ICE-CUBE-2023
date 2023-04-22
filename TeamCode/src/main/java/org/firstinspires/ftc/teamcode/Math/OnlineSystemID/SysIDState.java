@@ -5,11 +5,11 @@ package org.firstinspires.ftc.teamcode.Math.OnlineSystemID;
  */
 public class SysIDState {
 
-	public final double power;
-	public final double velocity;
+    public final double power;
+    public final double velocity;
 
-	public SysIDState(double power, double velocity) {
-		this.power = power;
-		this.velocity = velocity;
-	}
+    public SysIDState(double power, double velocity) {
+        this.power = power;
+        this.velocity = velocity;
+    }
 }

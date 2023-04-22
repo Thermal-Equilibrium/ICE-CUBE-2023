@@ -17,11 +17,11 @@ public class GetIntakeParameters extends Command {
     private final HorizontalExtension horizontalExtension;
     private Cone target = null;
 
-    private IntakeParameters intakeParameters;
-    private int measurementNumber = 5;
+    private final IntakeParameters intakeParameters;
+    private final int measurementNumber = 5;
     private int completedMeasures;
-    private ArrayList<Double> angles;
-    private ArrayList<Double> distances;
+    private final ArrayList<Double> angles;
+    private final ArrayList<Double> distances;
     private boolean isCompleted;
 
     public GetIntakeParameters(Turret turret, BackCamera backCamera, HorizontalExtension horizontalExtension) {
@@ -73,14 +73,13 @@ public class GetIntakeParameters extends Command {
                 if (angle < 0) {
                     angle += Math.PI * 2;
                 }
-            }
-            else {
+            } else {
                 foundCone = false;
             }
         }
-        Dashboard.packet.put("foundCone",foundCone);
-        Dashboard.packet.put("angle",angle);
-        Dashboard.packet.put("extendDistance",extendDistance);
+        Dashboard.packet.put("foundCone", foundCone);
+        Dashboard.packet.put("angle", angle);
+        Dashboard.packet.put("extendDistance", extendDistance);
         if (foundCone) {
             this.angles.add(angle);
             this.distances.add(extendDistance);
@@ -94,7 +93,7 @@ public class GetIntakeParameters extends Command {
 //            this.intakeParameters.angle = angle;
             double totalAngle = 0;
             double totalDistance = 0;
-            for (int i=0;i<this.angles.size();i++) {
+            for (int i = 0; i < this.angles.size(); i++) {
                 totalAngle += this.angles.get(i);
                 totalDistance += this.distances.get(i);
             }
@@ -102,8 +101,7 @@ public class GetIntakeParameters extends Command {
             if (this.angles.size() > 1) {
                 this.intakeParameters.angle = totalAngle / this.angles.size();
                 this.intakeParameters.extendDistance = totalDistance / this.distances.size();
-            }
-            else {
+            } else {
                 this.intakeParameters.angle = 0;
                 this.intakeParameters.extendDistance = 0;
             }

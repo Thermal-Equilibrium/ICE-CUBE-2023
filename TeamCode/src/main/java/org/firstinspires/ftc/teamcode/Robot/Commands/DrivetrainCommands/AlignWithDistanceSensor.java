@@ -16,40 +16,40 @@ import java.util.function.BooleanSupplier;
 
 public class AlignWithDistanceSensor extends Command {
 
-	protected BasicPID controller = new BasicPID(controllerCoefficientsDistance);
-	Drivetrain drivetrain;
-	DistanceSensor distanceSensor;
-	BooleanSupplier keepRunning;
+    protected BasicPID controller = new BasicPID(controllerCoefficientsDistance);
+    Drivetrain drivetrain;
+    DistanceSensor distanceSensor;
+    BooleanSupplier keepRunning;
 
 
-	public AlignWithDistanceSensor(Drivetrain drivetrain, DistanceSensor distanceSensor, BooleanSupplier keepRunning) {
-		this.drivetrain = drivetrain;
-		this.distanceSensor = distanceSensor;
-		this.keepRunning = keepRunning;
-	}
+    public AlignWithDistanceSensor(Drivetrain drivetrain, DistanceSensor distanceSensor, BooleanSupplier keepRunning) {
+        this.drivetrain = drivetrain;
+        this.distanceSensor = distanceSensor;
+        this.keepRunning = keepRunning;
+    }
 
-	@Override
-	public void init() {
+    @Override
+    public void init() {
 
-	}
+    }
 
-	@Override
-	public void periodic() {
+    @Override
+    public void periodic() {
 
-		double power = controller.calculate(referenceDistanceSensor, distanceSensor.getDistance_in());
-		drivetrain.robotRelative(new Pose2d(-power, 0, 0));
-	}
+        double power = controller.calculate(referenceDistanceSensor, distanceSensor.getDistance_in());
+        drivetrain.robotRelative(new Pose2d(-power, 0, 0));
+    }
 
-	@Override
-	public boolean completed() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-			return !keepRunning.getAsBoolean();
-		}
-		return true;
-	}
+    @Override
+    public boolean completed() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return !keepRunning.getAsBoolean();
+        }
+        return true;
+    }
 
-	@Override
-	public void shutdown() {
-		drivetrain.robotRelative(new Pose2d(0, 0, 0));
-	}
+    @Override
+    public void shutdown() {
+        drivetrain.robotRelative(new Pose2d(0, 0, 0));
+    }
 }

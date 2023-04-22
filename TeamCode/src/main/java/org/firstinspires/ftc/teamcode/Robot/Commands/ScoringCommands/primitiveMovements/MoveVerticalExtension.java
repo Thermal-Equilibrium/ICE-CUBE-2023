@@ -6,22 +6,22 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Vertical
 
 public class MoveVerticalExtension extends Command {
 
-	VerticalExtension extension;
-	double desiredPosition;
-	Drivetrain drivetrain;
-	double distanceFromPole = 3; //inches
+    VerticalExtension extension;
+    double desiredPosition;
+    Drivetrain drivetrain;
+    double distanceFromPole = 3; //inches
 
-	public MoveVerticalExtension(VerticalExtension extension, double desiredPosition, Drivetrain drivetrain) {
-		super(drivetrain);
-		this.extension = extension;
-		this.desiredPosition = desiredPosition;
+    public MoveVerticalExtension(VerticalExtension extension, double desiredPosition, Drivetrain drivetrain) {
+        super(drivetrain);
+        this.extension = extension;
+        this.desiredPosition = desiredPosition;
 
-		this.drivetrain = drivetrain;
-	}
+        this.drivetrain = drivetrain;
+    }
 
-	@Override
-	public void init() {
-		extension.updateTargetPosition(desiredPosition);
+    @Override
+    public void init() {
+        extension.updateTargetPosition(desiredPosition);
 //		if (desiredPosition == VerticalExtension.IN_POSITION) {
 //			Pose2d pose =  drivetrain.getPose();
 //			// detect the nearest pole using the current position and the angle
@@ -42,19 +42,19 @@ public class MoveVerticalExtension extends Command {
 //			// update robot pose
 //			drivetrain.setPose(new Pose2d(xOff, yOff, robotAngle));
 //		}
-	}
+    }
 
-	@Override
-	public void periodic() {
-	}
+    @Override
+    public void periodic() {
+    }
 
-	@Override
-	public boolean completed() {
-		return extension.isMovementFinished();
-	}
+    @Override
+    public boolean completed() {
+        return extension.isMovementFinished();
+    }
 
-	@Override
-	public void shutdown() {
+    @Override
+    public void shutdown() {
 
-	}
+    }
 }

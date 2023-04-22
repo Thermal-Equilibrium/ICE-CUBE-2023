@@ -3,14 +3,13 @@ package org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.BackCamera;
 import org.firstinspires.ftc.teamcode.VisionUtils.IntakeParameters;
 
 public class VisualIntakeStage2 extends Command {
     private final Turret turret;
     private final HorizontalExtension horizontalExtension;
     private boolean finished = false;
-    private IntakeParameters intakeParameters;
+    private final IntakeParameters intakeParameters;
 
 
     public VisualIntakeStage2(IntakeParameters intakeParameters, Turret turret, HorizontalExtension horizontalExtension) {
