@@ -10,6 +10,8 @@ public class CommandScheduler {
 	protected HardwareMap hwMap;
 	protected ArrayList<Subsystem> subsystems = new ArrayList<>();
 	protected ArrayList<Command> activeCommands = new ArrayList<>();
+	protected ArrayList<Command> interruptedCommands = new ArrayList<>();
+	protected ArrayList<Intent> intents = new ArrayList<>();
 
 	public CommandScheduler(HardwareMap hardwareMap, Subsystem... initSubsystems) {
 		hwMap = hardwareMap;
@@ -31,6 +33,10 @@ public class CommandScheduler {
 			subsystem.shutdown();
 	}
 
+	public void addIntent(Intent intent) {
+	    intents.add(intent);
+	}
+
 	public void run() {
 		for (Subsystem subsystem : subsystems) {
 			subsystem.startTimer();
@@ -38,7 +44,27 @@ public class CommandScheduler {
 			subsystem.stopTimer();
 		}
 
+		// detect intents
+		for (Intent intent : intents) {
+			if (!intent.isReady()) {
+				// skip this intent
+				continue;
+			}
+			if (intent.getCommand().canInterruptOthers) {
+				// interrupt all active commands
+				for (Command command : activeCommands) {
+					command.shutdown();
+					interruptedCommands.add(command);
+				}
+				activeCommands.clear();
+			}
+
+		}
+
 		Iterator<Command> commands = activeCommands.iterator();
+
+
+
 
 		ArrayList<Command> nextCommands = new ArrayList<>();
 		while (commands.hasNext()) {
@@ -47,10 +73,19 @@ public class CommandScheduler {
 
 			if (command.completed()) {
 				command.shutdown();
-				if (command.getNext() != null)
+				if (command.getNext() != null) {
 					nextCommands.add(command.getNext());
+				} else if (command.canInterruptOthers) {
+					// restart all interrupted commands
+					for (Command interruptedCommand : interruptedCommands) {
+						interruptedCommand.init();
+						activeCommands.add(interruptedCommand);
+					}
+
+				}
 
 				commands.remove();
+
 			}
 		}
 

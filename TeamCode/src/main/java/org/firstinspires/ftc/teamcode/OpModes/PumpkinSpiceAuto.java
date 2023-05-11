@@ -50,6 +50,8 @@ public class PumpkinSpiceAuto extends BaseAuto {
 	public Command setupAuto(CommandScheduler scheduler) {
 		ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism, robot.drivetrain, robot.backCamera);
 
+		 scheduler.addIntent(new ToggleBrake(robot.drivetrain).interruptOthers().when(() -> robot.drivetrain.getVelocity().getX() == 0));
+
 		Trajectory driveToPole = robot.drivetrain.getBuilder().trajectoryBuilder(startPose)
 				.splineTo(goToPole1.vec(), goToPole1.getHeading())
 				.splineToSplineHeading(goToPole2, calculateTangent(goToPole1, goToPole2))

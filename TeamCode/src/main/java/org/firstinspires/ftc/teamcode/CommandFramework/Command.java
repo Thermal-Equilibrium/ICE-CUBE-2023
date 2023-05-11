@@ -2,10 +2,13 @@ package org.firstinspires.ftc.teamcode.CommandFramework;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.function.Supplier;
 
 public abstract class Command {
 	protected Command nextCommand = null;
 	protected ArrayList<Subsystem> dependencies = new ArrayList<>();
+	protected boolean canInterruptOthers = false;
+
 
 	public Command(Subsystem... subsystems) {
 		Collections.addAll(dependencies, subsystems);
@@ -40,4 +43,14 @@ public abstract class Command {
 	public abstract boolean completed();
 
 	public abstract void shutdown();
+
+	public Command interruptOthers() {
+		canInterruptOthers = true;
+		return this;
+	}
+
+
+	public Intent when(Supplier<Boolean> condition) {
+	    return new Intent(this, condition);
+	}
 }
