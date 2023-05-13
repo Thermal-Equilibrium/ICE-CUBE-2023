@@ -155,4 +155,28 @@ public class PumpkinSpiceAuto extends BaseAuto {
 
 	}
 
+	public Command DislodgeConeIdeal() {
+
+		Trajectory DislodgeCone1 = robot.drivetrain.getBuilder().trajectoryBuilder(goToPole2,false)
+				.lineToConstantHeading(DislodgePosition.vec())
+				.build();
+
+		Trajectory DislodgeCone2 = robot.drivetrain.getBuilder().trajectoryBuilder(DislodgePosition,false)
+				.lineToConstantHeading(goToPole2.vec())
+				.build();
+
+		Command c = new RunCommand(() -> {
+			if (robot.scoringMechanism.horizontalExtension.currentExceedsCutoff()) {
+				return followRR(DislodgeCone1)
+						.addNext(new MoveHorizontalExtension(robot.scoringMechanism.horizontalExtension, HorizontalExtension.DISLODGE_CONE))
+						.addNext(followRR(DislodgeCone2));
+			}
+			return new NullCommand();
+		}
+		);
+
+		return c;
+
+	}
+
 }
