@@ -19,7 +19,7 @@ public class RoadrunnerHoldPose extends Command {
 
 	@Override
 	public void init() {
-
+		this.robot.drivetrain.setPIDMode(false);
 	}
 
 	@Override
@@ -34,6 +34,7 @@ public class RoadrunnerHoldPose extends Command {
 
 	@Override
 	public void shutdown() {
+		this.robot.drivetrain.setPIDMode(true);
 	}
 
 }

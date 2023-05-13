@@ -4,8 +4,8 @@ import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
 
 public class MoveHorizontalExtension extends Command {
-	HorizontalExtension extension;
-	double desiredPosition;
+	protected HorizontalExtension extension;
+	protected double desiredPosition;
 
 	public MoveHorizontalExtension(HorizontalExtension extension, double desiredPosition) {
 		this.extension = extension;
@@ -23,7 +23,7 @@ public class MoveHorizontalExtension extends Command {
 
 	@Override
 	public boolean completed() {
-		return extension.isMovementFinished();
+		return extension.isMovementFinished() || extension.currentExceedsCutoff();
 	}
 
 	@Override

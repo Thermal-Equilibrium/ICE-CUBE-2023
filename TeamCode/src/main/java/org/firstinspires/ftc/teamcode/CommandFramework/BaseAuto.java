@@ -11,11 +11,14 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.DelayedCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.RaceAction;
+import org.firstinspires.ftc.teamcode.Robot.Commands.SafetyAlgorithms.FollowIfNeeded;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
 import org.firstinspires.ftc.teamcode.Utils.Team;
 import org.firstinspires.ftc.teamcode.VisionUtils.VisionMode;
 import org.firstinspires.ftc.teamcode.visionPipelines.SleeveDetection;
+
+import java.util.function.BooleanSupplier;
 
 public abstract class BaseAuto extends LinearOpMode {
 
@@ -59,6 +62,11 @@ public abstract class BaseAuto extends LinearOpMode {
 	public RoadrunnerTrajectoryFollower followRR(Trajectory trajectory) {
 		return new RoadrunnerTrajectoryFollower(this.robot, trajectory, robot.dashboard);
 	}
+
+	public FollowIfNeeded followIfNeeded(Robot robot, Trajectory traj, BooleanSupplier externalStop) {
+		return new FollowIfNeeded(this.robot,traj, this.robot.dashboard, externalStop);
+	}
+
 
 	public DelayedCommand delayCommand(double time, Command command) {
 		return new DelayedCommand(time, command);

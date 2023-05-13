@@ -89,9 +89,9 @@ public class SampleMecanumDrive extends MecanumDrive {
 	MedianFilter3 voltageFilter = new MedianFilter3();
 	TwoWheelTrackingLocalizer localizer2Wheel;
 	private final BNO055IMU imu;
-	private final PIDFController axialController = new PIDFController(TRANSLATIONAL_PID);
-	private final PIDFController lateralController = new PIDFController(TRANSLATIONAL_PID);
-	private final PIDFController headingController = new PIDFController(HEADING_PID);
+	private PIDFController axialController = new PIDFController(TRANSLATIONAL_PID);
+	private PIDFController lateralController = new PIDFController(TRANSLATIONAL_PID);
+	private PIDFController headingController = new PIDFController(HEADING_PID);
 	private final TrajectorySequenceRunner trajectorySequenceRunner;
 	private final TrajectoryFollower follower;
 	private final DcMotorEx leftFront;
@@ -387,6 +387,18 @@ public class SampleMecanumDrive extends MecanumDrive {
 		double headingCorrection = headingController.update(0.0, robotVelocity.getHeading());
 		return new DriveSignal(new Pose2d(axialCorrection, lateralCorrection, headingCorrection), new Pose2d(0, 0, 0));
 
+	}
+
+	public void setCoefficients(boolean followingTrajectory) {
+		if (followingTrajectory) {
+			axialController = new PIDFController(TRANSLATIONAL_PID);
+			lateralController = new PIDFController(TRANSLATIONAL_PID);
+			headingController = new PIDFController(HEADING_PID);
+		} else {
+			axialController = new PIDFController(new PIDCoefficients(30,0,solveKD(30, DriveConstants.kV, DriveConstants.kA)));
+			lateralController = new PIDFController(new PIDCoefficients(30,0,solveKD(30, DriveConstants.kV, DriveConstants.kA)));
+			headingController = new PIDFController(new PIDCoefficients(30,0,solveKD(30, DriveConstants.kV/ TRACK_WIDTH, DriveConstants.kA/ TRACK_WIDTH)));
+		}
 	}
 
 

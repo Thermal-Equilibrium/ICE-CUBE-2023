@@ -123,4 +123,8 @@ public class Drivetrain extends Subsystem {
 	}
 
 
+	public void setPIDMode(boolean trajectory) {
+		this.drive.setCoefficients(trajectory);
+	}
+
 }

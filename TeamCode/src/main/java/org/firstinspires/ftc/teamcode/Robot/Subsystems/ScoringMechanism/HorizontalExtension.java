@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 import org.firstinspires.ftc.teamcode.Math.AsymmetricProfile.MotionConstraint;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
@@ -21,12 +22,13 @@ public class HorizontalExtension extends Subsystem {
 	public final static double PRE_EMPTIVE_EXTEND = 100;
 	public final static double PRE_EMPTIVE_EXTEND_BIG = 300;
 	public final static double TELE_CYCLE_EXTENSION = 359; // todo figure out our max safe extension
-	public final static double autoExtension = 408;
+	public final static double autoExtension = 420;
 	public final static double mostlyAutoExtension = autoExtension - 30;
 	public final static double autoExtension_MID = 422;
 	public final static double mostlyAutoExtension_MID = autoExtension_MID - 30;
 	public final static double autoExtension_MID_left = 455;
 	public final static double mostlyAutoExtension_MID_left = autoExtension_MID_left - 30;
+	public final static double DISLODGE_CONE = 300;
 
 	private static final double TICKS_TO_INCH = .03;
 	private static final double INCH_TO_TICKS = 33.3333333333;
@@ -81,7 +83,9 @@ public class HorizontalExtension extends Subsystem {
 		double power = controller.calculate(targetPosition, measuredPosition);
 		Dashboard.packet.put("measured horizontal position", measuredPosition);
 		Dashboard.packet.put("target horizontal position", controller.getTargetPosition());
-
+		if (currentExceedsCutoff()) {
+			power /= 5;
+		}
 		leftMotor.setPower(power);
 		rightMotor.setPower(power);
 	}
@@ -123,5 +127,9 @@ public class HorizontalExtension extends Subsystem {
 
 	public void setTargetPositionInches(double targetPositionInches) {
 		this.targetPosition = inchesToTicks(targetPositionInches);
+	}
+
+	public boolean currentExceedsCutoff() {
+		return Math.abs(leftMotor.getCurrent(CurrentUnit.AMPS)) > 6.5;
 	}
 }

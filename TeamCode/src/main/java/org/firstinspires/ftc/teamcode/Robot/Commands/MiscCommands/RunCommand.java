@@ -7,14 +7,17 @@ import java.util.function.Supplier;
 public class RunCommand extends Command {
 	Supplier<Command> callback;
 
+
 	public RunCommand(Supplier<Command> callback) {
 		this.callback = callback;
 	}
 
 	@Override
 	public void init() {
+
 		setNext(callback.get());
 	}
+
 
 	@Override
 	public void periodic() {

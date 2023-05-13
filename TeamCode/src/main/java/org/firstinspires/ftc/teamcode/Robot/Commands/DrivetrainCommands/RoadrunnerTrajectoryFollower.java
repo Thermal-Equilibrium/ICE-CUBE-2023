@@ -15,9 +15,9 @@ import java.util.LinkedList;
 public class RoadrunnerTrajectoryFollower extends Command {
 
 
-	private final Robot robot;
-	private final LinkedList<Pose2d> poseHistory = new LinkedList<>();
-	Trajectory traj;
+	protected final Robot robot;
+	protected final LinkedList<Pose2d> poseHistory = new LinkedList<>();
+	protected Trajectory traj;
 	Pose2d[] positions;
 	int pathPrecision = 50; // number of points to graph in the path.
 
