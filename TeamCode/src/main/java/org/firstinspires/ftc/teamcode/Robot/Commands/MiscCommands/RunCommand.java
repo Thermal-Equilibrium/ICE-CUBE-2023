@@ -14,8 +14,11 @@ public class RunCommand extends Command {
 
 	@Override
 	public void init() {
-
-		setNext(callback.get());
+		// Run the callback to get which command to run conditionally, and set whatever command was originally supposed to run after this command after the conditional command
+		Command conditionalCommand = callback.get();
+		conditionalCommand.setNext(this.nextCommand);
+		
+		setNext(conditionalCommand);
 	}
 
 
