@@ -29,6 +29,8 @@ public class HorizontalExtension extends Subsystem {
 	public final static double autoExtension_MID_left = 455;
 	public final static double mostlyAutoExtension_MID_left = autoExtension_MID_left - 30;
 	public final static double DISLODGE_CONE = 300;
+	protected double current = 0;
+	public boolean weakened = false;
 
 	private static final double TICKS_TO_INCH = .03;
 	private static final double INCH_TO_TICKS = 33.3333333333;
@@ -83,11 +85,16 @@ public class HorizontalExtension extends Subsystem {
 		double power = controller.calculate(targetPosition, measuredPosition);
 		Dashboard.packet.put("measured horizontal position", measuredPosition);
 		Dashboard.packet.put("target horizontal position", controller.getTargetPosition());
-		if (currentExceedsCutoff()) {
+
+		current = leftMotor.getCurrent(CurrentUnit.AMPS);
+		Dashboard.packet.put("horizontal current amps", current);
+		if (weakened) {
 			power /= 5;
 		}
+
 		leftMotor.setPower(power);
 		rightMotor.setPower(power);
+
 	}
 
 	public void setTargetPosition(double targetPosition) {
@@ -130,6 +137,10 @@ public class HorizontalExtension extends Subsystem {
 	}
 
 	public boolean currentExceedsCutoff() {
-		return Math.abs(leftMotor.getCurrent(CurrentUnit.AMPS)) > 6.5;
+		return current > 5.5;
+	}
+
+	public double getCurrent() {
+		return current;
 	}
 }

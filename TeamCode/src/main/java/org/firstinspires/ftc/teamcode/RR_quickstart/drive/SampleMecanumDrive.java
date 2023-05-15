@@ -54,8 +54,10 @@ import java.util.List;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-	private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
-	private static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
+	public static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(MAX_VEL, MAX_ANG_VEL, TRACK_WIDTH);
+	public static final TrajectoryAccelerationConstraint ACCEL_CONSTRAINT = getAccelerationConstraint(MAX_ACCEL);
+	public static final TrajectoryVelocityConstraint VEL_CONSTRAINT_FAST_TURN = getVelocityConstraint(MAX_VEL, Math.toRadians(400), TRACK_WIDTH);
+
 	public static PIDCoefficients TRANSLATIONAL_PID;
 	public static PIDCoefficients HEADING_PID; // new PIDCoefficients(5, 0, 0.3);
 	public static double LATERAL_MULTIPLIER = 1;

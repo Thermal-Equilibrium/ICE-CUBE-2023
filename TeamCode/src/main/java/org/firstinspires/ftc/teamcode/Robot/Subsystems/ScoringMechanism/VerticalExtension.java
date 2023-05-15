@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism;
 
+import static org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit.AMPS;
+
 import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -37,6 +39,7 @@ public class VerticalExtension extends Subsystem {
 	MotionConstraint downConstraint = new MotionConstraint(max_accel, max_accel, max_velocity);
 	ProfiledPID controller = new ProfiledPID(upConstraint, downConstraint, coefficients);
 	private VoltageSensor batteryVoltageSensor;
+	protected double current = 0;
 
 	public void commonInit(HardwareMap hwMap) {
 		vertical1 = hwMap.get(DcMotorEx.class, "vertical1");
@@ -91,6 +94,8 @@ public class VerticalExtension extends Subsystem {
 		Dashboard.packet.put("measured slide position", measuredPosition);
 		Dashboard.packet.put("target slide position", controller.getTargetPosition());
 		Dashboard.packet.put("slide power", power);
+		current = vertical1.getCurrent(AMPS);
+		Dashboard.packet.put("vertical current amps",current);
 	}
 
 	/**
@@ -116,5 +121,13 @@ public class VerticalExtension extends Subsystem {
 
 	public double countsToInches(double counts) {
 		return (counts / counts_per_revolution) * PULLEY_CIRCUMFERENCE;
+	}
+
+	public boolean currentLimitExceeded() {
+		return Math.abs(current) > 4;
+	}
+
+	public double getCurrent() {
+		return current;
 	}
 }

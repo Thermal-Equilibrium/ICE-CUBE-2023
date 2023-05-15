@@ -410,10 +410,20 @@ public class ScoringCommandGroups {
 
 
 
-	public Command collectConeAutoPT1(double autoExtensionDistance) {
+	public Command collectConeAutoPT1(double autoExtensionDistance, Command safetyProcedure) {
 
 		return depositConeAsync()
-				.addNext(openLatch())
+				.addNext(new Delay(0.025))
+				.addNext(new RunCommand(() -> {
+					System.out.println("current when vertical safety is checked: " + verticalExtension.getCurrent());
+					if (verticalExtension.currentLimitExceeded()) {
+						if (safetyProcedure == null) {
+							return new NullCommand();
+						}
+						return safetyProcedure;
+					}
+					return new NullCommand();
+ 				}))
 				.addNext(moveHorizontalExtension(autoExtensionDistance))
 				.addNext(new Delay(0.25))
 				.addNext(grabCone())

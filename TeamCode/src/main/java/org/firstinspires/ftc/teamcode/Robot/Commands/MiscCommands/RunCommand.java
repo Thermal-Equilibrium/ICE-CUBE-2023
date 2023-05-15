@@ -16,8 +16,11 @@ public class RunCommand extends Command {
 	public void init() {
 		// Run the callback to get which command to run conditionally, and set whatever command was originally supposed to run after this command after the conditional command
 		Command conditionalCommand = callback.get();
-		conditionalCommand.setNext(this.nextCommand);
-		
+		Command current = conditionalCommand;
+		while (current.getNext() != null)
+			current = current.getNext();
+
+		current.setNext(this.nextCommand);
 		setNext(conditionalCommand);
 	}
 

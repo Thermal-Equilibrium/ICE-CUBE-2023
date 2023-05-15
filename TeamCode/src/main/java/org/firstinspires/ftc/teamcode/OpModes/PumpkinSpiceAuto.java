@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.OpModes;
 
 import static org.firstinspires.ftc.teamcode.RR_quickstart.util.BasedMath.shiftRobotRelative;
 
+import com.acmerobotics.roadrunner.drive.Drive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -9,6 +10,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.CommandFramework.BaseAuto;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
+import org.firstinspires.ftc.teamcode.RR_quickstart.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Brake.SetDrivetrainBrake;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Brake.ToggleBrake;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.RoadrunnerHoldPose;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
@@ -20,8 +23,11 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.SafetyAlgorithms.MoveHorizo
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringCommandGroups;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveHorizontalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveHorizontalExtensionAsync;
+import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.SetSlideWeaken;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
+import org.firstinspires.ftc.teamcode.Simulation.TestCommandsSubsystems.PrintCommand1;
 import org.firstinspires.ftc.teamcode.Utils.Team;
 
 import java.util.function.BooleanSupplier;
@@ -43,8 +49,13 @@ public class PumpkinSpiceAuto extends BaseAuto {
 			0.6,
 			-1
 	);
+	Pose2d goToPoleAfterCorrection = new Pose2d(goToPole2.getX(), goToPole2.getY() + 3, goToPole2.getHeading());
 	final Pose2d parkRight1 = new Pose2d(goToPole2.getX() - 1, goToPole2.getY() + 3, goToPole2.getHeading());
-	Pose2d DislodgePosition = shiftRobotRelative(goToPole2, -2,12);
+	Pose2d DislodgePosition = shiftRobotRelative(goToPole2, -2,10);
+	double backup = -2;
+	Pose2d newPose = shiftRobotRelative(goToPole2,backup,0);
+	Trajectory backupFromPole;
+
 
 	@Override
 	public Team getTeam() {
@@ -86,7 +97,9 @@ public class PumpkinSpiceAuto extends BaseAuto {
 				.splineToSplineHeading(parkLeft_new, Math.toRadians(0))
 				.build();
 
-
+		backupFromPole = robot.drivetrain.getBuilder().trajectoryBuilder(goToPole2, false)
+				.lineToLinearHeading(newPose)
+				.build();
 
 
 		Trajectory park = parkLeftTrajNew;
@@ -103,7 +116,7 @@ public class PumpkinSpiceAuto extends BaseAuto {
 				break;
 		}
 
-		Command auto = followRR(driveToPole);
+		Command auto = followRR(driveToPole).addNext(new SetDrivetrainBrake(robot.drivetrain, Drivetrain.BrakeStates.FREE));
 
 
 		auto.addNext(new RoadrunnerHoldPose(robot, goToPole2));
@@ -128,49 +141,56 @@ public class PumpkinSpiceAuto extends BaseAuto {
 				commandGroups.moveToIntakingRightAuto(),
 				commandGroups.moveHorizontalExtension(HorizontalExtension.PRE_EMPTIVE_EXTEND))
 				.addNext(commandGroups.moveHorizontalExtension(HorizontalExtension.mostlyAutoExtension))
-				.addNext(commandGroups.collectConeAutoPT1(HorizontalExtension.autoExtension))
-				.addNext(DislodgeCone())
+				.addNext(commandGroups.collectConeAutoPT1(HorizontalExtension.autoExtension,
+						verticalExtensionHitPoleProcedure(commandGroups)))
+				.addNext(DislodgeConeIdeal())
 				.addNext(commandGroups.collectConeAutoPT2());
 
 		command.addNext(nextCommand);
 
 	}
 
+	/**
+	 * if our vertical extension is hitting the pole, we want to run this,
+	 * @return safety enforcing command
+	 */
+	public Command verticalExtensionHitPoleProcedure(ScoringCommandGroups commandGroups) {
 
-	public Command DislodgeCone() {
-
-		Trajectory DislodgeCone1 = robot.drivetrain.getBuilder().trajectoryBuilder(goToPole2,false)
-				.lineToConstantHeading(DislodgePosition.vec())
-				.build();
-
-		Trajectory DislodgeCone2 = robot.drivetrain.getBuilder().trajectoryBuilder(DislodgePosition,false)
-				.lineToConstantHeading(goToPole2.vec())
-				.build();
-
-
-		return followIfNeeded(robot,DislodgeCone1, () -> !robot.scoringMechanism.horizontalExtension.currentExceedsCutoff())
-					.addNext(new MoveHorizontalWhenNeeded(robot.scoringMechanism.horizontalExtension, HorizontalExtension.DISLODGE_CONE, () -> !robot.scoringMechanism.horizontalExtension.currentExceedsCutoff()))
-					.addNext(followIfNeeded(robot,DislodgeCone2, () -> !robot.scoringMechanism.horizontalExtension.currentExceedsCutoff()));
-
+		return new PrintCommand1(robot.print, "vertical safety initialization")
+				.addNext(commandGroups.moveHorizontalExtension(VerticalExtension.HIGH_POSITION))
+				.addNext(followRR(backupFromPole))
+				.addNext(commandGroups.asyncMoveVerticalExtension(VerticalExtension.IN_POSITION));
 
 	}
+
+
 
 	public Command DislodgeConeIdeal() {
 
 		Trajectory DislodgeCone1 = robot.drivetrain.getBuilder().trajectoryBuilder(goToPole2,false)
-				.lineToConstantHeading(DislodgePosition.vec())
+				.lineToLinearHeading(DislodgePosition, SampleMecanumDrive.VEL_CONSTRAINT_FAST_TURN, SampleMecanumDrive.ACCEL_CONSTRAINT)
 				.build();
 
+		DislodgePosition = new Pose2d(DislodgePosition.getX(), DislodgePosition.getY(), Math.toRadians(-90));
+
 		Trajectory DislodgeCone2 = robot.drivetrain.getBuilder().trajectoryBuilder(DislodgePosition,false)
-				.lineToConstantHeading(goToPole2.vec())
+				.lineToLinearHeading(goToPoleAfterCorrection)
 				.build();
 
 		Command c = new RunCommand(() -> {
+			System.out.println("Current at evaluation is " + robot.scoringMechanism.horizontalExtension.getCurrent());
 			if (robot.scoringMechanism.horizontalExtension.currentExceedsCutoff()) {
-				return followRR(DislodgeCone1)
-						.addNext(new MoveHorizontalExtension(robot.scoringMechanism.horizontalExtension, HorizontalExtension.DISLODGE_CONE))
-						.addNext(followRR(DislodgeCone2));
+				System.out.println("maneuver occurring");
+				double slidePosition = robot.scoringMechanism.horizontalExtension.getSlidePosition();
+				return new SetSlideWeaken(robot.scoringMechanism.horizontalExtension, true)
+							.addNext(new MoveHorizontalExtension(robot.scoringMechanism.horizontalExtension, slidePosition))
+							.addNext(followRR(DislodgeCone1))
+							.addNext(new SetSlideWeaken(robot.scoringMechanism.horizontalExtension, false))
+							.addNext(new MoveHorizontalExtension(robot.scoringMechanism.horizontalExtension, HorizontalExtension.DISLODGE_CONE))
+							.addNext(followRR(DislodgeCone2))
+							.addNext(new MoveHorizontalExtension(robot.scoringMechanism.horizontalExtension,HorizontalExtension.IN_POSITION));
 			}
+			System.out.println("no maneuver, null command returned");
 			return new NullCommand();
 		}
 		);

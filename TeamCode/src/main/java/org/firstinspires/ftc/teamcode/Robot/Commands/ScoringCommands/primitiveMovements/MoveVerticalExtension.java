@@ -50,7 +50,7 @@ public class MoveVerticalExtension extends Command {
 
 	@Override
 	public boolean completed() {
-		return extension.isMovementFinished();
+		return extension.isMovementFinished() || extension.currentLimitExceeded();
 	}
 
 	@Override

@@ -33,7 +33,7 @@ public class Robot {
 	public Robot(HardwareMap hwMap, OpMode opMode, Gamepad gamepad1, Gamepad gamepad2, Team team, VisionMode visionMode) {
 		backCamera = new BackCamera(team,visionMode);
 		frontCamera = new FrontCamera();
-		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard, scoringMechanism, field, backCamera,frontCamera);
+		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard, scoringMechanism, field, backCamera,frontCamera,print);
 		this.gamepad1 = new Input(gamepad1, scheduler);
 		this.gamepad2 = new Input(gamepad2, scheduler);
 

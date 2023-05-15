@@ -15,7 +15,7 @@ public class Drivetrain extends Subsystem {
 
 	protected double leftPower = 0;
 	protected double rightPower = 0;
-	SampleMecanumDrive drive;
+	public SampleMecanumDrive drive;
 	Servo aBrake;
 	double brakeActive = 0.5;
 	double brakeReleased = 0.7;
