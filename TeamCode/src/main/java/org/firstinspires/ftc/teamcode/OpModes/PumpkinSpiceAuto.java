@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.OpModes;
 
 import static org.firstinspires.ftc.teamcode.RR_quickstart.util.BasedMath.shiftRobotRelative;
 
-import com.acmerobotics.roadrunner.drive.Drive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -12,25 +11,18 @@ import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
 import org.firstinspires.ftc.teamcode.RR_quickstart.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Brake.SetDrivetrainBrake;
-import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Brake.ToggleBrake;
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.RoadrunnerHoldPose;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
-import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.NullCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.RunCommand;
-import org.firstinspires.ftc.teamcode.Robot.Commands.SafetyAlgorithms.FollowIfNeeded;
-import org.firstinspires.ftc.teamcode.Robot.Commands.SafetyAlgorithms.MoveHorizontalWhenNeeded;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringCommandGroups;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveHorizontalExtension;
-import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveHorizontalExtensionAsync;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.SetSlideWeaken;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.HorizontalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
 import org.firstinspires.ftc.teamcode.Simulation.TestCommandsSubsystems.PrintCommand1;
 import org.firstinspires.ftc.teamcode.Utils.Team;
-
-import java.util.function.BooleanSupplier;
 
 @Autonomous
 public class PumpkinSpiceAuto extends BaseAuto {
@@ -55,6 +47,9 @@ public class PumpkinSpiceAuto extends BaseAuto {
 	double backup = -2;
 	Pose2d newPose = shiftRobotRelative(goToPole2,backup,0);
 	Trajectory backupFromPole;
+
+	Pose2d newPoseIfMisfired = shiftRobotRelative(goToPole2,-backup,0);
+	Trajectory moveUpToPole;
 
 
 	@Override
@@ -100,6 +95,9 @@ public class PumpkinSpiceAuto extends BaseAuto {
 		backupFromPole = robot.drivetrain.getBuilder().trajectoryBuilder(goToPole2, false)
 				.lineToLinearHeading(newPose)
 				.build();
+		moveUpToPole = robot.drivetrain.getBuilder().trajectoryBuilder(goToPole2, false)
+				.lineToLinearHeading(newPoseIfMisfired)
+				.build();
 
 
 		Trajectory park = parkLeftTrajNew;
@@ -120,6 +118,7 @@ public class PumpkinSpiceAuto extends BaseAuto {
 
 
 		auto.addNext(new RoadrunnerHoldPose(robot, goToPole2));
+		auto.addNext(new SetDrivetrainBrake(robot.drivetrain, Drivetrain.BrakeStates.ACTIVATED));
 		for (int i = 0; i < 5; ++i) {
 			addCycle(auto, commandGroups);
 		}
@@ -129,6 +128,7 @@ public class PumpkinSpiceAuto extends BaseAuto {
 				.addNext(commandGroups.depositCone());
 
 		auto.addNext(commandGroups.moveHorizontalExtension(0));
+		auto.addNext(new SetDrivetrainBrake(robot.drivetrain, Drivetrain.BrakeStates.FREE));
 		auto.addNext(new Delay(0.1));
 		auto.addNext(followRR(park));
 		return auto;
@@ -143,6 +143,8 @@ public class PumpkinSpiceAuto extends BaseAuto {
 				.addNext(commandGroups.moveHorizontalExtension(HorizontalExtension.mostlyAutoExtension))
 				.addNext(commandGroups.collectConeAutoPT1(HorizontalExtension.autoExtension,
 						verticalExtensionHitPoleProcedure(commandGroups)))
+				.addNext(DepositIfMisFired(commandGroups))
+				.addNext(commandGroups.collectConeAutoPT1_5())
 				.addNext(DislodgeConeIdeal())
 				.addNext(commandGroups.collectConeAutoPT2());
 
@@ -182,13 +184,16 @@ public class PumpkinSpiceAuto extends BaseAuto {
 			if (robot.scoringMechanism.horizontalExtension.currentExceedsCutoff()) {
 				System.out.println("maneuver occurring");
 				double slidePosition = robot.scoringMechanism.horizontalExtension.getSlidePosition();
-				return new SetSlideWeaken(robot.scoringMechanism.horizontalExtension, true)
-							.addNext(new MoveHorizontalExtension(robot.scoringMechanism.horizontalExtension, slidePosition))
-							.addNext(followRR(DislodgeCone1))
-							.addNext(new SetSlideWeaken(robot.scoringMechanism.horizontalExtension, false))
-							.addNext(new MoveHorizontalExtension(robot.scoringMechanism.horizontalExtension, HorizontalExtension.DISLODGE_CONE))
-							.addNext(followRR(DislodgeCone2))
-							.addNext(new MoveHorizontalExtension(robot.scoringMechanism.horizontalExtension,HorizontalExtension.IN_POSITION));
+				return new SetDrivetrainBrake(robot.drivetrain, Drivetrain.BrakeStates.FREE)
+					.addNext(new Delay(0.1))
+					.addNext(new SetSlideWeaken(robot.scoringMechanism.horizontalExtension, true))
+					.addNext(new MoveHorizontalExtension(robot.scoringMechanism.horizontalExtension, slidePosition))
+					.addNext(followRR(DislodgeCone1))
+					.addNext(new SetSlideWeaken(robot.scoringMechanism.horizontalExtension, false))
+					.addNext(new MoveHorizontalExtension(robot.scoringMechanism.horizontalExtension, HorizontalExtension.DISLODGE_CONE))
+					.addNext(followRR(DislodgeCone2))
+					.addNext(new MoveHorizontalExtension(robot.scoringMechanism.horizontalExtension,HorizontalExtension.IN_POSITION))
+					.addNext(new SetDrivetrainBrake(robot.drivetrain, Drivetrain.BrakeStates.ACTIVATED));
 			}
 			System.out.println("no maneuver, null command returned");
 			return new NullCommand();
@@ -196,7 +201,27 @@ public class PumpkinSpiceAuto extends BaseAuto {
 		);
 
 		return c;
+	}
 
+	public Command DepositIfMisFired(ScoringCommandGroups commandGroups) {
+		Command c = new RunCommand(() -> {
+			System.out.println("checking if misfire occurred");
+			if (robot.scoringMechanism.verticalExtension.coneIsStillInDeposit()) {
+				System.out.println("Misfire did occur");
+				return commandGroups.openClaw()
+						.addNext(new SetDrivetrainBrake(robot.drivetrain, Drivetrain.BrakeStates.FREE))
+						.addNext(new Delay(0.2))
+						.addNext(followRR(moveUpToPole))
+						.addNext(new SetDrivetrainBrake(robot.drivetrain, Drivetrain.BrakeStates.ACTIVATED))
+						.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION))
+						.addNext(commandGroups.depositConeAsync())
+						.addNext(commandGroups.grabCone());
+			} else {
+				System.out.println("Misfire did not occur; distance was: " + robot.scoringMechanism.verticalExtension.getDistanceToDeposit() + " slide height was " + robot.scoringMechanism.verticalExtension.getSlidePosition());
+				return new NullCommand();
+			}
+		});
+		return c;
 	}
 
 }

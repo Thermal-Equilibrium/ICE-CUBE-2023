@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMo
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveArmDirect;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveArmIfCone;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveClaw;
+import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveClawOnceSlidesDown;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveHorizontalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveHorizontalExtensionAsync;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurret;
@@ -425,11 +426,14 @@ public class ScoringCommandGroups {
 					return new NullCommand();
  				}))
 				.addNext(moveHorizontalExtension(autoExtensionDistance))
-				.addNext(new Delay(0.25))
-				.addNext(grabCone())
-				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
+				.addNext(new MoveClawOnceSlidesDown(turret,verticalExtension, Turret.ClawStates.Closed));
+	}
+
+	public Command collectConeAutoPT1_5() {
+		return moveArm(Turret.ArmStates.TRANSFER_SAFE)
 				.addNext(moveTurret(Turret.TurretStates.TRANSFER))
 				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION));
+
 	}
 
 	public Command collectConeAutoPT2() {

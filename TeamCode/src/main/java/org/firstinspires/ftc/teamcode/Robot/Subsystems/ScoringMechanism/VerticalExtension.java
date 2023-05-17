@@ -4,12 +4,14 @@ import static org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit.AM
 
 import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
 import com.acmerobotics.dashboard.config.Config;
+import com.outoftheboxrobotics.photoncore.Neutrino.Rev2MSensor.Rev2mDistanceSensorEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 import org.firstinspires.ftc.teamcode.Math.AsymmetricProfile.MotionConstraint;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
@@ -29,6 +31,11 @@ public class VerticalExtension extends Subsystem {
 	public static double Kd = 1.3 * Math.sqrt(Kp * 0.0015);
 	public static double max_accel = 190;
 	public static double max_velocity = 200;
+
+	public static double DISTANCE_FOR_CONE = 8; // 9 inches or less means we still have the cone
+
+	public Rev2mDistanceSensorEx distanceSensor;
+
 	protected double slideTargetPosition = 0;
 	protected double Kg = 0.09499;
 	MainScoringMechanism.MechanismStates state = MainScoringMechanism.MechanismStates.BEGIN;
@@ -44,6 +51,8 @@ public class VerticalExtension extends Subsystem {
 	public void commonInit(HardwareMap hwMap) {
 		vertical1 = hwMap.get(DcMotorEx.class, "vertical1");
 		vertical2 = hwMap.get(DcMotorEx.class, "vertical2");
+		this.distanceSensor = hwMap.get(Rev2mDistanceSensorEx.class,"cone");
+		this.distanceSensor.setRangingProfile(Rev2mDistanceSensorEx.RANGING_PROFILE.HIGH_SPEED);
 		// TODO, set direction
 		vertical2.setDirection(DcMotorSimple.Direction.REVERSE);
 		vertical1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -71,6 +80,7 @@ public class VerticalExtension extends Subsystem {
 	public void periodic() {
 
 		updatePID();
+		Dashboard.packet.put("distance to cone / deposit", getDistanceToDeposit());
 
 	}
 
@@ -130,4 +140,17 @@ public class VerticalExtension extends Subsystem {
 	public double getCurrent() {
 		return current;
 	}
+
+	public boolean coneIsStillInDeposit() {
+		return slideIsDown() && getDistanceToDeposit() < DISTANCE_FOR_CONE;
+	}
+
+	public double getDistanceToDeposit() {
+		return distanceSensor.getDistance(DistanceUnit.INCH);
+	}
+
+	public boolean slideIsDown() {
+		return getSlidePosition() < 0.25;
+	}
+
 }
