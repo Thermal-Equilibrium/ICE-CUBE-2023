@@ -29,8 +29,8 @@ public class VerticalExtension extends Subsystem {
 	static final double counts_per_revolution = 145.090909;
 	public static double Kp = 0.2;
 	public static double Kd = 1.3 * Math.sqrt(Kp * 0.0015);
-	public static double max_accel = 190;
-	public static double max_velocity = 200;
+	public static double max_accel = 250;
+	public static double max_velocity = 250;
 
 	public static double DISTANCE_FOR_CONE = 8; // 9 inches or less means we still have the cone
 

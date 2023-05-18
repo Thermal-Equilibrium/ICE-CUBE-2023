@@ -382,6 +382,7 @@ public class ScoringCommandGroups {
 				.addNext(openLatch()) // 0s
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE)) // 0.25s
 				.addNext(moveTurret(Turret.TurretStates.TRANSFER)) // 0.2s
+				.addNext(new Delay(0.15)) // 0.15s
 				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION)) // some amount of time, assuming about 0.2
 				.addNext(moveArm(Turret.ArmStates.TRANSFER)) // 0.25s
 				.addNext(new Delay(0.15)) // 0.15s
@@ -414,7 +415,6 @@ public class ScoringCommandGroups {
 	public Command collectConeAutoPT1(double autoExtensionDistance, Command safetyProcedure) {
 
 		return depositConeAsync()
-				.addNext(new Delay(0.025))
 				.addNext(new RunCommand(() -> {
 					System.out.println("current when vertical safety is checked: " + verticalExtension.getCurrent());
 					if (verticalExtension.currentLimitExceeded()) {
@@ -438,10 +438,8 @@ public class ScoringCommandGroups {
 
 	public Command collectConeAutoPT2() {
 		return moveArm(Turret.ArmStates.TRANSFER)
-				.addNext(new Delay(0.15))
 				.addNext(releaseCone())
 				.addNext(closeLatch())
-				.addNext(new Delay(0.1))
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
 
 	}

@@ -124,7 +124,7 @@ public class PumpkinSpiceAuto extends BaseAuto {
 		}
 
 		auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION))
-				.addNext(new Delay(0.1))
+				.addNext(new Delay(0.25))
 				.addNext(commandGroups.depositCone());
 
 		auto.addNext(commandGroups.moveHorizontalExtension(0));
