@@ -20,8 +20,8 @@ import org.firstinspires.ftc.teamcode.Utils.ProfiledPID;
 @Config
 public class VerticalExtension extends Subsystem {
 
-	public static double HIGH_POSITION = 26;
-	public static double MID_POSITION = 16.3;
+	public static double HIGH_POSITION = 25.3;
+	public static double MID_POSITION = 15.5;
 	public static double MID_POSITION_teleop = 16.2;
 
 	public final static double IN_POSITION = 0;
@@ -99,6 +99,11 @@ public class VerticalExtension extends Subsystem {
 		} else {
 			power -= Kg;
 		}
+
+		if (currentLimitExceeded()) {
+			power /= 4;
+		}
+
 		vertical1.setPower(power);
 		vertical2.setPower(power);
 		Dashboard.packet.put("measured slide position", measuredPosition);
