@@ -23,6 +23,7 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Horizont
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
 import org.firstinspires.ftc.teamcode.Simulation.TestCommandsSubsystems.PrintCommand1;
 import org.firstinspires.ftc.teamcode.Utils.Team;
+import org.firstinspires.ftc.teamcode.visionPipelines.SleeveDetection;
 
 @Autonomous
 public class PumpkinSpiceAuto extends BaseAuto {
@@ -31,8 +32,6 @@ public class PumpkinSpiceAuto extends BaseAuto {
 	final Pose2d goToPole1 = new Pose2d(-38, 24, Math.toRadians(-100));
 	final Pose2d parkRight = new Pose2d(-63, 20, Math.toRadians(0));
 	final Pose2d parkMID = new Pose2d(-40, 18, Math.toRadians(-90));
-	//    final Pose2d parkLeft1 = new Pose2d(-38,26,Math.toRadians(-90));
-//    final Pose2d parkLeft = new Pose2d(-6,38,Math.toRadians(180));
 	final Pose2d parkLeft1_new = new Pose2d(-38, 19, Math.toRadians(270));
 	final Pose2d parkLeft_new = new Pose2d(-8, 15, Math.toRadians(90));
 	Pose2d startPose = new Pose2d(-36, 66.5, Math.toRadians(-90));
@@ -41,6 +40,9 @@ public class PumpkinSpiceAuto extends BaseAuto {
 			0.6,
 			-1
 	);
+	final Pose2d parkLefter1 = new Pose2d(0, 19, Math.toRadians(270));
+	final Pose2d parkLefter_new = new Pose2d(12, 15, Math.toRadians(90));
+
 	Pose2d goToPoleAfterCorrection = new Pose2d(goToPole2.getX(), goToPole2.getY() + 3, goToPole2.getHeading());
 	final Pose2d parkRight1 = new Pose2d(goToPole2.getX() - 1, goToPole2.getY() + 3, goToPole2.getHeading());
 	Pose2d DislodgePosition = shiftRobotRelative(goToPole2, -2,10);
@@ -91,6 +93,11 @@ public class PumpkinSpiceAuto extends BaseAuto {
 				.splineToConstantHeading(parkLeft1_new.vec(), Math.toRadians(0))
 				.splineToSplineHeading(parkLeft_new, Math.toRadians(0))
 				.build();
+		Trajectory parkLefter = robot.drivetrain.getBuilder().trajectoryBuilder(goToPole2, true)
+				.splineToConstantHeading(parkLefter1.vec(), Math.toRadians(0))
+				.splineToSplineHeading(parkLefter_new, Math.toRadians(0))
+				.build();
+
 
 		backupFromPole = robot.drivetrain.getBuilder().trajectoryBuilder(goToPole2, false)
 				.lineToLinearHeading(newPose)
@@ -101,6 +108,7 @@ public class PumpkinSpiceAuto extends BaseAuto {
 
 
 		Trajectory park = parkLeftTrajNew;
+		parkingPosition = SleeveDetection.ParkingPosition.RIGHT;
 
 		switch (parkingPosition) {
 			case LEFT:
@@ -110,7 +118,7 @@ public class PumpkinSpiceAuto extends BaseAuto {
 				park = parkMidTraj;
 				break;
 			case RIGHT:
-				park = parkRightTraj;
+				park = parkLefter;
 				break;
 		}
 

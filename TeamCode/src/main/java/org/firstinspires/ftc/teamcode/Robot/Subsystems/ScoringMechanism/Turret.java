@@ -28,7 +28,7 @@ public class Turret extends Subsystem {
 	int MAX_PWM_RANGE = 2485;
 
 	double latch_open = 0.48;
-	double latch_closed = 0.18;
+	double latch_closed = 0.12;
 
 
 	@Override
@@ -88,7 +88,7 @@ public class Turret extends Subsystem {
 				setBasedTurretPosition(Math.toRadians(70));
 				break;
 			case Slight_RIGHT_AUTO:
-				setBasedTurretPosition(Math.toRadians(15));
+				setBasedTurretPosition(Math.toRadians(13.5));
 				break;
 			case Slight_LEFT:
 				setBasedTurretPosition(Math.toRadians(345));

@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMo
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveTurretAsync;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveVerticalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveVerticalExtensionAsync;
+import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveVerticalExtensionTeleop;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.OpenLatch;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.SetHorizontalExtensionInches;
 import org.firstinspires.ftc.teamcode.Robot.Commands.VisionCommands.CancelableMoveArmDirect;
@@ -438,6 +439,7 @@ public class ScoringCommandGroups {
 
 	public Command collectConeAutoPT2() {
 		return moveArm(Turret.ArmStates.TRANSFER)
+				.addNext(new Delay(0.15))
 				.addNext(releaseCone())
 				.addNext(closeLatch())
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE));
@@ -468,7 +470,12 @@ public class ScoringCommandGroups {
 		if (verticalExtension.getSlideTargetPosition() == VerticalExtension.IN_POSITION) {
 			return moveClaw(Turret.ClawStates.Open);
 		} else {
-			return depositCone();
+			return new MultipleCommand(new MoveVerticalExtensionTeleop(verticalExtension,VerticalExtension.IN_POSITION)
+			,
+					new Delay(0.2)
+							.addNext(new OpenLatch(turret)
+					)
+			);
 		}
 	}
 

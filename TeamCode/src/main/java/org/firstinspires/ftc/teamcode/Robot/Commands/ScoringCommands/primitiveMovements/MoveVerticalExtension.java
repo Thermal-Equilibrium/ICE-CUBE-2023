@@ -10,6 +10,7 @@ public class MoveVerticalExtension extends Command {
 	double desiredPosition;
 	Drivetrain drivetrain;
 	double distanceFromPole = 3; //inches
+	double initialPoition = 0;
 
 	public MoveVerticalExtension(VerticalExtension extension, double desiredPosition, Drivetrain drivetrain) {
 		super(drivetrain);
@@ -50,7 +51,7 @@ public class MoveVerticalExtension extends Command {
 
 	@Override
 	public boolean completed() {
-		return extension.isMovementFinished() || extension.currentLimitExceeded();
+		return extension.isMovementFinished();
 	}
 
 	@Override

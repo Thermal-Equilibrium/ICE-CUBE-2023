@@ -20,15 +20,15 @@ import org.firstinspires.ftc.teamcode.Utils.ProfiledPID;
 @Config
 public class VerticalExtension extends Subsystem {
 
-	public static double HIGH_POSITION = 25.3;
+	public static double HIGH_POSITION = 26.5;
 	public static double MID_POSITION = 15.5;
-	public static double MID_POSITION_teleop = 16.2;
+	public static double MID_POSITION_teleop = 16;
 
 	public final static double IN_POSITION = 0;
 	static final double PULLEY_CIRCUMFERENCE = 4.409;
 	static final double counts_per_revolution = 145.090909;
 	public static double Kp = 0.2;
-	public static double Kd = 1.3 * Math.sqrt(Kp * 0.0015);
+	public static double Kd = 1.8 * Math.sqrt(Kp * 0.0015);
 	public static double max_accel = 250;
 	public static double max_velocity = 250;
 
@@ -72,12 +72,22 @@ public class VerticalExtension extends Subsystem {
 	@Override
 	public void initTeleop(HardwareMap hwMap) {
 		commonInit(hwMap);
+		upConstraint = new MotionConstraint(max_accel, max_accel / 2, max_velocity);
+		downConstraint = new MotionConstraint(max_accel, max_accel / 2, max_velocity);
+
 		vertical1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 		vertical2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 	}
 
 	@Override
 	public void periodic() {
+
+		if (getSlidePosition() < 4 && currentLimitExceeded()) {
+			vertical1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+			vertical2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+			vertical1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+			vertical2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+		}
 
 		updatePID();
 		Dashboard.packet.put("distance to cone / deposit", getDistanceToDeposit());
