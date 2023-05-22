@@ -5,7 +5,7 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Vertical
 
 public class MoveVerticalExtensionAsync extends MoveVerticalExtension{
 	public MoveVerticalExtensionAsync(VerticalExtension extension, double desiredPosition, Drivetrain drivetrain) {
-		super(extension, desiredPosition, drivetrain);
+		super(extension, desiredPosition);
 	}
 	@Override
 	public boolean completed() {

@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 
 public class Turret extends Subsystem {
 
@@ -33,11 +34,9 @@ public class Turret extends Subsystem {
 
 	@Override
 	public void initAuto(HardwareMap hwMap) {
-
 		turret = hwMap.get(ServoImplEx.class, "turret");
 		turret.setPwmRange(new PwmControl.PwmRange(MIN_PWM_RANGE, MAX_PWM_RANGE));
 		setBasedTurretPosition(turretTransfer);
-
 
 		arm1 = hwMap.get(Servo.class, "arm");
 		arm1.setDirection(Servo.Direction.REVERSE);
@@ -69,6 +68,7 @@ public class Turret extends Subsystem {
 	@Override
 	public void periodic() {
 		System.out.println("turret position : " + turret.getPosition());
+		Dashboard.packet.put("Arm position", arm1.getPosition());
 	}
 
 	@Override

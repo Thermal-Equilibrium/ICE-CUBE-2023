@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
@@ -20,11 +21,12 @@ import org.firstinspires.ftc.teamcode.Utils.ProfiledPID;
 @Config
 public class VerticalExtension extends Subsystem {
 
-	public static double HIGH_POSITION = 26.5;
-	public static double MID_POSITION = 15.5;
-	public static double MID_POSITION_teleop = 16;
+	public static final double HIGH_POSITION = 26.5;
+	public static final double ABOVE_POLE_POSITION = HIGH_POSITION + 2.5;
+	public static final double MID_POSITION = 15.5;
+	public static final double MID_POSITION_teleop = 16;
 
-	public final static double IN_POSITION = 0;
+	public static final double IN_POSITION = 0;
 	static final double PULLEY_CIRCUMFERENCE = 4.409;
 	static final double counts_per_revolution = 145.090909;
 	public static double Kp = 0.2;
@@ -47,6 +49,13 @@ public class VerticalExtension extends Subsystem {
 	ProfiledPID controller = new ProfiledPID(upConstraint, downConstraint, coefficients);
 	private VoltageSensor batteryVoltageSensor;
 	protected double current = 0;
+	protected double power = 0;
+
+	private ElapsedTime timer;
+	private double lastPosition;
+	private double lastTime;
+
+	private double velocityInchesPerSecond = 0;
 
 	public void commonInit(HardwareMap hwMap) {
 		vertical1 = hwMap.get(DcMotorEx.class, "vertical1");
@@ -58,6 +67,10 @@ public class VerticalExtension extends Subsystem {
 		vertical1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 		vertical2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 		this.batteryVoltageSensor = hwMap.voltageSensor.iterator().next();
+
+		this.timer = new ElapsedTime();
+		this.lastPosition = this.getSlidePosition();
+		this.lastTime = this.timer.milliseconds();
 	}
 
 	@Override
@@ -91,14 +104,38 @@ public class VerticalExtension extends Subsystem {
 
 		updatePID();
 		Dashboard.packet.put("distance to cone / deposit", getDistanceToDeposit());
-
+		getSlidePosition();
+		this.updateVelocity();
+		Dashboard.packet.put("Vertical PID Target Inches", this.getPIDTargetInches());
+		Dashboard.packet.put("Vertical Position Inches", this.getSlidePosition());
+		Dashboard.packet.put("Vertical Deviation Inches", this.getPIDTargetDeviation());
+		Dashboard.packet.put("DANGER", 0); // <- will be overridden by command
 	}
 
 	@Override
 	public void shutdown() {
 		vertical1.setPower(0);
 		vertical2.setPower(0);
+	}
 
+	private void updateVelocity() {
+		double newPosition = countsToInches(getSlidePosition());
+		double newTime = timer.seconds();
+
+		this.velocityInchesPerSecond = Math.abs(newPosition - this.lastPosition) / (newTime - this.lastTime);
+
+		Dashboard.packet.put("Vertical Extension Velocity", this.velocityInchesPerSecond);
+		this.lastPosition = newPosition;
+		this.lastTime = newTime;
+	}
+
+	public double getVelocityInchesPerSecond() {
+		return this.velocityInchesPerSecond;
+	}
+	public double getSpeedInchesPerSecond() {
+		double speed = Math.abs(this.velocityInchesPerSecond);
+
+		return Math.max(speed, 0.0001);
 	}
 
 	protected void updatePID() {
@@ -116,6 +153,7 @@ public class VerticalExtension extends Subsystem {
 
 		vertical1.setPower(power);
 		vertical2.setPower(power);
+		this.power = power;
 		Dashboard.packet.put("measured slide position", measuredPosition);
 		Dashboard.packet.put("target slide position", controller.getTargetPosition());
 		Dashboard.packet.put("slide power", power);
@@ -134,6 +172,13 @@ public class VerticalExtension extends Subsystem {
 
 	public double getSlideTargetPosition() {
 		return slideTargetPosition;
+	}
+	public double getPIDTargetInches() {
+		return controller.getTargetPosition();
+	}
+
+	public double getPIDTargetDeviation() {
+		return Math.abs(this.getPIDTargetInches() - this.getSlidePosition());
 	}
 
 	public void updateTargetPosition(double targetpos) {
@@ -154,6 +199,10 @@ public class VerticalExtension extends Subsystem {
 
 	public double getCurrent() {
 		return current;
+	}
+
+	public double getPower() {
+		return this.power;
 	}
 
 	public boolean coneIsStillInDeposit() {

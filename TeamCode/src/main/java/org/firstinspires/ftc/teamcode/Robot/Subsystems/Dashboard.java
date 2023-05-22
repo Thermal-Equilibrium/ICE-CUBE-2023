@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.stream.CameraStreamSource;
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 
+import java.text.DecimalFormat;
+
 public class Dashboard extends Subsystem {
 
 
@@ -38,5 +40,9 @@ public class Dashboard extends Subsystem {
 	@Override
 	public void shutdown() {
 
+	}
+
+	public static String round2Decimals(double value) {
+		return String.valueOf((double) Math.round(value * 100) / 100);
 	}
 }
