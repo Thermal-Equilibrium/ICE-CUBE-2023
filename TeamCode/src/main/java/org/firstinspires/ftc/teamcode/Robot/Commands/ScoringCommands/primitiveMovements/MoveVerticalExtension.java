@@ -6,18 +6,13 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Vertical
 
 public class MoveVerticalExtension extends Command {
 
-	VerticalExtension extension;
+	protected VerticalExtension extension;
 	double desiredPosition;
-	Drivetrain drivetrain;
-	double distanceFromPole = 3; //inches
-	double initialPoition = 0;
 
-	public MoveVerticalExtension(VerticalExtension extension, double desiredPosition, Drivetrain drivetrain) {
-		super(drivetrain);
+	public MoveVerticalExtension(VerticalExtension extension, double desiredPosition) {
+
 		this.extension = extension;
 		this.desiredPosition = desiredPosition;
-
-		this.drivetrain = drivetrain;
 	}
 
 	@Override

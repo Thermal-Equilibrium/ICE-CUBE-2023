@@ -512,7 +512,7 @@ public class ScoringCommandGroups {
 	}
 
 	public MoveVerticalExtension moveVerticalExtension(double position) {
-		return new MoveVerticalExtension(verticalExtension, position, drivetrain);
+		return new MoveVerticalExtension(verticalExtension, position);
 	}
 
 	public Command depositCone() {
