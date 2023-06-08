@@ -30,7 +30,7 @@ public class Teleop extends BaseTeleop {
 		robot.gamepad1.whenRightTriggerPressed(new RunCommandLegacy(commandGroups::moveVerticalExtensionDownOrReleaseClaw));
 		robot.gamepad1.whenSquarePressed(commandGroups.moveVerticalExtension(VerticalExtension.MID_POSITION_teleop));
 		robot.gamepad1.whenCrossPressed(new RunCommandLegacy(commandGroups::moveToIntakingLeftWithDeposit));
-		robot.gamepad1.whenTrianglePressed(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION));
+		robot.gamepad1.whenTrianglePressed(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION_teleop));
 		robot.gamepad1.whenCirclePressed(commandGroups.moveToLowGoalScoring());
 		robot.backCamera.setVisionMode(VisionMode.LION); //TODO this might be redundant, remove this if pipeline instance is created at the start of every opmode
 		return new MultipleCommand(new RobotRelative(robot, robot.gamepad1));
