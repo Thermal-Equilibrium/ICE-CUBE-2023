@@ -65,7 +65,7 @@ public class Drivetrain extends Subsystem {
 
 		double dt = integration_timer.seconds();
 		integration_timer.reset();
-		Vector2d acceleration = getFieldRelativeAcceleration();
+		Vector2d acceleration = getRobotRelativeAcceleration();
 		if (robotIsLikelyStill()) {
 			imu_velocity_estimate = new Vector2d();
 			stoppedAccelerationsY.push(acceleration.getY());
@@ -84,6 +84,7 @@ public class Drivetrain extends Subsystem {
 		}
 
 		acceleration = acceleration.plus(new Vector2d(-average_biasX,-average_biasY));
+		acceleration = acceleration.rotated(drive.getPoseEstimate().getHeading());
 
 
 		Vector2d velocityDelta = acceleration.times(dt);
