@@ -5,9 +5,6 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.MainScoringMechanism;
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.BackCamera;
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.FrontCamera;
 import org.firstinspires.ftc.teamcode.Simulation.TestCommandsSubsystems.PrintSubsystem1;
 import org.firstinspires.ftc.teamcode.Utils.Team;
 import org.firstinspires.ftc.teamcode.VisionUtils.VisionMode;
@@ -21,19 +18,19 @@ public class Robot {
 	public Input gamepad1;
 	public Input gamepad2;
 	public Drivetrain drivetrain = new Drivetrain();
-	public MainScoringMechanism scoringMechanism = new MainScoringMechanism();
-	public FieldMap field = new FieldMap();
-	public FrontCamera frontCamera;
-	public BackCamera backCamera;
+//	public MainScoringMechanism scoringMechanism = new MainScoringMechanism();
+//	public FieldMap field = new FieldMap();
+//	public FrontCamera frontCamera;
+//	public BackCamera backCamera;
 	// print subsystem for testing
 	public PrintSubsystem1 print = new PrintSubsystem1();
 	protected CommandScheduler scheduler;
 	ArrayList<LynxModule> modules = new ArrayList<>();
 
 	public Robot(HardwareMap hwMap, OpMode opMode, Gamepad gamepad1, Gamepad gamepad2, Team team, VisionMode visionMode) {
-		backCamera = new BackCamera(team,visionMode);
-		frontCamera = new FrontCamera();
-		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard, scoringMechanism, field, backCamera,frontCamera,print);
+//		backCamera = new BackCamera(team,visionMode);
+//		frontCamera = new FrontCamera();
+		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard,print);
 		this.gamepad1 = new Input(gamepad1, scheduler);
 		this.gamepad2 = new Input(gamepad2, scheduler);
 
@@ -58,9 +55,7 @@ public class Robot {
 		Dashboard.packet.put("game1 Delay", gamepad1.getDelayLength());
 		Dashboard.packet.put("game2 Delay", gamepad2.getDelayLength());
 		Dashboard.packet.put("drivetrain Delay", drivetrain.getDelayLength());
-		Dashboard.packet.put("scoring Delay", scoringMechanism.getDelayLength());
-		Dashboard.packet.put("distanceSensor Delay", scoringMechanism.getDelayLength());
-		Dashboard.packet.put("field delay", field.getDelayLength());
+
 	}
 
 	public void shutdown() {

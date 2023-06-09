@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.VisionUtils.VisionMode;
 
 public abstract class BaseTeleop extends LinearOpMode {
 
-	public final Pose2d initialPose = new Pose2d(-36, 66.5, Math.toRadians(-90)); // new Pose2d( -36, 63.5, Math.toRadians(-90));
+	public final Pose2d initialPose = new Pose2d(0, 0, Math.toRadians(0)); // new Pose2d( -36, 63.5, Math.toRadians(-90));
 	protected Robot robot;
 
 	@Override

@@ -203,6 +203,10 @@ public class SampleMecanumDrive extends MecanumDrive {
 		return new TrajectoryBuilder(startPose, startHeading, VEL_CONSTRAINT, ACCEL_CONSTRAINT);
 	}
 
+	public BNO055IMU getImu() {
+		return imu;
+	}
+
 	public TrajectorySequenceBuilder trajectorySequenceBuilder(Pose2d startPose) {
 		return new TrajectorySequenceBuilder(
 				startPose,
@@ -348,6 +352,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 	}
 
 	@Override
+	@NonNull
 	public Double getExternalHeadingVelocity() {
 
 		return (double) imu.getAngularVelocity().zRotationRate;
