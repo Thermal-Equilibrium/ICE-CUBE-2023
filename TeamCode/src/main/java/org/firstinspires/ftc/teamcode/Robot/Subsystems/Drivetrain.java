@@ -36,6 +36,8 @@ public class Drivetrain extends Subsystem {
 
 	boolean has_begun_integration = false;
 
+	Vector2d hubPosition_m = new Vector2d(0,-metersFomInches(2.5));
+
 
 	SizedStack<Double> stoppedAccelerationsY = new SizedStack<>(60);
 	SizedStack<Double> stoppedAccelerationsX = new SizedStack<>(60);
@@ -66,12 +68,25 @@ public class Drivetrain extends Subsystem {
 		double dt = integration_timer.seconds();
 		integration_timer.reset();
 		Vector2d acceleration = getRobotRelativeAcceleration();
+
+		double ang_vel_rad = drive.getExternalHeadingVelocity();
+		Vector2d hub_acceleration_centripetal = hubPosition_m.times(ang_vel_rad * ang_vel_rad);
+
+		hub_acceleration_centripetal = new Vector2d(
+				inchesFromMeters(hub_acceleration_centripetal.getX()),
+				inchesFromMeters(hub_acceleration_centripetal.getY())
+		);
+
+		acceleration = acceleration.minus(hub_acceleration_centripetal);
+
+
 		if (robotIsLikelyStill()) {
 			imu_velocity_estimate = new Vector2d();
 			stoppedAccelerationsY.push(acceleration.getY());
 			stoppedAccelerationsX.push(acceleration.getX());
 
 			average_biasX = 0;
+			average_biasY = 0;
 			for (double accel : stoppedAccelerationsX) {
 				average_biasX += accel;
 			}
@@ -85,7 +100,6 @@ public class Drivetrain extends Subsystem {
 
 		acceleration = acceleration.plus(new Vector2d(-average_biasX,-average_biasY));
 		acceleration = acceleration.rotated(drive.getPoseEstimate().getHeading());
-
 
 		Vector2d velocityDelta = acceleration.times(dt);
 
@@ -184,6 +198,10 @@ public class Drivetrain extends Subsystem {
 
 	public double inchesFromMeters(double meters) {
 		return meters * 39.370079;
+	}
+
+	public double metersFomInches(double inches) {
+		return inches * 0.0254;
 	}
 
 	public void setPIDMode(boolean trajectory) {
