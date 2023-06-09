@@ -148,10 +148,10 @@ public class SampleMecanumDrive extends MecanumDrive {
 		// BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_Y);
 
 
-		leftFront = hardwareMap.get(DcMotorEx.class, "FrontLeft");
-		leftRear = hardwareMap.get(DcMotorEx.class, "BackLeft");
-		rightRear = hardwareMap.get(DcMotorEx.class, "BackRight");
-		rightFront = hardwareMap.get(DcMotorEx.class, "FrontRight");
+		leftFront = hardwareMap.get(DcMotorEx.class, "frontleft");
+		leftRear = hardwareMap.get(DcMotorEx.class, "backleft");
+		rightRear = hardwareMap.get(DcMotorEx.class, "backright");
+		rightFront = hardwareMap.get(DcMotorEx.class, "frontright");
 
 
 		motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
