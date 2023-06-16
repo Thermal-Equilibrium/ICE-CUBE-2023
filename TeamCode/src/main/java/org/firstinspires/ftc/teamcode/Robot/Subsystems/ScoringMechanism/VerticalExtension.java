@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.Utils.ProfiledPID;
 @Config
 public class VerticalExtension extends Subsystem {
 
-	public static double HIGH_POSITION = 25.7;
+	public static double HIGH_POSITION = 26;
 	public static double HIGH_POSITION_teleop = 26.7;
 
 	public static double MID_POSITION = 15.5;
@@ -45,7 +45,7 @@ public class VerticalExtension extends Subsystem {
 	DcMotorEx vertical1;
 	DcMotorEx vertical2;
 	PIDCoefficients coefficients = new PIDCoefficients(Kp, 0, Kd);
-	MotionConstraint upConstraint = new MotionConstraint(max_accel, max_accel, max_velocity);
+	MotionConstraint upConstraint = new MotionConstraint(max_accel/ 1.5, max_accel / 2, max_velocity / 1.5);
 	MotionConstraint downConstraint = new MotionConstraint(max_accel, max_accel, max_velocity);
 	ProfiledPID controller = new ProfiledPID(upConstraint, downConstraint, coefficients);
 	private VoltageSensor batteryVoltageSensor;

@@ -37,11 +37,11 @@ public class PumpkinSpiceAuto extends BaseAuto {
 	Pose2d startPose = new Pose2d(-36, 66.5, Math.toRadians(-90));
 	Pose2d goToPole2 = shiftRobotRelative(
 			new Pose2d(-36.2, 10.158013549498268, Math.toRadians(338.11832672430523)),
-			0.6,
+			0.8,
 			-1
 	);
 	final Pose2d parkLefter1 = new Pose2d(0, 19, Math.toRadians(270));
-	final Pose2d parkLefter_new = new Pose2d(12, 15, Math.toRadians(90));
+	final Pose2d parkLefter_new = new Pose2d(12, 19, Math.toRadians(90));
 
 	Pose2d goToPoleAfterCorrection = new Pose2d(goToPole2.getX(), goToPole2.getY() + 3, goToPole2.getHeading());
 	final Pose2d parkRight1 = new Pose2d(goToPole2.getX() - 1, goToPole2.getY() + 3, goToPole2.getHeading());
@@ -214,7 +214,7 @@ public class PumpkinSpiceAuto extends BaseAuto {
 	public Command DepositIfMisFired(ScoringCommandGroups commandGroups) {
 		Command c = new RunCommand(() -> {
 			System.out.println("checking if misfire occurred");
-			if (robot.scoringMechanism.verticalExtension.coneIsStillInDeposit()) {
+			if (false) {// if (robot.scoringMechanism.verticalExtension.coneIsStillInDeposit()) {
 				System.out.println("Misfire did occur");
 				return commandGroups.openClaw()
 						.addNext(new SetDrivetrainBrake(robot.drivetrain, Drivetrain.BrakeStates.FREE))
