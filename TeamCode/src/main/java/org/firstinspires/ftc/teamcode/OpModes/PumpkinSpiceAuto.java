@@ -124,17 +124,14 @@ public class PumpkinSpiceAuto extends BaseAuto {
 
 		Command auto = followRR(driveToPole).addNext(new SetDrivetrainBrake(robot.drivetrain, Drivetrain.BrakeStates.FREE));
 
-
 		auto.addNext(new RoadrunnerHoldPose(robot, goToPole2));
 		auto.addNext(new SetDrivetrainBrake(robot.drivetrain, Drivetrain.BrakeStates.ACTIVATED));
 		for (int i = 0; i < 5; ++i) {
 			addCycle(auto, commandGroups);
 		}
-
 		auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION))
 				.addNext(new Delay(0.25))
 				.addNext(commandGroups.depositCone());
-
 		auto.addNext(commandGroups.moveHorizontalExtension(0));
 		auto.addNext(new SetDrivetrainBrake(robot.drivetrain, Drivetrain.BrakeStates.FREE));
 		auto.addNext(new Delay(0.1));
@@ -214,7 +211,7 @@ public class PumpkinSpiceAuto extends BaseAuto {
 	public Command DepositIfMisFired(ScoringCommandGroups commandGroups) {
 		Command c = new RunCommand(() -> {
 			System.out.println("checking if misfire occurred");
-			if (false) {// if (robot.scoringMechanism.verticalExtension.coneIsStillInDeposit()) {
+			if (robot.scoringMechanism.verticalExtension.coneIsStillInDeposit()) {
 				System.out.println("Misfire did occur");
 				return commandGroups.openClaw()
 						.addNext(new SetDrivetrainBrake(robot.drivetrain, Drivetrain.BrakeStates.FREE))

@@ -297,6 +297,7 @@ public class ScoringCommandGroups {
 		return moveHorizontalExtension(HorizontalExtension.CLOSE_INTAKE)
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
 				.addNext(moveTurret(Turret.TurretStates.Slight_LEFT))
+				.addNext(new Delay(0.1))
 				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
 	}
 
@@ -324,7 +325,7 @@ public class ScoringCommandGroups {
 
 		return moveArm(Turret.ArmStates.TRANSFER_SAFE)
 				.addNext(moveTurret(Turret.TurretStates.Slight_RIGHT_AUTO))
-				.addNext(new MultipleCommand(moveArmDirect(-0.02 + armConeHeights[currentCone]), openClaw()));
+				.addNext(new MultipleCommand(moveArmDirect(-0.03 + armConeHeights[currentCone]), openClaw()));
 	}
 
 	public Command moveToIntakingLeftAuto() {
@@ -382,6 +383,7 @@ public class ScoringCommandGroups {
 		return grabCone() // 0.25s
 				.addNext(openLatch()) // 0s
 				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE)) // 0.25s
+				.addNext(new Delay(0.15))
 				.addNext(moveTurret(Turret.TurretStates.TRANSFER)) // 0.2s
 				.addNext(new Delay(0.15)) // 0.15s
 				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION)) // some amount of time, assuming about 0.2
@@ -472,7 +474,7 @@ public class ScoringCommandGroups {
 		} else {
 			return new MultipleCommand(new MoveVerticalExtensionTeleop(verticalExtension,VerticalExtension.IN_POSITION)
 			,
-					new Delay(0.2)
+					new Delay(0.3)
 							.addNext(new OpenLatch(turret)
 					)
 			);

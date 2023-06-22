@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 import org.firstinspires.ftc.teamcode.RR_quickstart.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.Utils.PoseStorage;
 
 public class Drivetrain extends Subsystem {
 	protected HardwareMap hwMap;
@@ -30,6 +31,13 @@ public class Drivetrain extends Subsystem {
 	}
 
 	@Override
+	public void initTeleop(HardwareMap hwMap) {
+		initAuto(hwMap);
+		drive.setPoseEstimate(PoseStorage.pose_storage);
+	}
+
+
+	@Override
 	public void periodic() {
 		drive.update();
 		switch (brakeState) {
@@ -40,6 +48,8 @@ public class Drivetrain extends Subsystem {
 				aBrake.setPosition(brakeActive);
 				break;
 		}
+
+		PoseStorage.pose_storage = drive.getPoseEstimate();
 
 	}
 

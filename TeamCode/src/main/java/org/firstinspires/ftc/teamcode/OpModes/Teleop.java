@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+
 import org.firstinspires.ftc.teamcode.CommandFramework.BaseTeleop;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
@@ -7,6 +9,7 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.Brake.To
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.RobotRelative;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.NullCommand;
+import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.RunCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.RunCommandLegacy;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.ScoringCommandGroups;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
@@ -32,6 +35,10 @@ public class Teleop extends BaseTeleop {
 		robot.gamepad1.whenCrossPressed(new RunCommandLegacy(commandGroups::moveToIntakingLeftWithDeposit));
 		robot.gamepad1.whenTrianglePressed(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION_teleop));
 		robot.gamepad1.whenCirclePressed(commandGroups.moveToLowGoalScoring());
+		robot.gamepad1.whenRightStickButtonPressed(new RunCommand(() -> {
+			robot.drivetrain.setPose(new Pose2d(0,0,Math.toRadians(-90)));
+			return new NullCommand();
+		}));
 		robot.backCamera.setVisionMode(VisionMode.LION); //TODO this might be redundant, remove this if pipeline instance is created at the start of every opmode
 		return new MultipleCommand(new RobotRelative(robot, robot.gamepad1));
 	}

@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands;
 
 
+import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.AngleController;
+import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
+import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
@@ -14,10 +17,16 @@ public class RobotRelative extends Command {
 
 
 	protected boolean isBoostAppropriate = false;
+
+	BasicPID heading_controller = new BasicPID(new PIDCoefficients(3,0,0.2));
+	AngleController heading_control = new AngleController(heading_controller);
+
 	Drivetrain drivetrain;
 	HorizontalExtension extension;
 	Input game_pad1;
 	double strafe_dead_band = 0.1;
+
+	double snap_angle = Math.toRadians(-90);
 
 	public RobotRelative(Robot robot, Input game_pad1) {
 		super(robot.drivetrain, game_pad1);
@@ -45,8 +54,15 @@ public class RobotRelative extends Command {
 		x = game_pad1.getForwardJoystick();
 		turn = game_pad1.getTurnJoystick();
 
-		if (this.extension.getSlidePosition() > 200) {
+		if (this.extension.getSlidePosition() > 100) {
 			turn *= 0.5;
+		}
+
+		if (game_pad1.getLeft_trigger_value() > 0.5) {
+			turn = heading_control.calculate(
+					snap_angle,
+					drivetrain.drive.getPoseEstimate().getHeading()
+			);
 		}
 
 		y = MathUtils.applyDeadBand(y, strafe_dead_band);
