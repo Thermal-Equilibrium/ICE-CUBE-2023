@@ -300,6 +300,13 @@ public class ScoringCommandGroups {
 				.addNext(new Delay(0.1))
 				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
 	}
+	public Command moveToIntakingLeftLonger() {
+		return moveHorizontalExtension(HorizontalExtension.autoExtension)
+				.addNext(moveArm(Turret.ArmStates.TRANSFER_SAFE))
+				.addNext(moveTurret(Turret.TurretStates.Slight_LEFT))
+				.addNext(new Delay(0.1))
+				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
+	}
 
 	public Command moveToIntakingLeftWithDeposit() {
 		Pose2d drivetrainPos = drivetrain.getPose();

@@ -25,9 +25,8 @@ public class Teleop extends BaseTeleop {
 		ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.scoringMechanism, robot.drivetrain, robot.backCamera);
 
 		robot.gamepad1.whenDPadDownPressed(new RunCommandLegacy(commandGroups::moveToIntakingLeft));
-		robot.gamepad1.whenDPadLeftPressed(new NullCommand());
+		robot.gamepad1.whenDPadUpPressed(new RunCommandLegacy(commandGroups::moveToIntakingLeftLonger));
 		robot.gamepad1.whenLeftBumperPressed(commandGroups.cornerScore());
-		robot.gamepad1.whenDPadRightPressed(new RunCommandLegacy(commandGroups::fastTeleAutoSingleMeasure));
 		robot.gamepad1.whenLeftStickButtonPressed(new ToggleBrake(robot.drivetrain));
 		robot.gamepad1.whenRightBumperPressed(new RunCommandLegacy(commandGroups::collectCone));
 		robot.gamepad1.whenRightTriggerPressed(new RunCommandLegacy(commandGroups::moveVerticalExtensionDownOrReleaseClaw));
