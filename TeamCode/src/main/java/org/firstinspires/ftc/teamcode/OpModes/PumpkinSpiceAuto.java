@@ -37,8 +37,8 @@ public class PumpkinSpiceAuto extends BaseAuto {
 	Pose2d startPose = new Pose2d(-36, 66.5, Math.toRadians(-90));
 	Pose2d goToPole2 = shiftRobotRelative(
 			new Pose2d(-36.2, 10.158013549498268, Math.toRadians(338.11832672430523)),
-			0.8,
-			-1
+			0.7,
+			-1.7
 	);
 	final Pose2d parkLefter1 = new Pose2d(0, 19, Math.toRadians(270));
 	final Pose2d parkLefter_new = new Pose2d(12, 19, Math.toRadians(90));
@@ -129,7 +129,7 @@ public class PumpkinSpiceAuto extends BaseAuto {
 		for (int i = 0; i < 5; ++i) {
 			addCycle(auto, commandGroups);
 		}
-		auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION))
+		auto.addNext(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION_teleop))
 				.addNext(new Delay(0.25))
 				.addNext(commandGroups.depositCone());
 		auto.addNext(commandGroups.moveHorizontalExtension(0));
@@ -143,15 +143,17 @@ public class PumpkinSpiceAuto extends BaseAuto {
 
 
 		Command nextCommand = multiCommand(commandGroups.moveVerticalExtension(VerticalExtension.HIGH_POSITION),
-				commandGroups.moveToIntakingRightAuto(),
+				commandGroups.moveToIntakingPosition(),
 				commandGroups.moveHorizontalExtension(HorizontalExtension.PRE_EMPTIVE_EXTEND))
 				.addNext(commandGroups.moveHorizontalExtension(HorizontalExtension.mostlyAutoExtension))
-				.addNext(commandGroups.collectConeAutoPT1(HorizontalExtension.autoExtension,
-						verticalExtensionHitPoleProcedure(commandGroups)))
+				.addNext(commandGroups.depositConeAndGrabCone(
+						HorizontalExtension.autoExtension,
+						verticalExtensionHitPoleProcedure(commandGroups))
+				)
 				.addNext(DepositIfMisFired(commandGroups))
-				.addNext(commandGroups.collectConeAutoPT1_5())
+				.addNext(commandGroups.bringConeIn())
 				.addNext(DislodgeConeIdeal())
-				.addNext(commandGroups.collectConeAutoPT2());
+				.addNext(commandGroups.completeConeTransfer());
 
 		command.addNext(nextCommand);
 
@@ -213,6 +215,7 @@ public class PumpkinSpiceAuto extends BaseAuto {
 			System.out.println("checking if misfire occurred");
 			if (robot.scoringMechanism.verticalExtension.coneIsStillInDeposit()) {
 				System.out.println("Misfire did occur");
+
 				return commandGroups.openClaw()
 						.addNext(new SetDrivetrainBrake(robot.drivetrain, Drivetrain.BrakeStates.FREE))
 						.addNext(new Delay(0.2))

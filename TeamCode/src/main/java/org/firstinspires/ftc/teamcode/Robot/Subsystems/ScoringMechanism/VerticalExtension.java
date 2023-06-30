@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.Utils.ProfiledPID;
 public class VerticalExtension extends Subsystem {
 
 	public static double HIGH_POSITION = 26;
-	public static double HIGH_POSITION_teleop = 26.7;
+	public static double HIGH_POSITION_teleop = 26.3;
 
 	public static double MID_POSITION = 15.5;
 
@@ -35,7 +35,7 @@ public class VerticalExtension extends Subsystem {
 	public static double max_accel = 250;
 	public static double max_velocity = 250;
 
-	public static double DISTANCE_FOR_CONE = 8; // 9 inches or less means we still have the cone
+	public static double DISTANCE_FOR_CONE = 8.5; // 9 inches or less means we still have the cone
 
 	public Rev2mDistanceSensorEx distanceSensor;
 

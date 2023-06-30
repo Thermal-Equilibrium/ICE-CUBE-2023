@@ -320,12 +320,12 @@ public class ScoringCommandGroups {
 				.addNext(new MultipleCommand(moveArm(Turret.ArmStates.DOWN), openClaw()));
 	}
 
-	public Command moveToIntakingRightAuto() {
+	public Command moveToIntakingPosition() {
 		currentCone--;
 
 		return moveArm(Turret.ArmStates.TRANSFER_SAFE)
 				.addNext(moveTurret(Turret.TurretStates.Slight_RIGHT_AUTO))
-				.addNext(new MultipleCommand(moveArmDirect(-0.03 + armConeHeights[currentCone]), openClaw()));
+				.addNext(new MultipleCommand(moveArmDirect(-0.04 + armConeHeights[currentCone]), openClaw()));
 	}
 
 	public Command moveToIntakingLeftAuto() {
@@ -415,7 +415,7 @@ public class ScoringCommandGroups {
 
 
 
-	public Command collectConeAutoPT1(double autoExtensionDistance, Command safetyProcedure) {
+	public Command depositConeAndGrabCone(double autoExtensionDistance, Command safetyProcedure) {
 
 		return depositConeAsync()
 				.addNext(new RunCommand(() -> {
@@ -432,14 +432,15 @@ public class ScoringCommandGroups {
 				.addNext(new MoveClawOnceSlidesDown(turret,verticalExtension, Turret.ClawStates.Closed));
 	}
 
-	public Command collectConeAutoPT1_5() {
+	public Command bringConeIn() {
 		return moveArm(Turret.ArmStates.TRANSFER_SAFE)
+				.addNext(new Delay(0.15))
 				.addNext(moveTurret(Turret.TurretStates.TRANSFER))
 				.addNext(moveHorizontalExtension(HorizontalExtension.IN_POSITION));
 
 	}
 
-	public Command collectConeAutoPT2() {
+	public Command completeConeTransfer() {
 		return moveArm(Turret.ArmStates.TRANSFER)
 				.addNext(new Delay(0.15))
 				.addNext(releaseCone())
