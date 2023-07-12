@@ -3,25 +3,25 @@ package org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveM
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.ArmSystem;
 
 public class MoveClaw extends Command {
 
 	double delayS = 0.20;
 
-	Turret turret;
-	Turret.ClawStates clawState;
+	ArmSystem armSystem;
+	ArmSystem.ClawStates clawState;
 
 	ElapsedTime timer = new ElapsedTime();
 
-	public MoveClaw(Turret turret, Turret.ClawStates clawState) {
-		this.turret = turret;
+	public MoveClaw(ArmSystem armSystem, ArmSystem.ClawStates clawState) {
+		this.armSystem = armSystem;
 		this.clawState = clawState;
 	}
 
 	@Override
 	public void init() {
-		turret.setClawGrabbing(clawState);
+		armSystem.setClawGrabbing(clawState);
 		timer.reset();
 	}
 

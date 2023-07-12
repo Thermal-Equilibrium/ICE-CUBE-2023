@@ -6,25 +6,22 @@ import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 
 public class MainScoringMechanism extends Subsystem {
 
-	public HorizontalExtension horizontalExtension = new HorizontalExtension();
 	public VerticalExtension verticalExtension = new VerticalExtension();
-	public Turret turret = new Turret();
+	public ArmSystem armSystem = new ArmSystem();
 
 
 	MechanismStates state = MechanismStates.BEGIN;
 
 	@Override
 	public void initAuto(HardwareMap hwMap) {
-		horizontalExtension.initAuto(hwMap);
 		verticalExtension.initAuto(hwMap);
-		turret.initAuto(hwMap);
+		armSystem.initAuto(hwMap);
 	}
 
 	@Override
 	public void initTeleop(HardwareMap hwMap) {
-		horizontalExtension.initTeleop(hwMap);
 		verticalExtension.initTeleop(hwMap);
-		turret.initTeleop(hwMap);
+		armSystem.initTeleop(hwMap);
 	}
 
 	@Override
@@ -39,9 +36,8 @@ public class MainScoringMechanism extends Subsystem {
 
 
 	private void updateMechanisms() {
-		horizontalExtension.periodic();
 		verticalExtension.periodic();
-		turret.periodic();
+		armSystem.periodic();
 	}
 
 	private void updateLogic() {

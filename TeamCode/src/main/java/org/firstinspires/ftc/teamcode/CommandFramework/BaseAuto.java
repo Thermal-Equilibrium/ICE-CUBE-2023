@@ -35,7 +35,7 @@ public abstract class BaseAuto extends LinearOpMode {
 
 	@Override
 	public void runOpMode() {
-		robot = new Robot(hardwareMap, Robot.OpMode.Auto, gamepad1, gamepad2, getTeam(), getVisionMode());
+		robot = new Robot(hardwareMap, Robot.OpMode.Auto, gamepad1, gamepad2);
 		setRobotPosition();
 
 		while (!isStopRequested() && !opModeIsActive() && opModeInInit()) {

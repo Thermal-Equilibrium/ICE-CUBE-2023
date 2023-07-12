@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 
-public class Turret extends Subsystem {
+public class ArmSystem extends Subsystem {
 
 	private static final double turretTransfer = Math.toRadians(179);//3.05;
 	private static final double MIN_RAW_SERVO_ANGLE = 0;

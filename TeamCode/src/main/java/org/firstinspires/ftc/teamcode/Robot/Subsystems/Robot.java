@@ -24,16 +24,14 @@ public class Robot {
 	public MainScoringMechanism scoringMechanism = new MainScoringMechanism();
 	public FieldMap field = new FieldMap();
 	public FrontCamera frontCamera;
-	public BackCamera backCamera;
 	// print subsystem for testing
 	public PrintSubsystem1 print = new PrintSubsystem1();
 	protected CommandScheduler scheduler;
 	ArrayList<LynxModule> modules = new ArrayList<>();
 
-	public Robot(HardwareMap hwMap, OpMode opMode, Gamepad gamepad1, Gamepad gamepad2, Team team, VisionMode visionMode) {
-		backCamera = new BackCamera(team,visionMode);
+	public Robot(HardwareMap hwMap, OpMode opMode, Gamepad gamepad1, Gamepad gamepad2) {
 		frontCamera = new FrontCamera();
-		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard, scoringMechanism, field, backCamera,frontCamera,print);
+		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard, field,print);
 		this.gamepad1 = new Input(gamepad1, scheduler);
 		this.gamepad2 = new Input(gamepad2, scheduler);
 

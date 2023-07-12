@@ -3,24 +3,24 @@ package org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveM
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Turret;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.ArmSystem;
 
 public class MoveArm extends Command {
 	double delayS = 0.15;
 
-	Turret turret;
-	Turret.ArmStates armStates;
+	ArmSystem armSystem;
+	ArmSystem.ArmStates armStates;
 
 	ElapsedTime timer = new ElapsedTime();
 
-	public MoveArm(Turret turret, Turret.ArmStates armStates) {
-		this.turret = turret;
+	public MoveArm(ArmSystem armSystem, ArmSystem.ArmStates armStates) {
+		this.armSystem = armSystem;
 		this.armStates = armStates;
 	}
 
 	@Override
 	public void init() {
-		turret.setArm(armStates);
+		armSystem.setArm(armStates);
 		timer.reset();
 	}
 
