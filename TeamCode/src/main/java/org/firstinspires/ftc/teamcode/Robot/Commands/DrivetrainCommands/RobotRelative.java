@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands;
 import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.AngleController;
 import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
 import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.Input;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
 import org.firstinspires.ftc.teamcode.Utils.MathUtils;
 
+@Config
 public class RobotRelative extends Command {
 
 
@@ -25,6 +27,10 @@ public class RobotRelative extends Command {
 	double strafe_dead_band = 0.1;
 
 	double snap_angle = Math.toRadians(-90);
+
+	public static double x_power = 0;
+	public static double y_power = 0;
+	public static double turn_power = 0;
 
 	public RobotRelative(Robot robot, Input game_pad1) {
 		super(robot.drivetrain, game_pad1);
@@ -60,7 +66,7 @@ public class RobotRelative extends Command {
 
 		y = MathUtils.applyDeadBand(y, strafe_dead_band);
 
-		Pose2d powers = new Pose2d(x * scalar, y * scalar, turn * scalar * 0.5);
+		Pose2d powers = new Pose2d(x * scalar + x_power, y * scalar + y_power, turn * scalar * 0.5 + turn_power);
 
 
 		drivetrain.robotRelative(powers);

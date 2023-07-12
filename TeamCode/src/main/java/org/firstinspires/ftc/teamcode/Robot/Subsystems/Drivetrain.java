@@ -14,20 +14,12 @@ import org.firstinspires.ftc.teamcode.Utils.PoseStorage;
 public class Drivetrain extends Subsystem {
 	protected HardwareMap hwMap;
 
-	protected double leftPower = 0;
-	protected double rightPower = 0;
 	public SampleMecanumDrive drive;
-	Servo aBrake;
-	double brakeActive = 0.5;
-	double brakeReleased = 0.7;
-	BrakeStates brakeState = BrakeStates.FREE;
 
 	@Override
 	public void initAuto(HardwareMap hwMap) {
 		this.hwMap = hwMap;
 		drive = new SampleMecanumDrive(hwMap);
-		aBrake = hwMap.get(Servo.class, "break");
-		aBrake.setPosition(brakeReleased);
 	}
 
 	@Override
@@ -40,17 +32,7 @@ public class Drivetrain extends Subsystem {
 	@Override
 	public void periodic() {
 		drive.update();
-		switch (brakeState) {
-			case FREE:
-				aBrake.setPosition(brakeReleased);
-				break;
-			case ACTIVATED:
-				aBrake.setPosition(brakeActive);
-				break;
-		}
-
 		PoseStorage.pose_storage = drive.getPoseEstimate();
-
 	}
 
 
@@ -75,13 +57,6 @@ public class Drivetrain extends Subsystem {
 		drive.setMotorPowers(0, 0, 0, 0);
 	}
 
-	public double getLeftPower() {
-		return leftPower;
-	}
-
-	public double getRightPower() {
-		return rightPower;
-	}
 
 	public Pose2d getPose() {
 		return drive.getPoseEstimate();
@@ -103,21 +78,6 @@ public class Drivetrain extends Subsystem {
 		return drive.getPoseVelocity();
 	}
 
-	public BrakeStates getBrakeState() {
-		return brakeState;
-	}
-
-	public void setBrakeState(BrakeStates brakeState) {
-		this.brakeState = brakeState;
-	}
-
-	public void toggleBrakeState() {
-		if (brakeState.equals(BrakeStates.ACTIVATED)) {
-			brakeState = BrakeStates.FREE;
-		} else {
-			brakeState = BrakeStates.ACTIVATED;
-		}
-	}
 
 	public void setTrajectoryTracking(boolean shouldTrajectoryTrackNotStablilize) {
 		drive.isHoldingPosition = !shouldTrajectoryTrackNotStablilize;
@@ -127,10 +87,6 @@ public class Drivetrain extends Subsystem {
 		drive.holdingPose = pose;
 	}
 
-	public enum BrakeStates {
-		FREE,
-		ACTIVATED
-	}
 
 
 	public void setPIDMode(boolean trajectory) {
