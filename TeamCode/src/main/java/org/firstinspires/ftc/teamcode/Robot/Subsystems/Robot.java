@@ -59,6 +59,15 @@ public class Robot {
 		Dashboard.packet.put("scoring Delay", scoringMechanism.getDelayLength());
 		Dashboard.packet.put("distanceSensor Delay", scoringMechanism.getDelayLength());
 		Dashboard.packet.put("field delay", field.getDelayLength());
+
+//		Dashboard.packet.put("left stick x", gamepad1.getLeft_stick_x());
+//		Dashboard.packet.put("left stick y", gamepad1.getLeft_stick_y());
+//		Dashboard.packet.put("right stick x", gamepad1.getRight_stick_x());
+//		Dashboard.packet.put("right stick y", gamepad1.getRight_stick_y());
+//
+//		Dashboard.packet.put("forward joystick", gamepad1.getForwardJoystick());
+//		Dashboard.packet.put("strafe joystick", gamepad1.getStrafeJoystick());
+//		Dashboard.packet.put("turn joystick", gamepad1.getTurnJoystick());
 	}
 
 	public void shutdown() {

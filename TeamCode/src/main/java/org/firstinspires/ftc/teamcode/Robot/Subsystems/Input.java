@@ -427,9 +427,7 @@ public class Input extends Subsystem {
 		return -getLeft_stick_x();
 	}
 
-	public double getTurnJoystick() {
-		return -getRight_stick_x();
-	}
+	public double getTurnJoystick() { return -getRight_stick_x(); }
 
 	public boolean isCrossPressed() {
 		return cross && !cross_prev;
