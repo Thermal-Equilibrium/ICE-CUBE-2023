@@ -6,7 +6,7 @@ import android.annotation.SuppressLint;
 import com.acmerobotics.dashboard.config.Config;
 
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.BackCamera;
-import org.firstinspires.ftc.teamcode.Utils.Team;
+import org.firstinspires.ftc.teamcode.Purepursuit.Utils.Team;
 import org.firstinspires.ftc.teamcode.VisionUtils.CameraBasedPosition;
 import org.firstinspires.ftc.teamcode.VisionUtils.Cone;
 import org.firstinspires.ftc.teamcode.VisionUtils.ConePointMethod;

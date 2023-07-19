@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Utils;
+package org.firstinspires.ftc.teamcode.Purepursuit.Utils;
 
 public class MathUtils {
 	public static double applyDeadBand(double input, double deadBand) {

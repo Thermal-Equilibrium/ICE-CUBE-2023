@@ -5,12 +5,12 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.CommandScheduler;
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.MainScoringMechanism;
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.BackCamera;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Claw;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Flip;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Rotate;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.FrontCamera;
 import org.firstinspires.ftc.teamcode.Simulation.TestCommandsSubsystems.PrintSubsystem1;
-import org.firstinspires.ftc.teamcode.Utils.Team;
-import org.firstinspires.ftc.teamcode.VisionUtils.VisionMode;
 
 import java.util.ArrayList;
 
@@ -21,9 +21,13 @@ public class Robot {
 	public Input gamepad1;
 	public Input gamepad2;
 	public Drivetrain drivetrain = new Drivetrain();
-	public MainScoringMechanism scoringMechanism = new MainScoringMechanism();
+	public VerticalExtension extension = new VerticalExtension();
+	public Claw claw = new Claw();
+	public Flip flip = new Flip();
+	public Rotate rotate = new Rotate();
 	public FieldMap field = new FieldMap();
 	public FrontCamera frontCamera;
+	public ConeSensors coneSensors;
 	// print subsystem for testing
 	public PrintSubsystem1 print = new PrintSubsystem1();
 	protected CommandScheduler scheduler;
@@ -31,9 +35,11 @@ public class Robot {
 
 	public Robot(HardwareMap hwMap, OpMode opMode, Gamepad gamepad1, Gamepad gamepad2) {
 		frontCamera = new FrontCamera();
-		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard, field,print);
+		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard, field,print,extension,claw,flip,rotate);
 		this.gamepad1 = new Input(gamepad1, scheduler);
 		this.gamepad2 = new Input(gamepad2, scheduler);
+		coneSensors = new ConeSensors(scheduler);
+		scheduler.appendSubsystem(coneSensors);
 
 		if (opMode.equals(OpMode.Auto)) {
 			scheduler.initAuto();
@@ -56,8 +62,6 @@ public class Robot {
 		Dashboard.packet.put("game1 Delay", gamepad1.getDelayLength());
 		Dashboard.packet.put("game2 Delay", gamepad2.getDelayLength());
 		Dashboard.packet.put("drivetrain Delay", drivetrain.getDelayLength());
-		Dashboard.packet.put("scoring Delay", scoringMechanism.getDelayLength());
-		Dashboard.packet.put("distanceSensor Delay", scoringMechanism.getDelayLength());
 		Dashboard.packet.put("field delay", field.getDelayLength());
 
 //		Dashboard.packet.put("left stick x", gamepad1.getLeft_stick_x());

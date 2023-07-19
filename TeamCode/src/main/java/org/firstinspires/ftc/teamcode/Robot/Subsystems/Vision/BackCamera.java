@@ -13,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusCo
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 import org.firstinspires.ftc.teamcode.Math.Kinematics.IntakeKinematics;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
-import org.firstinspires.ftc.teamcode.Utils.Team;
+import org.firstinspires.ftc.teamcode.Purepursuit.Utils.Team;
 import org.firstinspires.ftc.teamcode.VisionUtils.Cone;
 import org.firstinspires.ftc.teamcode.VisionUtils.Resolution;
 import org.firstinspires.ftc.teamcode.VisionUtils.VisionMode;

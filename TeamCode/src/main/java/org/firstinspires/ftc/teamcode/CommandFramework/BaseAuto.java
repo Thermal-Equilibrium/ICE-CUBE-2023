@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.RaceAction;
 import org.firstinspires.ftc.teamcode.Robot.Commands.SafetyAlgorithms.FollowIfNeeded;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
-import org.firstinspires.ftc.teamcode.Utils.Team;
+import org.firstinspires.ftc.teamcode.Purepursuit.Utils.Team;
 import org.firstinspires.ftc.teamcode.VisionUtils.VisionMode;
 import org.firstinspires.ftc.teamcode.visionPipelines.SleeveDetection;
 

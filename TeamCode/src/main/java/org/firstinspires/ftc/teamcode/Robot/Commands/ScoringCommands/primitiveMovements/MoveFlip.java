@@ -3,25 +3,25 @@ package org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveM
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.ArmSystem;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Claw;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Flip;
 
-public class MoveArm extends Command {
-	double delayS = 0.15;
+public class MoveFlip extends Command {
 
-	ArmSystem armSystem;
-	ArmSystem.ArmStates armStates;
-
+	double position;
 	ElapsedTime timer = new ElapsedTime();
+	double duration = 0.15;
+	Flip flip;
 
-	public MoveArm(ArmSystem armSystem, ArmSystem.ArmStates armStates) {
-		this.armSystem = armSystem;
-		this.armStates = armStates;
+	public MoveFlip(Flip flip, double position) {
+		this.flip = flip;
+		this.position = position;
 	}
 
 	@Override
 	public void init() {
-		armSystem.setArm(armStates);
 		timer.reset();
+		this.flip.setPosition(position);
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public class MoveArm extends Command {
 
 	@Override
 	public boolean completed() {
-		return timer.seconds() > delayS;
+		return timer.seconds() > duration;
 	}
 
 	@Override

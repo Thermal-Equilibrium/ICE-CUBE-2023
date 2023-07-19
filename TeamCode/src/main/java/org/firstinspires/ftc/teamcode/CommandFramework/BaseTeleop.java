@@ -1,11 +1,10 @@
 package org.firstinspires.ftc.teamcode.CommandFramework;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.outoftheboxrobotics.photoncore.PhotonCore;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
-import org.firstinspires.ftc.teamcode.Utils.Team;
+import org.firstinspires.ftc.teamcode.Purepursuit.Utils.Team;
 import org.firstinspires.ftc.teamcode.VisionUtils.VisionMode;
 
 public abstract class BaseTeleop extends LinearOpMode {
@@ -15,7 +14,6 @@ public abstract class BaseTeleop extends LinearOpMode {
 
 	@Override
 	public void runOpMode() {
-		PhotonCore.enable();
 
 		robot = new Robot(hardwareMap, Robot.OpMode.Teleop, gamepad1, gamepad2);
 		robot.drivetrain.setPose(initialPose);

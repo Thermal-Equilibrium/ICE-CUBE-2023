@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Utils;
+package org.firstinspires.ftc.teamcode.Purepursuit.Utils;
 
 
 import java.util.ArrayList;
@@ -35,7 +35,6 @@ public class BallerFilter {
 	public BallerFilter(Double[] data) {
 		this.data = data;
 		this.numToRemain = (int) ((1 - percentageToRemove) * data.length);
-
 	}
 
 
@@ -71,8 +70,6 @@ public class BallerFilter {
 		}
 
 		return sum / data.length;
-
-
 	}
 
 

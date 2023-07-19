@@ -3,17 +3,18 @@ package org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveM
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Claw;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Flip;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Rotate;
 
-public class MoveClaw extends Command {
+public class MoveRotate extends Command {
 
 	double position;
 	ElapsedTime timer = new ElapsedTime();
 	double duration = 0.15;
-	Claw claw;
+	Rotate rotate;
 
-	public MoveClaw(Claw claw, double position) {
-		this.claw = claw;
+	public MoveRotate(Rotate rotate, double position) {
+		this.rotate = rotate;
 		this.position = position;
 	}
 
@@ -21,7 +22,7 @@ public class MoveClaw extends Command {
 	@Override
 	public void init() {
 		timer.reset();
-		claw.setPosition(position);
+		rotate.setPosition(this.position);
 	}
 
 	@Override
@@ -31,7 +32,7 @@ public class MoveClaw extends Command {
 
 	@Override
 	public boolean completed() {
-		return timer.seconds() > duration;
+		return timer.seconds() > this.duration;
 	}
 
 	@Override

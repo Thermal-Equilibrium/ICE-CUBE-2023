@@ -115,4 +115,8 @@ public class CommandScheduler {
 	public boolean isEmpty() {
 		return activeCommands.isEmpty();
 	}
+
+	public void appendSubsystem(Subsystem s) {
+		subsystems.add(s);
+	}
 }

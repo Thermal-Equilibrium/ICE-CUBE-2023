@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
-import org.firstinspires.ftc.teamcode.Utils.VirtualField;
+import org.firstinspires.ftc.teamcode.Purepursuit.Utils.VirtualField;
 
 public class TUI extends Command {
 	Telemetry telemetry;

@@ -5,9 +5,9 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
-import org.firstinspires.ftc.teamcode.Utils.BallerFilter;
-import org.firstinspires.ftc.teamcode.Utils.ExtraUtils;
-import org.firstinspires.ftc.teamcode.Utils.LimitedSizeQueue;
+import org.firstinspires.ftc.teamcode.Purepursuit.Utils.BallerFilter;
+import org.firstinspires.ftc.teamcode.Purepursuit.Utils.ExtraUtils;
+import org.firstinspires.ftc.teamcode.Purepursuit.Utils.LimitedSizeQueue;
 
 public class DistanceSensor extends Subsystem {
 
@@ -44,15 +44,13 @@ public class DistanceSensor extends Subsystem {
 
 		double sensor_volts = distance2.getVoltage();
 		double sensor_inches = sensor_volts * constant;
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-			BallerFilter filter = new BallerFilter(queue.toArray());
-			distance_in = sensor_inches; //filter.computeResult();  //filter.estimate(sensor_inches);
-			Dashboard.packet.put("DistanceKF", distance_in);
-			Dashboard.packet.put("Sensor_Inches_raw", sensor_inches);
-			ExtraUtils.drawPole(polePositionInContext, Dashboard.packet);
-			queue.add(distance_in);
-			System.out.println(queue);
-		}
+		BallerFilter filter = new BallerFilter(queue.toArray());
+		distance_in = sensor_inches; //filter.computeResult();  //filter.estimate(sensor_inches);
+		Dashboard.packet.put("DistanceKF", distance_in);
+		Dashboard.packet.put("Sensor_Inches_raw", sensor_inches);
+		ExtraUtils.drawPole(polePositionInContext, Dashboard.packet);
+		queue.add(distance_in);
+		System.out.println(queue);
 
 	}
 

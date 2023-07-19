@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Drivetrain;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Input;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Robot;
-import org.firstinspires.ftc.teamcode.Utils.MathUtils;
+import org.firstinspires.ftc.teamcode.Purepursuit.Utils.MathUtils;
 
 @Config
 public class RobotRelative extends Command {

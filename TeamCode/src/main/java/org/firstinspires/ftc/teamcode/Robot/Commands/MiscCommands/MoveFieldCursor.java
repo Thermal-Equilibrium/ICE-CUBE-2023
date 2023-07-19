@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
-import org.firstinspires.ftc.teamcode.Utils.VirtualField;
+import org.firstinspires.ftc.teamcode.Purepursuit.Utils.VirtualField;
 
 public class MoveFieldCursor extends Command {
 	int x;

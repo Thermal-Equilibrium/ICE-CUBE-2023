@@ -4,28 +4,25 @@ import static org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit.AM
 
 import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
 import com.acmerobotics.dashboard.config.Config;
-import com.outoftheboxrobotics.photoncore.Neutrino.Rev2MSensor.Rev2mDistanceSensorEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
 import org.firstinspires.ftc.teamcode.Math.AsymmetricProfile.MotionConstraint;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
-import org.firstinspires.ftc.teamcode.Utils.ProfiledPID;
+import org.firstinspires.ftc.teamcode.Purepursuit.Utils.ProfiledPID;
 
 @Config
 public class VerticalExtension extends Subsystem {
 
-	public static double HIGH_POSITION = 26;
-	public static double HIGH_POSITION_teleop = 26.3;
+	public static double HIGH_POSITION = 28.5;
+	public static double MID_POSITION = 20;
+	public static double GROUND_POSITION = 2;
+	public static double LOW_POSITION = 15;
 
-	public static double MID_POSITION = 15.5;
-
-	public static double MID_POSITION_teleop = 16;
 
 	public final static double IN_POSITION = 0;
 	static final double PULLEY_CIRCUMFERENCE = 4.409;
@@ -37,25 +34,21 @@ public class VerticalExtension extends Subsystem {
 
 	public static double DISTANCE_FOR_CONE = 8.5; // 9 inches or less means we still have the cone
 
-	public Rev2mDistanceSensorEx distanceSensor;
 
 	protected double slideTargetPosition = 0;
 	protected double Kg = 0.09499;
-	MainScoringMechanism.MechanismStates state = MainScoringMechanism.MechanismStates.BEGIN;
 	DcMotorEx vertical1;
 	DcMotorEx vertical2;
 	PIDCoefficients coefficients = new PIDCoefficients(Kp, 0, Kd);
-	MotionConstraint upConstraint = new MotionConstraint(max_accel/ 1.5, max_accel / 2, max_velocity / 1.5);
-	MotionConstraint downConstraint = new MotionConstraint(max_accel, max_accel, max_velocity);
+	MotionConstraint upConstraint = new MotionConstraint(max_accel , max_accel / 2, max_velocity);
+	MotionConstraint downConstraint = new MotionConstraint(max_accel / 1.5, max_accel / 2, max_velocity / 1.5);
 	ProfiledPID controller = new ProfiledPID(upConstraint, downConstraint, coefficients);
 	private VoltageSensor batteryVoltageSensor;
 	protected double current = 0;
 
 	public void commonInit(HardwareMap hwMap) {
-		vertical1 = hwMap.get(DcMotorEx.class, "vertical1");
-		vertical2 = hwMap.get(DcMotorEx.class, "vertical2");
-		this.distanceSensor = hwMap.get(Rev2mDistanceSensorEx.class,"cone");
-		this.distanceSensor.setRangingProfile(Rev2mDistanceSensorEx.RANGING_PROFILE.HIGH_SPEED);
+		vertical1 = hwMap.get(DcMotorEx.class, "slidesRight");
+		vertical2 = hwMap.get(DcMotorEx.class, "slidesLeft");
 		// TODO, set direction
 		vertical2.setDirection(DcMotorSimple.Direction.REVERSE);
 		vertical1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -78,6 +71,8 @@ public class VerticalExtension extends Subsystem {
 		upConstraint = new MotionConstraint(max_accel, max_accel / 2, max_velocity);
 		downConstraint = new MotionConstraint(max_accel, max_accel / 2, max_velocity);
 
+		vertical1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		vertical2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		vertical1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 		vertical2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 	}
@@ -85,15 +80,18 @@ public class VerticalExtension extends Subsystem {
 	@Override
 	public void periodic() {
 
-		if (getSlidePosition() < 4 && currentLimitExceeded()) {
-			vertical1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-			vertical2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-			vertical1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-			vertical2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-		}
+//		if (getSlidePosition() < 4 && currentLimitExceeded()) {
+//			vertical1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//			vertical2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//			vertical1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//			vertical2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//		}
+
+		Dashboard.packet.put(
+				"slide height", getSlidePosition()
+		);
 
 		updatePID();
-		Dashboard.packet.put("distance to cone / deposit", getDistanceToDeposit());
 
 	}
 
@@ -159,13 +157,6 @@ public class VerticalExtension extends Subsystem {
 		return current;
 	}
 
-	public boolean coneIsStillInDeposit() {
-		return slideIsDown() && getDistanceToDeposit() < DISTANCE_FOR_CONE;
-	}
-
-	public double getDistanceToDeposit() {
-		return distanceSensor.getDistance(DistanceUnit.INCH);
-	}
 
 	public boolean slideIsDown() {
 		return getSlidePosition() < 0.25;

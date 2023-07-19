@@ -1,16 +1,9 @@
 package org.firstinspires.ftc.teamcode.OpModes;
-
-import static java.lang.Double.isNaN;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.Servo;
-
-import org.checkerframework.checker.units.qual.A;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.Utils.BallerFilter;
+import org.firstinspires.ftc.teamcode.Purepursuit.Utils.BallerFilter;
 
 import java.util.ArrayList;
 
@@ -44,13 +37,13 @@ public class ConeDetectionSensor extends LinearOpMode {
             rightData.add(distRight);
 
             if(leftData.size() > sampleSize) {
-                BallerFilter ballerFilter = new BallerFilter(leftData.toArray(new Double[leftData.size()]));
+                BallerFilter ballerFilter = new BallerFilter(leftData.toArray(new Double[0]));
                 leftFiltered = ballerFilter.computeResult();
                 leftData.clear();
             }
 
             if(rightData.size() > sampleSize) {
-                BallerFilter ballerFilter = new BallerFilter(rightData.toArray(new Double[rightData.size()]));
+                BallerFilter ballerFilter = new BallerFilter(rightData.toArray(new Double[0]));
                 rightFiltered = ballerFilter.computeResult();
                 rightData.clear();
             }
