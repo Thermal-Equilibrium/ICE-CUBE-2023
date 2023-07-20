@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.OpModes;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 
 
 @TeleOp
+@Disabled
 public class ConeDetectionSensor extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
