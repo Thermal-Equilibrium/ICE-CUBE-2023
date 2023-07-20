@@ -1,13 +1,11 @@
 package org.firstinspires.ftc.teamcode.Robot.Commands;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
-import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.Delay;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveClaw;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveFlip;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveRotate;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveVerticalExtension;
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Claw;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Flip;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Rotate;
@@ -69,7 +67,7 @@ public class ScoringCommandGroups {
 
 		// only runs on manual release
 		if (flip.is_folded) {
-			claw.intentionalDropStart();
+			claw.startIntentionalDrop();
 			return ready_for_intake();
 		}
 
@@ -122,11 +120,13 @@ public class ScoringCommandGroups {
 	}
 
 	// Auto stack manual height selection
-	public Command stack5(double currTargetHeight) {
-//		Dashboard.packet.put("bruh1", currTargetHeight);
+	public Command stack5() {
+//		Dashboard.packet.put("bruh1", extension.getSlideTargetPosition());
 //		Dashboard.packet.put("bruh2", VerticalExtension.CONE_5);
-		// I don't know how to correctly check for is currently at picking up cone 5 state
-		if (currTargetHeight == VerticalExtension.CONE_5) {
+		// I don't know how to correctly check for is currently at picking up cone 5 state.
+		// Could have a flag that is set on state transition but seems bad because there would
+		// be so many transitions out where it would need to be reset.
+		if (extension.getSlideTargetPosition() == VerticalExtension.CONE_5) {
 			return ready_for_intake();
 		} else {
 			return ready_for_intake_stack(VerticalExtension.CONE_5);
@@ -143,6 +143,7 @@ public class ScoringCommandGroups {
 	}
 
 	public Command ground() {
+		claw.startIntentionalDrop();
 		return setFlip(Flip.FLIP_PICKUP).addNext(scoring_height(VerticalExtension.GROUND_POSITION));
 	}
 

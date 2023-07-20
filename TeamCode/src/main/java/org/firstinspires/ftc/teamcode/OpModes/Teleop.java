@@ -19,15 +19,21 @@ public class Teleop extends BaseTeleop {
 	@Override
 	public Command setupTeleop(CommandScheduler scheduler) {
 		ScoringCommandGroups commandGroups = new ScoringCommandGroups(robot.claw,robot.flip,robot.rotate,robot.extension);
+		// Placement positions
 		robot.gamepad1.whenTrianglePressed(commandGroups.high());
 		robot.gamepad1.whenCirclePressed(commandGroups.mid());
 		robot.gamepad1.whenCrossPressed(commandGroups.low());
 		robot.gamepad1.whenSquarePressed(commandGroups.ground());
-		robot.gamepad1.whenRightTriggerPressed(commandGroups.deposit_teleop());
+
+		// Cone grab and release
 		robot.gamepad1.whenRightBumperPressed(new RunCommandLegacy(commandGroups::grab_cone));
+		robot.gamepad1.whenRightTriggerPressed(commandGroups.deposit_teleop());
+
+		// Sensor automatic grab
 		robot.coneSensors.setCommand(new RunCommandLegacy(commandGroups::sensor_cone_grab));
 
-		robot.gamepad1.whenDPadUpPressed(commandGroups.stack5(robot.extension.getSlideTargetPosition()));
+		// Stack intake positions
+		robot.gamepad1.whenDPadUpPressed(commandGroups.stack5());
 		robot.gamepad1.whenDPadRightPressed(commandGroups.stack4());
 		robot.gamepad1.whenDPadDownPressed(commandGroups.stack3());
 		robot.gamepad1.whenDPadLeftPressed(commandGroups.stack2());

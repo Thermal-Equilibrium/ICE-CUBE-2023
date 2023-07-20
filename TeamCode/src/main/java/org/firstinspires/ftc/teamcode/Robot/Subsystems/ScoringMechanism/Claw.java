@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 
 @Config
 public class Claw extends Subsystem {
@@ -16,7 +17,7 @@ public class Claw extends Subsystem {
 	public static double CLAW_CLOSED = 0.20;
 	public static double CLAW_TRANSFER_SAFE = 0.335;
 
-	public static double INTENTIONAL_DROP_DELAY = 3000.0;
+	public static double INTENTIONAL_DROP_DELAY = 1000.0;
 	ElapsedTime intentionalDropTimer = new ElapsedTime();
 	public boolean is_intentionally_waiting = false;
 
@@ -37,6 +38,8 @@ public class Claw extends Subsystem {
 		if(is_intentionally_waiting && intentionalDropTimer.milliseconds() >= INTENTIONAL_DROP_DELAY) {
 			is_intentionally_waiting = false;
 		}
+		Dashboard.packet.put("is intentionally waiting", is_intentionally_waiting);
+		Dashboard.packet.put("intentional drop timer", intentionalDropTimer.milliseconds());
 	}
 
 	public void setPosition(double position) {
@@ -48,7 +51,7 @@ public class Claw extends Subsystem {
 
 	}
 
-	public void intentionalDropStart() {
+	public void startIntentionalDrop() {
 		intentionalDropTimer.reset();
 		is_intentionally_waiting = true;
 	}
