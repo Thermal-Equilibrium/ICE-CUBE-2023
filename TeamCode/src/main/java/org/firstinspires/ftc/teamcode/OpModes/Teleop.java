@@ -9,8 +9,6 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.RobotRel
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.RunCommandLegacy;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommandGroups;
-import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveVerticalExtension;
-import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
 import org.firstinspires.ftc.teamcode.VisionUtils.VisionMode;
 
 
@@ -25,7 +23,7 @@ public class Teleop extends BaseTeleop {
 		robot.gamepad1.whenCirclePressed(commandGroups.mid());
 		robot.gamepad1.whenCrossPressed(commandGroups.low());
 		robot.gamepad1.whenSquarePressed(commandGroups.ground());
-		robot.gamepad1.whenRightTriggerPressed(commandGroups.deposit());
+		robot.gamepad1.whenRightTriggerPressed(commandGroups.deposit_teleop());
 		robot.gamepad1.whenRightBumperPressed(new RunCommandLegacy(commandGroups::grab_cone));
 		robot.coneSensors.setCommand(new RunCommandLegacy(commandGroups::grab_cone));
 		return new MultipleCommand(new RobotRelative(robot, robot.gamepad1));

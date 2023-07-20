@@ -42,11 +42,21 @@ public class ScoringCommandGroups {
 		return new MoveVerticalExtension(extension,position);
 	}
 
-	public Command ready_for_intake() {
+	public Command ready_for_intake_generic(double slide_height) {
 		return setClaw(Claw.CLAW_CLOSED)
 				.addNext(new MultipleCommand(setRotate(Rotate.ROTATE_PICKUP), setFlip(Flip.FLIP_PICKUP)))
-				.addNext(setVertical(VerticalExtension.IN_POSITION))
+				.addNext(setVertical(slide_height))
 				.addNext(setClaw(Claw.CLAW_OPEN));
+	}
+
+	public Command ready_for_intake_auto(double slide_height) {
+		return new MultipleCommand(setRotate(Rotate.ROTATE_PICKUP), setFlip(Flip.FLIP_PICKUP))
+				.addNext(setClaw(Claw.CLAW_OPEN))
+				.addNext(setVertical(slide_height));
+	}
+
+	public Command ready_for_intake() {
+		return ready_for_intake_generic(VerticalExtension.IN_POSITION);
 	}
 
 	public Command grab_cone() {
@@ -61,12 +71,23 @@ public class ScoringCommandGroups {
 				.addNext(setVertical(VerticalExtension.GROUND_POSITION));
 	}
 
+	public Command grab_cone_auto() {
+		return setClaw(Claw.CLAW_CLOSED)
+				.addNext(
+						new MultipleCommand(
+								setFlip(Flip.FLIP_FOLDED),
+								setVertical(VerticalExtension.MID_POSITION)
+						)
+				);
+	}
+
+
 
 
 	public Command scoring_height(double slide_pos) {
 
 		if (slide_pos != VerticalExtension.GROUND_POSITION) {
-			return new MultipleCommand(setVertical(slide_pos), new Delay(0.3).addNext(setRotate(Rotate.ROTATE_DEPOSIT)))
+			return new MultipleCommand(setVertical(slide_pos), setRotate(Rotate.ROTATE_DEPOSIT))
 					.addNext(setFlip(Flip.FLIP_POLE_ALIGN));
 		} else {
 			return setVertical(slide_pos);
@@ -85,12 +106,18 @@ public class ScoringCommandGroups {
 	public Command ground() {
 		return setFlip(Flip.FLIP_PICKUP).addNext(scoring_height(VerticalExtension.GROUND_POSITION));
 	}
-	public Command deposit() {
+
+	public Command deposit_generic(Command intake_command) {
 		return setFlip(Flip.FLIP_DEPOSIT)
 				.addNext(setClaw(Claw.CLAW_OPEN))
 				.addNext(setClaw(Claw.CLAW_TRANSFER_SAFE))
 				.addNext(new MultipleCommand(setRotate(Rotate.ROTATE_PICKUP), setFlip(Flip.FLIP_PICKUP)))
-				.addNext(ready_for_intake());
+				.addNext(intake_command);
+	}
+
+
+	public Command deposit_teleop() {
+		return deposit_generic(ready_for_intake());
 	}
 
 }

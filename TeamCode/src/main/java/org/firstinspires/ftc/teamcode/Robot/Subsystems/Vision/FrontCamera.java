@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision;
 
 
-import static org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision.BackCamera.streamBackCameraToDash;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -37,12 +36,9 @@ public class FrontCamera extends Subsystem {
 	@Override
 	public void initAuto(HardwareMap hwMap) {
 //		cam = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, "Front Webcam"));
-		if (!streamBackCameraToDash) {
-			cam = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, "Front Webcam"), hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName()));
-		}
-		else {
-			cam = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, "Front Webcam"));
-		}
+
+		cam = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, "usbCamera"));
+
 		cam.setViewportRenderer(OpenCvWebcam.ViewportRenderer.GPU_ACCELERATED);
 		cam.setPipeline(pipeline);
 		cam.openCameraDeviceAsync(new OpenCvWebcam.AsyncCameraOpenListener() {
@@ -61,10 +57,9 @@ public class FrontCamera extends Subsystem {
 			public void onError(int errorCode) {
 			}
 		});
-		if (!streamBackCameraToDash) {
-			FtcDashboard dashboard = FtcDashboard.getInstance();
-			dashboard.startCameraStream(cam, 20);
-		}
+		FtcDashboard dashboard = FtcDashboard.getInstance();
+		dashboard.startCameraStream(cam, 20);
+
 	}
 
 	@Override
@@ -82,7 +77,6 @@ public class FrontCamera extends Subsystem {
 	}
 
 	public SleeveDetection.ParkingPosition getParkingPosition() {
-//        return SleeveDetection.ParkingPosition.CENTER;
 		if (cam.getFrameCount() < 1 || !open) {
 			return SleeveDetection.ParkingPosition.CENTER;
 		}

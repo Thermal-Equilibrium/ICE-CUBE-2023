@@ -19,32 +19,24 @@ public class LeftHighAuto {
 
 	public static void main(String[] args) {
 		MeepMeep meepMeep = new MeepMeep(800);
-		final Pose2d startPose = new Pose2d(-36, -66.5,Math.toRadians(-90));
-		final Pose2d goToPole1 = new Pose2d(-38, -24,Math.toRadians(100));
-		Pose2d goToPole2 = shiftRobotRelative(
-				new Pose2d(-34.714046022304565,-10.158013549498268,Math.toRadians(-338.11832672430523)),
-				-2.5,
-				-0.5
-		);
-
-		final Pose2d parkRight1= new Pose2d(goToPole2.getX() - 1, -goToPole2.getY() + 3, goToPole2.getHeading());
-		final Pose2d parkRight = new Pose2d(-63, -20, -Math.toRadians(0));
-		final Pose2d parkMID = new Pose2d(-40, -18, -Math.toRadians(-90));
-//    final Pose2d parkLeft1 = new Pose2d(-38,26,Math.toRadians(-90));
-//    final Pose2d parkLeft = new Pose2d(-6,38,Math.toRadians(180));
-		final Pose2d parkLeft1_new = new Pose2d(-38,-18,-Math.toRadians(270));
-		final Pose2d parkLeft_new = new Pose2d(-8,-14,-Math.toRadians(90));
+		final Pose2d START_POSE = new Pose2d(-31, -64.5, Math.toRadians(-90));
+		final Pose2d SCORE_POSE_ZERO = new Pose2d(-25, -9, Math.toRadians(180 + 45));
+		final Pose2d CONE_POSE_ONE = new Pose2d(-57, -14, Math.toRadians(180));
+		final Pose2d ZONE_ONE = new Pose2d(-52, -16, Math.toRadians(0));
+		final Pose2d ZONE_TWO = new Pose2d(-32, -16, Math.toRadians(90));
+		final Pose2d ZONE_THREE = new Pose2d(-8, -16, Math.toRadians(90));
 
 		RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
 				// Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
 				.setConstraints(MAX_VEL, MAX_ACCEL, MAX_ANG_VEL, MAX_ANG_ACCEL, 12)
 				.followTrajectorySequence(drive ->
-						drive.trajectorySequenceBuilder(startPose)
-								.splineTo(goToPole1.vec(), goToPole1.getHeading())
-								.splineToSplineHeading(goToPole2,calculateTangent(goToPole1,goToPole2))
+						drive.trajectorySequenceBuilder(START_POSE)
 								.setReversed(true)
-								.splineToConstantHeading(parkLeft1_new.vec(),-Math.toRadians(0))
-								.splineToSplineHeading(parkLeft_new,-Math.toRadians(0))
+								.splineToSplineHeading(SCORE_POSE_ZERO,Math.toRadians(45))
+								.setReversed(false)
+								.splineToSplineHeading(CONE_POSE_ONE,Math.toRadians(180))
+								.setReversed(true)
+								.splineToSplineHeading(SCORE_POSE_ZERO,Math.toRadians(45))
 								.build()
 
 				);

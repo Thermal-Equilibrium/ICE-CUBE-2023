@@ -20,6 +20,12 @@ public class Claw extends Subsystem {
 	@Override
 	public void initAuto(HardwareMap hwMap) {
 		claw_servo = hwMap.get(Servo.class,"servoClaw");
+		claw_servo.setPosition(CLAW_CLOSED);
+	}
+
+	@Override
+	public void initTeleop(HardwareMap hwMap) {
+		claw_servo = hwMap.get(Servo.class,"servoClaw");
 		claw_servo.setPosition(CLAW_OPEN);
 	}
 

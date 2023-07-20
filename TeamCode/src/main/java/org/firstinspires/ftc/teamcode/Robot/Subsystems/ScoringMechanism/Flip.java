@@ -22,8 +22,14 @@ public class Flip extends Subsystem {
 	@Override
 	public void initAuto(HardwareMap hwMap) {
 		flip = hwMap.get(Servo.class, "servoFlip");
+		flip.setPosition(FLIP_FOLDED);
+	}
+	@Override
+	public void initTeleop(HardwareMap hwMap) {
+		flip = hwMap.get(Servo.class, "servoFlip");
 		flip.setPosition(FLIP_PICKUP);
 	}
+
 
 	@Override
 	public void periodic() {

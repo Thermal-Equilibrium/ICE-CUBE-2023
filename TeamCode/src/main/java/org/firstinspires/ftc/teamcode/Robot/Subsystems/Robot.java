@@ -35,7 +35,7 @@ public class Robot {
 
 	public Robot(HardwareMap hwMap, OpMode opMode, Gamepad gamepad1, Gamepad gamepad2) {
 		frontCamera = new FrontCamera();
-		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard, field,print,extension,claw,flip,rotate);
+		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard, field,print,extension,claw,flip,rotate,frontCamera);
 		this.gamepad1 = new Input(gamepad1, scheduler);
 		this.gamepad2 = new Input(gamepad2, scheduler);
 		coneSensors = new ConeSensors(scheduler);
