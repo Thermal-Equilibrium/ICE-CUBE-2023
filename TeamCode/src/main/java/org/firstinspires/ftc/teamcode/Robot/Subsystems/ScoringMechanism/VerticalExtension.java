@@ -19,23 +19,23 @@ import org.firstinspires.ftc.teamcode.Purepursuit.Utils.ProfiledPID;
 public class VerticalExtension extends Subsystem {
 
 	public static double HIGH_POSITION = 28.5;
-	public static double MID_POSITION = 20;
-	public static double GROUND_POSITION = 2;
-	public static double LOW_POSITION = 15;
+	public static double MID_POSITION = 20.5;
+	public static double GROUND_POSITION = 2.0;
+	public static double LOW_POSITION = 13.0;
 	public static double CONE_5 = 5.25;
 	public static double CONE_4 = 3.5;
-	public static double CONE_3 = 2;
-	public static double CONE_2 = 1;
-	public static double CONE_1 = 0;
+	public static double CONE_3 = 2.0;
+	public static double CONE_2 = 1.0;
+	public static double CONE_1 = 0.0;
 
 
-	public final static double IN_POSITION = 0;
+	public final static double IN_POSITION = 0.0;
 	static final double PULLEY_CIRCUMFERENCE = 4.409;
 	static final double counts_per_revolution = 145.090909;
 	public static double Kp = 0.2;
 	public static double Kd = 1.8 * Math.sqrt(Kp * 0.0015);
-	public static double max_accel = 250;
-	public static double max_velocity = 250;
+	public static double max_accel = 250.0;
+	public static double max_velocity = 250.0;
 
 	public static double DISTANCE_FOR_CONE = 8.5; // 9 inches or less means we still have the cone
 

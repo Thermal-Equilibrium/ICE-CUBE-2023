@@ -7,6 +7,7 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMo
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveFlip;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveRotate;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveVerticalExtension;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Claw;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Flip;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Rotate;
@@ -55,20 +56,36 @@ public class ScoringCommandGroups {
 				.addNext(setVertical(slide_height));
 	}
 
+	public Command ready_for_intake_stack(double slide_height) {
+		return new MultipleCommand(setVertical(slide_height), setRotate(Rotate.ROTATE_PICKUP), setFlip(Flip.FLIP_PICKUP))
+				.addNext(setClaw(Claw.CLAW_OPEN));
+	}
+
 	public Command ready_for_intake() {
 		return ready_for_intake_generic(VerticalExtension.IN_POSITION);
 	}
 
 	public Command grab_cone() {
 
-		// try again
+		// only runs on manual release
 		if (flip.is_folded) {
+			claw.intentionalDropStart();
 			return ready_for_intake();
 		}
 
 		return setClaw(Claw.CLAW_CLOSED)
 				.addNext(setFlip(Flip.FLIP_FOLDED))
 				.addNext(setVertical(VerticalExtension.GROUND_POSITION));
+	}
+
+	public Command sensor_cone_grab() {
+		if (!flip.is_folded && !claw.is_intentionally_waiting) {
+			// sensor grab only if its not flipped up and cone wasn't recently intentionally released
+			return grab_cone();
+		} else {
+			// dont release cone cause already obtained
+			return null;
+		}
 	}
 
 	public Command grab_cone_auto() {
@@ -86,7 +103,7 @@ public class ScoringCommandGroups {
 
 	public Command scoring_height(double slide_pos) {
 
-		if (slide_pos != VerticalExtension.GROUND_POSITION) {
+		if (slide_pos > VerticalExtension.GROUND_POSITION) {
 			return new MultipleCommand(setVertical(slide_pos), setRotate(Rotate.ROTATE_DEPOSIT))
 					.addNext(setFlip(Flip.FLIP_POLE_ALIGN));
 		} else {
@@ -103,6 +120,28 @@ public class ScoringCommandGroups {
 	public Command low() {
 		return scoring_height(VerticalExtension.LOW_POSITION);
 	}
+
+	// Auto stack manual height selection
+	public Command stack5(double currTargetHeight) {
+//		Dashboard.packet.put("bruh1", currTargetHeight);
+//		Dashboard.packet.put("bruh2", VerticalExtension.CONE_5);
+		// I don't know how to correctly check for is currently at picking up cone 5 state
+		if (currTargetHeight == VerticalExtension.CONE_5) {
+			return ready_for_intake();
+		} else {
+			return ready_for_intake_stack(VerticalExtension.CONE_5);
+		}
+	}
+	public Command stack4() {
+		return ready_for_intake_stack(VerticalExtension.CONE_4);
+	}
+	public Command stack3() {
+		return ready_for_intake_stack(VerticalExtension.CONE_3);
+	}
+	public Command stack2() {
+		return ready_for_intake_stack(VerticalExtension.CONE_2);
+	}
+
 	public Command ground() {
 		return setFlip(Flip.FLIP_PICKUP).addNext(scoring_height(VerticalExtension.GROUND_POSITION));
 	}

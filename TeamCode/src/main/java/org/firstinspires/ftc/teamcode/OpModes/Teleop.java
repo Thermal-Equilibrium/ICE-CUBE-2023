@@ -25,7 +25,12 @@ public class Teleop extends BaseTeleop {
 		robot.gamepad1.whenSquarePressed(commandGroups.ground());
 		robot.gamepad1.whenRightTriggerPressed(commandGroups.deposit_teleop());
 		robot.gamepad1.whenRightBumperPressed(new RunCommandLegacy(commandGroups::grab_cone));
-		robot.coneSensors.setCommand(new RunCommandLegacy(commandGroups::grab_cone));
+		robot.coneSensors.setCommand(new RunCommandLegacy(commandGroups::sensor_cone_grab));
+
+		robot.gamepad1.whenDPadUpPressed(commandGroups.stack5(robot.extension.getSlideTargetPosition()));
+		robot.gamepad1.whenDPadRightPressed(commandGroups.stack4());
+		robot.gamepad1.whenDPadDownPressed(commandGroups.stack3());
+		robot.gamepad1.whenDPadLeftPressed(commandGroups.stack2());
 		return new MultipleCommand(new RobotRelative(robot, robot.gamepad1));
 	}
 	@Override
