@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode.Robot.Commands;
 
+import android.util.Log;
+
 import org.firstinspires.ftc.teamcode.CommandFramework.Command;
 import org.firstinspires.ftc.teamcode.Robot.Commands.MiscCommands.MultipleCommand;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveClaw;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveFlip;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveRotate;
 import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommands.primitiveMovements.MoveVerticalExtension;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Claw;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Flip;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.Rotate;
@@ -65,10 +68,18 @@ public class ScoringCommandGroups {
 
 	public Command grab_cone() {
 
-		// only runs on manual release
+		// intentionally drop cone if manually triggered
 		if (flip.is_folded) {
 			claw.startIntentionalDrop();
 			return ready_for_intake();
+		}
+
+		// Grab and move slides up if picking off stack
+		if (extension.getSlideTargetPosition() >= VerticalExtension.CONE_2
+				&& extension.getSlideTargetPosition() <= VerticalExtension.CONE_5) {
+			return setClaw(Claw.CLAW_CLOSED)
+					.addNext(setFlip(Flip.FLIP_FOLDED))
+					.addNext(setVertical(VerticalExtension.LOW_POSITION));
 		}
 
 		return setClaw(Claw.CLAW_CLOSED)
@@ -109,37 +120,48 @@ public class ScoringCommandGroups {
 		}
 	}
 
+	public Command scoring_front_height(double slide_pos) {
+		return new MultipleCommand(setVertical(slide_pos), setRotate(Rotate.ROTATE_PICKUP))
+				.addNext(setFlip(Flip.FLIP_FRONT_ALIGN));
+	}
+
 	public Command high() {
 		return scoring_height(VerticalExtension.HIGH_POSITION);
 	}
-	public Command mid() {
-		return scoring_height(VerticalExtension.MID_POSITION);
-	}
+	public Command mid() { return scoring_height(VerticalExtension.MID_POSITION); }
 	public Command low() {
 		return scoring_height(VerticalExtension.LOW_POSITION);
 	}
+	public Command frontLow() { return scoring_front_height(VerticalExtension.LOW_POSITION); }
 
 	// Auto stack manual height selection
 	public Command stack5() {
-//		Dashboard.packet.put("bruh1", extension.getSlideTargetPosition());
-//		Dashboard.packet.put("bruh2", VerticalExtension.CONE_5);
-		// I don't know how to correctly check for is currently at picking up cone 5 state.
-		// Could have a flag that is set on state transition but seems bad because there would
-		// be so many transitions out where it would need to be reset.
 		if (extension.getSlideTargetPosition() == VerticalExtension.CONE_5) {
-			return ready_for_intake();
+			return ready_for_intake_stack(VerticalExtension.IN_POSITION);
 		} else {
 			return ready_for_intake_stack(VerticalExtension.CONE_5);
 		}
 	}
 	public Command stack4() {
-		return ready_for_intake_stack(VerticalExtension.CONE_4);
+		if (extension.getSlideTargetPosition() == VerticalExtension.CONE_4) {
+			return ready_for_intake_stack(VerticalExtension.IN_POSITION);
+		} else {
+			return ready_for_intake_stack(VerticalExtension.CONE_4);
+		}
 	}
 	public Command stack3() {
-		return ready_for_intake_stack(VerticalExtension.CONE_3);
+		if (extension.getSlideTargetPosition() == VerticalExtension.CONE_3) {
+			return ready_for_intake_stack(VerticalExtension.IN_POSITION);
+		} else {
+			return ready_for_intake_stack(VerticalExtension.CONE_3);
+		}
 	}
 	public Command stack2() {
-		return ready_for_intake_stack(VerticalExtension.CONE_2);
+		if (extension.getSlideTargetPosition() == VerticalExtension.CONE_2) {
+			return ready_for_intake_stack(VerticalExtension.IN_POSITION);
+		} else {
+			return ready_for_intake_stack(VerticalExtension.CONE_2);
+		}
 	}
 
 	public Command ground() {
@@ -155,8 +177,31 @@ public class ScoringCommandGroups {
 				.addNext(intake_command);
 	}
 
+	public Command deposit_ground() {
+		return setClaw(Claw.CLAW_OPEN)
+				.addNext(new MultipleCommand(setRotate(Rotate.ROTATE_PICKUP), setFlip(Flip.FLIP_PICKUP)))
+				.addNext(setVertical(VerticalExtension.IN_POSITION));
+	}
+
+	public Command deposit_front(Command intake_command) {
+		return setFlip(Flip.FLIP_PICKUP)
+				.addNext(setClaw(Claw.CLAW_OPEN))
+				.addNext(intake_command);
+	}
 
 	public Command deposit_teleop() {
+		Log.i("Command", "Deposit Selection");
+		if(extension.getSlideTargetPosition() == VerticalExtension.GROUND_POSITION) {
+			Log.i("Command", "Deposit Ground");
+			return deposit_ground();
+		}
+
+		if(flip.getPosition() == Flip.FLIP_FRONT_ALIGN) {
+			Log.i("Command", "Deposit Front");
+			return deposit_front(ready_for_intake_stack(VerticalExtension.IN_POSITION));
+		}
+
+		Log.i("Command", "Deposit Generic");
 		return deposit_generic(ready_for_intake());
 	}
 

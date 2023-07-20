@@ -22,11 +22,11 @@ public class VerticalExtension extends Subsystem {
 	public static double MID_POSITION = 20.5;
 	public static double GROUND_POSITION = 2.0;
 	public static double LOW_POSITION = 13.0;
-	public static double CONE_5 = 5.25;
-	public static double CONE_4 = 3.5;
-	public static double CONE_3 = 2.0;
-	public static double CONE_2 = 1.0;
-	public static double CONE_1 = 0.0;
+	public static double CONE_5 = 5.75; //5.25
+	public static double CONE_4 = 4.25; //3.5
+	public static double CONE_3 = 3.25; //2.0
+	public static double CONE_2 = 1.75; //1.0
+	public static double CONE_1 = 0.0; //0.0
 
 
 	public final static double IN_POSITION = 0.0;

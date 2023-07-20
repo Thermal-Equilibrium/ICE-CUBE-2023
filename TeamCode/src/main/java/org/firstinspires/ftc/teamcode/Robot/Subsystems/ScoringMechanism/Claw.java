@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism;
 
+import android.util.Log;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -38,8 +40,6 @@ public class Claw extends Subsystem {
 		if(is_intentionally_waiting && intentionalDropTimer.milliseconds() >= INTENTIONAL_DROP_DELAY) {
 			is_intentionally_waiting = false;
 		}
-		Dashboard.packet.put("is intentionally waiting", is_intentionally_waiting);
-		Dashboard.packet.put("intentional drop timer", intentionalDropTimer.milliseconds());
 	}
 
 	public void setPosition(double position) {
@@ -52,6 +52,7 @@ public class Claw extends Subsystem {
 	}
 
 	public void startIntentionalDrop() {
+		Log.i("CLAW", "Starting Intentional Drop");
 		intentionalDropTimer.reset();
 		is_intentionally_waiting = true;
 	}

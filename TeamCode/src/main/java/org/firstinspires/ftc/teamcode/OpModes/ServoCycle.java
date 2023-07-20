@@ -75,7 +75,7 @@ public class ServoCycle extends LinearOpMode {
                 flipPos = flipDeposit;
             }
 
-            rotator.setPosition(Range.clip(rotatorPos, rotatorPickup, rotatorDeposit));
+//            rotator.setPosition(Range.clip(rotatorPos, rotatorPickup, rotatorDeposit));
             flip.setPosition(Range.clip(flipPos, flipPickup, flipDeposit));
 
             telemetry.addData("rotator angle: ", rotatorPos);

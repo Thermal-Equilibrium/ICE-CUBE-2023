@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.CommandFramework.Subsystem;
+import org.firstinspires.ftc.teamcode.Robot.Subsystems.Dashboard;
 
 
 @Config
@@ -14,6 +15,8 @@ public class Flip extends Subsystem {
 	public static double FLIP_DEPOSIT = 0.78;
 	public static double FLIP_POLE_ALIGN = 0.6;
 	public static double FLIP_FOLDED = 0.38;
+
+	public static double FLIP_FRONT_ALIGN = 0.3;
 	public boolean is_folded = false;
 
 	Servo flip;
