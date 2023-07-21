@@ -88,7 +88,7 @@ public class ScoringCommandGroups {
 	}
 
 	public Command sensor_cone_grab() {
-		if (!flip.is_folded && !claw.is_intentionally_waiting) {
+		if (!flip.is_folded && !claw.is_intentionally_waiting && extension.getSlideTargetPosition() <= VerticalExtension.CONE_5) {
 			// sensor grab only if its not flipped up and cone wasn't recently intentionally released
 			return grab_cone();
 		} else {
@@ -196,12 +196,17 @@ public class ScoringCommandGroups {
 			return deposit_ground();
 		}
 
-		if(flip.getPosition() == Flip.FLIP_FRONT_ALIGN) {
+		if(Math.abs(flip.getPosition() - Flip.FLIP_FRONT_ALIGN) < 0.01) {
 			Log.i("Command", "Deposit Front");
+			claw.startIntentionalDrop();
 			return deposit_front(ready_for_intake_stack(VerticalExtension.IN_POSITION));
 		}
 
 		Log.i("Command", "Deposit Generic");
+		return deposit_generic(ready_for_intake());
+	}
+
+	public Command deposit_autonomous() {
 		return deposit_generic(ready_for_intake());
 	}
 

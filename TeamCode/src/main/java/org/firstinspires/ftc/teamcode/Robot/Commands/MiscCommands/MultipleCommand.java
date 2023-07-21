@@ -14,7 +14,6 @@ public class MultipleCommand extends Command {
 
 	public MultipleCommand(Command... commands) {
 		Collections.addAll(this.commands, commands);
-
 	}
 
 	@Override
@@ -42,7 +41,7 @@ public class MultipleCommand extends Command {
 		}
 
 //		cleanup();
-		System.out.println("Number of commands in the multiple command: " + commands.size());
+//		System.out.println("Number of commands in the multiple command: " + commands.size());
 	}
 
 	/**
