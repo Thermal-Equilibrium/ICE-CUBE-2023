@@ -47,7 +47,6 @@ public abstract class BaseAuto extends LinearOpMode {
 		}
 
 		robot.frontCamera.close();
-		parkingPosition = SleeveDetection.ParkingPosition.RIGHT;
 
 		waitForStart();
 		robot.getScheduler().forceCommand(setupAuto(robot.getScheduler()));

@@ -19,13 +19,10 @@ public class LeftHighPole extends BaseAuto {
 
 	final Pose2d START_POSE = new Pose2d(-31, -64.5, Math.toRadians(-90));
 
-	final Pose2d go_to_score_initial = new Pose2d(-31,-16, Math.toRadians(-90));
-	final Pose2d SCORE_POSE_ZERO = new Pose2d(-24.5, -2.75, Math.toRadians(180 + 45));
+	final Pose2d go_to_score_initial = new Pose2d(-31,-10, Math.toRadians(-90));
+	final Pose2d SCORE_POSE_ZERO = new Pose2d(-25, -3.75, Math.toRadians(180 + 45));
 	final Pose2d SCORE_POSE_ONE = SCORE_POSE_ZERO; //shiftRobotRelative(SCORE_POSE_ZERO,-1.2,2);
-
-	final Pose2d CONE_POSE_ONE = new Pose2d(-60, -12, Math.toRadians(180));
-	final Pose2d CONE_POSE_TWO = new Pose2d(-60, -13, Math.toRadians(180));
-	final Pose2d CONE_POSE_THREE = shiftRobotRelative(CONE_POSE_TWO, 0, -1);
+	final Pose2d CONE_POSE_ONE = new Pose2d(-60, -13.5, Math.toRadians(180));
 
 	final Pose2d ZONE_TWO = new Pose2d(-33, -16, Math.toRadians(-90));
 	final Pose2d ZONE_THREE = new Pose2d(-5.5, -11, Math.toRadians(180));
@@ -49,24 +46,16 @@ public class LeftHighPole extends BaseAuto {
 				.splineToSplineHeading(SCORE_POSE_ZERO,calculateTangent(go_to_score_initial,SCORE_POSE_ZERO))
 				.build();
 
-		Trajectory goToStack = robot.drivetrain.getBuilder().trajectoryBuilder(SCORE_POSE_ZERO,false)
-				.splineToSplineHeading(CONE_POSE_TWO,Math.toRadians(180))
-				.build();
-
 		Trajectory goToStackBetter = robot.drivetrain.getBuilder().trajectoryBuilder(SCORE_POSE_ONE,false)
-				.splineToSplineHeading(CONE_POSE_THREE,calculateTangent(SCORE_POSE_ONE,CONE_POSE_THREE))
+				.splineToSplineHeading(CONE_POSE_ONE,calculateTangent(SCORE_POSE_ONE,CONE_POSE_ONE))
 				.build();
 
-		Trajectory fromStackToPole = robot.drivetrain.getBuilder().trajectoryBuilder(CONE_POSE_TWO,true)
-				.splineToSplineHeading(SCORE_POSE_ZERO,calculateTangent(CONE_POSE_TWO,SCORE_POSE_ZERO))
-				.build();
-
-		Trajectory fromStackToPole2 = robot.drivetrain.getBuilder().trajectoryBuilder(CONE_POSE_THREE,true)
+		Trajectory fromStackToPole2 = robot.drivetrain.getBuilder().trajectoryBuilder(CONE_POSE_ONE,true)
 				.splineToSplineHeading(SCORE_POSE_ONE,Math.toRadians(45))
 				.build();
 
 		Trajectory zone1 = robot.drivetrain.getBuilder().trajectoryBuilder(SCORE_POSE_ZERO,false)
-				.splineToSplineHeading(CONE_POSE_TWO,Math.toRadians(180))
+				.splineToSplineHeading(CONE_POSE_ONE,Math.toRadians(180))
 				.build();
 
 		Trajectory zone2 = robot.drivetrain.getBuilder().trajectoryBuilder(SCORE_POSE_ZERO,false)
@@ -86,8 +75,6 @@ public class LeftHighPole extends BaseAuto {
 		if (parkingPosition.equals(SleeveDetection.ParkingPosition.RIGHT)) {
 			park_trajectory = zone3;
 		}
-
-		park_trajectory = zone1;
 
 
 

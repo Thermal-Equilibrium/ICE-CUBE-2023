@@ -19,7 +19,6 @@ public class Robot {
 
 	public Dashboard dashboard = new Dashboard();
 	public Input gamepad1;
-	public Input gamepad2;
 	public Drivetrain drivetrain = new Drivetrain();
 	public VerticalExtension extension = new VerticalExtension();
 	public Claw claw = new Claw();
@@ -37,7 +36,6 @@ public class Robot {
 		frontCamera = new FrontCamera();
 		scheduler = new CommandScheduler(hwMap, drivetrain, dashboard, field,print,extension,claw,flip,rotate,frontCamera);
 		this.gamepad1 = new Input(gamepad1, scheduler);
-		this.gamepad2 = new Input(gamepad2, scheduler);
 		coneSensors = new ConeSensors(scheduler);
 		scheduler.appendSubsystem(coneSensors);
 
@@ -60,7 +58,6 @@ public class Robot {
 		scheduler.run();
 		Dashboard.packet.put("Dash Delay", dashboard.getDelayLength());
 		Dashboard.packet.put("game1 Delay", gamepad1.getDelayLength());
-		Dashboard.packet.put("game2 Delay", gamepad2.getDelayLength());
 		Dashboard.packet.put("drivetrain Delay", drivetrain.getDelayLength());
 		Dashboard.packet.put("field delay", field.getDelayLength());
 
@@ -80,7 +77,6 @@ public class Robot {
 
 	public void updateInput() {
 		gamepad1.periodic();
-		gamepad2.periodic();
 	}
 
 	public CommandScheduler getScheduler() {

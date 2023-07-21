@@ -45,7 +45,7 @@ public class ScoringCommandGroups {
 	}
 
 	public Command ready_for_intake_generic(double slide_height) {
-		return setClaw(Claw.CLAW_CLOSED)
+		return setClaw(Claw.CLAW_TRANSFER_SAFE)
 				.addNext(new MultipleCommand(setRotate(Rotate.ROTATE_PICKUP), setFlip(Flip.FLIP_PICKUP)))
 				.addNext(setVertical(slide_height))
 				.addNext(setClaw(Claw.CLAW_OPEN));

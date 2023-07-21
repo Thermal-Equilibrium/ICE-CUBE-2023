@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Robot.Subsystems.Vision;
 
 
 
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -39,7 +40,6 @@ public class FrontCamera extends Subsystem {
 
 		cam = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, "usbCamera"));
 
-		cam.setViewportRenderer(OpenCvWebcam.ViewportRenderer.GPU_ACCELERATED);
 		cam.setPipeline(pipeline);
 		cam.openCameraDeviceAsync(new OpenCvWebcam.AsyncCameraOpenListener() {
 			@Override
@@ -78,7 +78,7 @@ public class FrontCamera extends Subsystem {
 
 	public SleeveDetection.ParkingPosition getParkingPosition() {
 		if (cam.getFrameCount() < 1 || !open) {
-			return SleeveDetection.ParkingPosition.CENTER;
+			return SleeveDetection.ParkingPosition.LEFT;
 		}
 		assert pipeline instanceof SleeveDetection;
 		return ((SleeveDetection) pipeline).getPosition();
