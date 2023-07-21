@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Robot.Commands.ScoringCommandGroups;
 import org.firstinspires.ftc.teamcode.Robot.Subsystems.ScoringMechanism.VerticalExtension;
 import org.firstinspires.ftc.teamcode.visionPipelines.SleeveDetection;
 
-@Autonomous
+@Autonomous(name = "Left High Pole", preselectTeleOp = "Teleop")
 public class LeftHighPole extends BaseAuto {
 
 	final Pose2d START_POSE = new Pose2d(-31, -64.5, Math.toRadians(-90));
