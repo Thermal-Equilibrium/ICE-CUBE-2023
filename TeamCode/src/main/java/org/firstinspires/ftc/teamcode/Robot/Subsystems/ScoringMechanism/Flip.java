@@ -16,7 +16,7 @@ public class Flip extends Subsystem {
 	public static double FLIP_POLE_ALIGN = 0.6;
 	public static double FLIP_FOLDED = 0.38;
 
-	public static double FLIP_FRONT_ALIGN = 0.3;
+	public static double FLIP_FRONT_ALIGN = 0.375;
 	public boolean is_folded = false;
 
 	Servo flip;

@@ -19,9 +19,9 @@ import org.firstinspires.ftc.teamcode.Purepursuit.Utils.ProfiledPID;
 public class VerticalExtension extends Subsystem {
 
 	public static double HIGH_POSITION = 28.5;
-	public static double MID_POSITION = 20.5;
+	public static double MID_POSITION = 19;
 	public static double GROUND_POSITION = 2.0;
-	public static double LOW_POSITION = 13.0;
+	public static double LOW_POSITION = 9;
 	public static double CONE_5 = 5.75; //5.25
 	public static double CONE_4 = 4.25; //3.5
 	public static double CONE_3 = 3.25; //2.0
