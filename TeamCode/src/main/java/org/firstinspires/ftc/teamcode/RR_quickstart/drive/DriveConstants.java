@@ -21,6 +21,7 @@ public class DriveConstants {
 	 * These are motor constants that should be listed online for your motors.
 	 */
 	public static final double TICKS_PER_REV = 28 * 13.7 * (28.0/24.0);
+
 	public static final double MAX_RPM = 435;
 
 	/*
@@ -70,7 +71,7 @@ public class DriveConstants {
 	public static double MAX_ANG_VEL_slow = Math.toRadians(90);
 	public static double MAX_ANG_ACCEL_slow = Math.toRadians(90);
 	public static double MAX_VEL = 60;
-	public static double MAX_ACCEL = 40;
+	public static double MAX_ACCEL = 30;
 	public static double MAX_ANG_VEL = Math.toRadians(180);
 	public static double MAX_ANG_ACCEL = Math.toRadians(100);
 

@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.CommandFramework;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
+import com.outoftheboxrobotics.photoncore.PhotonCore;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot.Commands.DrivetrainCommands.RoadrunnerTrajectoryFollower;
@@ -25,7 +26,7 @@ public abstract class BaseAuto extends LinearOpMode {
 	protected Robot robot;
 	protected TrajectoryBuilder trajectoryBuilder;
 
-	protected SleeveDetection.ParkingPosition parkingPosition = SleeveDetection.ParkingPosition.LEFT;
+	protected SleeveDetection.ParkingPosition parkingPosition;
 
 	public static double calculateTangent(Pose2d initialPosition, Pose2d finalPosition) {
 		double xd = initialPosition.getX() - finalPosition.getX();
@@ -44,7 +45,9 @@ public abstract class BaseAuto extends LinearOpMode {
 			telemetry.addData("current parking position is: ", parkingPosition);
 			telemetry.update();
 		}
+
 		robot.frontCamera.close();
+		parkingPosition = SleeveDetection.ParkingPosition.RIGHT;
 
 		waitForStart();
 		robot.getScheduler().forceCommand(setupAuto(robot.getScheduler()));

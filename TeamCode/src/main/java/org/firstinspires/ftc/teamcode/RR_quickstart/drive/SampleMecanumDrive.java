@@ -112,7 +112,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 		headingController.setInputBounds(-Math.PI, Math.PI);
 
 		follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
-				new Pose2d(0.1, 0.1, Math.toRadians(0.3)), 1);
+				new Pose2d(0.5, 0.5, Math.toRadians(0.5)), 0.4);
 
 		LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
 
@@ -123,7 +123,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 		imu = hardwareMap.get(BNO055IMU.class, "imu");
 		BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
 		parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
-		parameters.mode = BNO055IMU.SensorMode.NDOF;
+		parameters.mode = BNO055IMU.SensorMode.IMU;
 		imu.initialize(parameters);
 
 
@@ -167,6 +167,9 @@ public class SampleMecanumDrive extends MecanumDrive {
 		if (RUN_USING_ENCODER) {
 			setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		}
+
+		setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 		setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -319,8 +322,17 @@ public class SampleMecanumDrive extends MecanumDrive {
 	@Override
 	public List<Double> getWheelPositions() {
 		List<Double> wheelPositions = new ArrayList<>();
+		wheelPositions.add(encoderTicksToInches(motors.get(0).getCurrentPosition()));
+		wheelPositions.add(encoderTicksToInches(motors.get(1).getCurrentPosition()));
+		wheelPositions.add(encoderTicksToInches(motors.get(2).getCurrentPosition()));
+		wheelPositions.add(encoderTicksToInches(motors.get(3).getCurrentPosition()));
+		return wheelPositions;
+	}
+
+	public List<Integer> getWheelTicks() {
+		List<Integer> wheelPositions = new ArrayList<>();
 		for (DcMotorEx motor : motors) {
-			wheelPositions.add(encoderTicksToInches(motor.getCurrentPosition()));
+			wheelPositions.add(motor.getCurrentPosition());
 		}
 		return wheelPositions;
 	}
@@ -328,9 +340,11 @@ public class SampleMecanumDrive extends MecanumDrive {
 	@Override
 	public List<Double> getWheelVelocities() {
 		List<Double> wheelVelocities = new ArrayList<>();
-		for (DcMotorEx motor : motors) {
-			wheelVelocities.add(encoderTicksToInches(motor.getVelocity()));
-		}
+		wheelVelocities.add(encoderTicksToInches(motors.get(0).getVelocity()));
+		wheelVelocities.add(encoderTicksToInches(motors.get(1).getVelocity()));
+		wheelVelocities.add(encoderTicksToInches(motors.get(2).getVelocity()));
+		wheelVelocities.add(encoderTicksToInches(motors.get(3).getVelocity()));
+
 		return wheelVelocities;
 	}
 

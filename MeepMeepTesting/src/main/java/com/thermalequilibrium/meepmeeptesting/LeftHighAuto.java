@@ -20,11 +20,15 @@ public class LeftHighAuto {
 	public static void main(String[] args) {
 		MeepMeep meepMeep = new MeepMeep(800);
 		final Pose2d START_POSE = new Pose2d(-31, -64.5, Math.toRadians(-90));
-		final Pose2d SCORE_POSE_ZERO = new Pose2d(-25, -9, Math.toRadians(180 + 45));
-		final Pose2d CONE_POSE_ONE = new Pose2d(-57, -14, Math.toRadians(180));
+		final Pose2d SCORE_POSE_ZERO = shiftRobotRelative(new Pose2d(-25, -3, Math.toRadians(180 + 45)),-1,0);
+		final Pose2d SCORE_POSE_ONE = shiftRobotRelative(SCORE_POSE_ZERO,-1.2,0);
+
+		final Pose2d CONE_POSE_ONE = new Pose2d(-61, -10, Math.toRadians(180));
+		final Pose2d CONE_POSE_TWO = new Pose2d(-61, -8.5, Math.toRadians(180));
 		final Pose2d ZONE_ONE = new Pose2d(-52, -16, Math.toRadians(0));
 		final Pose2d ZONE_TWO = new Pose2d(-32, -16, Math.toRadians(90));
-		final Pose2d ZONE_THREE = new Pose2d(-8, -16, Math.toRadians(90));
+		final Pose2d ZONE_THREE = new Pose2d(-8, -16, Math.toRadians(-90));
+		final Pose2d go_to_score_initial = new Pose2d(-31,-40, Math.toRadians(-90));
 
 		RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
 				// Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
@@ -32,11 +36,15 @@ public class LeftHighAuto {
 				.followTrajectorySequence(drive ->
 						drive.trajectorySequenceBuilder(START_POSE)
 								.setReversed(true)
-								.splineToSplineHeading(SCORE_POSE_ZERO,Math.toRadians(45))
+								.splineToSplineHeading(go_to_score_initial,calculateTangent(START_POSE,go_to_score_initial))
+								.splineToSplineHeading(SCORE_POSE_ZERO,calculateTangent(go_to_score_initial,SCORE_POSE_ZERO))
 								.setReversed(false)
 								.splineToSplineHeading(CONE_POSE_ONE,Math.toRadians(180))
 								.setReversed(true)
 								.splineToSplineHeading(SCORE_POSE_ZERO,Math.toRadians(45))
+								.setReversed(false)
+								.splineToSplineHeading(ZONE_THREE,Math.toRadians(Math.toRadians(90)))
+
 								.build()
 
 				);
