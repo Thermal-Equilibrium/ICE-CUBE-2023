@@ -54,12 +54,6 @@ public class RobotRelative extends Command {
 		x = game_pad1.getForwardJoystick();
 		turn = game_pad1.getTurnJoystick();
 
-		if (game_pad1.getLeft_trigger_value() > 0.5) {
-			turn = heading_control.calculate(
-					snap_angle,
-					drivetrain.drive.getPoseEstimate().getHeading()
-			);
-		}
 
 		y = MathUtils.applyDeadBand(y, strafe_dead_band);
 

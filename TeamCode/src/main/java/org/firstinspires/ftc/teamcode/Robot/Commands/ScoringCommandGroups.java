@@ -132,7 +132,7 @@ public class ScoringCommandGroups {
 	public Command low() {
 		return scoring_height(VerticalExtension.LOW_POSITION);
 	}
-	public Command frontLow() { return scoring_front_height(VerticalExtension.LOW_POSITION); }
+	public Command frontLow(double slides_pos) { return scoring_front_height(slides_pos); }
 
 	// Auto stack manual height selection
 	public Command stack5() {
